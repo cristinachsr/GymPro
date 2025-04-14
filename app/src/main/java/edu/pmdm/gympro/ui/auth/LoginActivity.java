@@ -2,18 +2,19 @@ package edu.pmdm.gympro.ui.auth;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.InputType;
 import android.util.Patterns;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import edu.pmdm.gympro.R;
 import edu.pmdm.gympro.databinding.ActivityLoginBinding;
-import android.text.InputType;
-import android.widget.EditText;
-import android.widget.ImageView;
-
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -64,27 +65,28 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
-        // Primero comprobamos si el correo está registrado
-        db.collection("empleados")
+        // Usamos la colección "administradores" en lugar de "empleados"
+        db.collection("administradores")
                 .whereEqualTo("email", email)
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     if (queryDocumentSnapshots.isEmpty()) {
                         Toast.makeText(this, "El correo electrónico no está registrado", Toast.LENGTH_SHORT).show();
                     } else {
-                        // El correo existe, ahora intentamos hacer login
                         auth.signInWithEmailAndPassword(email, password)
                                 .addOnSuccessListener(authResult -> {
                                     String uid = auth.getCurrentUser().getUid();
-                                    db.collection("empleados").document(uid).get()
+                                    db.collection("administradores").document(uid).get()
                                             .addOnSuccessListener(documentSnapshot -> {
                                                 if (documentSnapshot.exists()) {
                                                     String rol = documentSnapshot.getString("rol");
-                                                    if ("empleado".equals(rol)) {
+
+                                                    if ("administrador".equals(rol)) {
+                                                        Toast.makeText(this, "Bienvenido Administrador", Toast.LENGTH_SHORT).show();
                                                         startActivity(new Intent(this, edu.pmdm.gympro.MainActivity.class));
                                                         finish();
                                                     } else {
-                                                        Toast.makeText(this, "Solo empleados pueden acceder aquí", Toast.LENGTH_SHORT).show();
+                                                        Toast.makeText(this, "Rol no autorizado para acceder", Toast.LENGTH_SHORT).show();
                                                         auth.signOut();
                                                     }
                                                 } else {
@@ -101,5 +103,4 @@ public class LoginActivity extends AppCompatActivity {
                     Toast.makeText(this, "Error al verificar el correo: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }
-
 }

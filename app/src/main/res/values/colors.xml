@@ -9,5 +9,9 @@
     <color name="white">#FFFFFFFF</color>
     <color name="blue">#2196F3</color>
     <color name="gympro_blue">#0073CF</color>
+    <color name="blue_light">#BBDEFB</color>
+    <color name="drawer_background">#D0E8FF</color> <!-- Azul claro -->
+
+
 
 </resources>

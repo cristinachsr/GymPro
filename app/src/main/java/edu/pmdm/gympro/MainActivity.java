@@ -5,10 +5,14 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.Menu;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -66,6 +70,35 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
             finish();
         });
+
+
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        String uid = auth.getCurrentUser().getUid();
+
+        // Acceder al header del NavigationView
+        TextView tvNombre = headerView.findViewById(R.id.textViewNombre);
+        TextView tvCorreo = headerView.findViewById(R.id.textViewCorreo);
+        ImageView ivFoto = headerView.findViewById(R.id.imageViewProfile);
+
+        // Obtener datos del administrador desde Firestore
+        db.collection("administradores").document(uid).get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        String nombre = documentSnapshot.getString("nombreAdministrador");
+                        String correo = documentSnapshot.getString("email");
+                        String fotoUrl = documentSnapshot.getString("photo");
+
+                        tvNombre.setText(nombre != null ? nombre : "Admin");
+                        tvCorreo.setText(correo != null ? correo : "correo");
+
+                        if (fotoUrl != null && !fotoUrl.isEmpty()) {
+                            Glide.with(this).load(fotoUrl).into(ivFoto);
+                        } else {
+                            ivFoto.setImageResource(R.drawable.usuario);
+                        }
+                    }
+                });
     }
 
     @Override
