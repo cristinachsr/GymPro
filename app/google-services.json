@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1031019258306",
+    "project_id": "gympro-ba0bf",
+    "storage_bucket": "gympro-ba0bf.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1031019258306:android:e506dda89db80e721e365b",
+        "android_client_info": {
+          "package_name": "edu.pmdm.gympro"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBdyBhO4th_88-sXLZvsJyJ6yR_YjYZ6AI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

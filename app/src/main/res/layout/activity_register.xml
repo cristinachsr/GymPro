@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:padding="32dp"
+        android:gravity="center_horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <!-- Logo -->
+        <ImageView
+            android:layout_width="160dp"
+            android:layout_height="160dp"
+            android:layout_marginBottom="24dp"
+            android:src="@drawable/logo_gympro"
+            android:contentDescription="Logo" />
+
+        <!-- Título -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Registro de Empleado"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:textColor="@color/blue"
+            android:layout_marginBottom="24dp" />
+
+        <!-- Nombre -->
+        <EditText
+            android:id="@+id/etNombre"
+            android:hint="Nombre"
+            android:maxLength="28"
+            android:textColor="@color/blue"
+            android:textColorHint="@color/blue"
+            android:backgroundTint="@color/blue"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <!-- Apellidos -->
+        <EditText
+            android:id="@+id/etApellidos"
+            android:hint="Apellidos"
+            android:maxLength="28"
+            android:textColor="@color/blue"
+            android:textColorHint="@color/blue"
+            android:backgroundTint="@color/blue"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <!-- DNI -->
+        <EditText
+            android:id="@+id/etDni"
+            android:hint="DNI"
+            android:maxLength="9"
+            android:textColor="@color/blue"
+            android:textColorHint="@color/blue"
+            android:backgroundTint="@color/blue"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <!-- Fecha de nacimiento -->
+        <EditText
+            android:id="@+id/etFechaNacimiento"
+            android:hint="Fecha de nacimiento"
+            android:maxLength="10"
+            android:textColor="@color/blue"
+            android:textColorHint="@color/blue"
+            android:backgroundTint="@color/blue"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <!-- Email -->
+        <EditText
+            android:id="@+id/etEmail"
+            android:hint="Email"
+            android:inputType="textEmailAddress"
+            android:maxLength="28"
+            android:textColor="@color/blue"
+            android:textColorHint="@color/blue"
+            android:backgroundTint="@color/blue"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <!-- Contraseña con icono -->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp">
+
+            <EditText
+                android:id="@+id/etPassword"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Contraseña"
+                android:maxLength="15"
+                android:inputType="textPassword"
+                android:textColor="@color/blue"
+                android:textColorHint="@color/blue"
+                android:backgroundTint="@color/blue"
+                android:paddingEnd="48dp" />
+
+            <ImageView
+                android:id="@+id/ivTogglePassword"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_visibility_off"
+                android:layout_alignEnd="@id/etPassword"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="12dp"
+                android:contentDescription="Ver contraseña" />
+        </RelativeLayout>
+
+        <!-- Botón de registro -->
+        <Button
+            android:id="@+id/btnRegistrarse"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="REGISTRARSE"
+            android:layout_marginTop="24dp"
+            android:backgroundTint="@color/blue"
+            android:textColor="@android:color/white" />
+
+        <!-- Enlace para ir a login -->
+        <TextView
+            android:id="@+id/btnGoToLogin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="¿Ya tienes cuenta? Inicia sesión"
+            android:textColor="@color/blue"
+            android:textStyle="bold"
+            android:layout_marginTop="20dp" />
+    </LinearLayout>
+</ScrollView>
