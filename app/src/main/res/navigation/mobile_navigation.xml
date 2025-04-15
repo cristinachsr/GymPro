@@ -3,23 +3,29 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/nav_home">
+    app:startDestination="@+id/nav_inicio">
 
     <fragment
-        android:id="@+id/nav_home"
+        android:id="@+id/nav_inicio"
         android:name="edu.pmdm.gympro.ui.inicio.InicioFragment"
         android:label="Inicio"
         tools:layout="@layout/fragment_inicio" />
 
     <fragment
-        android:id="@+id/nav_gallery"
-        android:name="edu.pmdm.gympro.ui.gallery.GalleryFragment"
-        android:label="@string/menu_gallery"
-        tools:layout="@layout/fragment_gallery" />
+        android:id="@+id/nav_clientes"
+        android:name="edu.pmdm.gympro.ui.clientes.ClientesFragment"
+        android:label="@string/menu_clientes"
+        tools:layout="@layout/fragment_clientes" />
 
     <fragment
-        android:id="@+id/nav_slideshow"
-        android:name="edu.pmdm.gympro.ui.slideshow.SlideshowFragment"
-        android:label="@string/menu_slideshow"
-        tools:layout="@layout/fragment_slideshow" />
+        android:id="@+id/nav_grupos"
+        android:name="edu.pmdm.gympro.ui.grupos.GruposFragment"
+        android:label="@string/menu_grupos"
+        tools:layout="@layout/fragment_grupos" />
+
+    <fragment
+        android:id="@+id/nav_monitores"
+        android:name="edu.pmdm.gympro.ui.monitores.MonitoresFragment"
+        android:label="@string/menu_monitores"
+        tools:layout="@layout/fragment_monitores" />
 </navigation>

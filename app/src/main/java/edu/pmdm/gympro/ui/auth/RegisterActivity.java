@@ -80,10 +80,10 @@ public class RegisterActivity extends AppCompatActivity {
         ivToggle.setOnClickListener(v -> {
             if (etPassword.getInputType() == (InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD)) {
                 etPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
-                ivToggle.setImageResource(R.drawable.ic_visibility);
+                ivToggle.setImageResource(R.drawable.ic_visibility_sinfondo);
             } else {
                 etPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-                ivToggle.setImageResource(R.drawable.ic_visibility_off);
+                ivToggle.setImageResource(R.drawable.ic_visibility_off_sinfondo);
             }
             etPassword.setSelection(etPassword.getText().length());
         });

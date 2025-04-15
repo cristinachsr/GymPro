@@ -1,14 +1,14 @@
-package edu.pmdm.gympro.ui.gallery;
+package edu.pmdm.gympro.ui.clientes;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-public class GalleryViewModel extends ViewModel {
+public class ClientesViewModel extends ViewModel {
 
     private final MutableLiveData<String> mText;
 
-    public GalleryViewModel() {
+    public ClientesViewModel() {
         mText = new MutableLiveData<>();
         mText.setValue("This is gallery fragment");
     }

@@ -42,10 +42,10 @@ public class LoginActivity extends AppCompatActivity {
         ivToggle.setOnClickListener(v -> {
             if (etPassword.getInputType() == (InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD)) {
                 etPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
-                ivToggle.setImageResource(R.drawable.ic_visibility); // ojo abierto
+                ivToggle.setImageResource(R.drawable.ic_visibility_sinfondo); // ojo abierto
             } else {
                 etPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-                ivToggle.setImageResource(R.drawable.ic_visibility_off); // ojo cerrado
+                ivToggle.setImageResource(R.drawable.ic_visibility_off_sinfondo); // ojo cerrado
             }
             etPassword.setSelection(etPassword.getText().length()); // mantener cursor al final
         });

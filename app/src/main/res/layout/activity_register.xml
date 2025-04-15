@@ -2,7 +2,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/white">
+    android:background="?android:colorBackground">
 
     <LinearLayout
         android:orientation="vertical"
@@ -16,7 +16,7 @@
             android:layout_width="160dp"
             android:layout_height="160dp"
             android:layout_marginBottom="24dp"
-            android:src="@drawable/logo_gympro"
+            android:src="@drawable/logo_gympro_sinfondo"
             android:contentDescription="Logo" />
 
         <!-- Título -->
@@ -35,8 +35,7 @@
             android:layout_height="120dp"
             android:layout_gravity="center"
             android:scaleType="centerCrop"
-            android:src="@drawable/usuario"
-            android:background="@drawable/circle_border"
+            android:src="@drawable/usuario_sinfondo"
             android:layout_marginBottom="16dp" />
 
         <Button
@@ -127,7 +126,7 @@
                 android:id="@+id/ivTogglePassword"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
-                android:src="@drawable/ic_visibility_off"
+                android:src="@drawable/ic_visibility_off_sinfondo"
                 android:layout_alignEnd="@id/etPassword"
                 android:layout_centerVertical="true"
                 android:layout_marginEnd="12dp"

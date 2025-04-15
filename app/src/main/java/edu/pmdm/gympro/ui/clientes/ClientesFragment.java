@@ -1,4 +1,4 @@
-package edu.pmdm.gympro.ui.gallery;
+package edu.pmdm.gympro.ui.clientes;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -10,22 +10,22 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import edu.pmdm.gympro.databinding.FragmentGalleryBinding;
+import edu.pmdm.gympro.databinding.FragmentClientesBinding;
 
-public class GalleryFragment extends Fragment {
+public class ClientesFragment extends Fragment {
 
-    private FragmentGalleryBinding binding;
+    private FragmentClientesBinding binding;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        GalleryViewModel galleryViewModel =
-                new ViewModelProvider(this).get(GalleryViewModel.class);
+        ClientesViewModel clientesViewModel =
+                new ViewModelProvider(this).get(ClientesViewModel.class);
 
-        binding = FragmentGalleryBinding.inflate(inflater, container, false);
+        binding = FragmentClientesBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
         final TextView textView = binding.textGallery;
-        galleryViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
+        clientesViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
         return root;
     }
 

@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.Menu;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -14,6 +15,7 @@ import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -36,25 +38,32 @@ public class MainActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         setSupportActionBar(binding.appBarMain.toolbar);
-        binding.appBarMain.fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null)
-                        .setAnchorView(R.id.fab).show();
-            }
-        });
+
         DrawerLayout drawer = binding.drawerLayout;
         NavigationView navigationView = binding.navView;
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow)
-                .setOpenableLayout(drawer)
+                R.id.nav_inicio, R.id.nav_clientes, R.id.nav_grupos, R.id.nav_monitores
+        ).setOpenableLayout(drawer)
                 .build();
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
+
+        navigationView.setNavigationItemSelectedListener(item -> {
+            int id = item.getItemId();
+
+            if (id == R.id.nav_inicio) {
+                // 👇 Esto fuerza volver al fragmento de inicio, aunque vengas de otro
+                navController.popBackStack(R.id.nav_inicio, false);
+            } else {
+                navController.navigate(id);
+            }
+
+            drawer.closeDrawers(); // Cierra el menú lateral
+            return true;
+        });
 
         // Acceder a la vista del header (donde está el botón)
         View headerView = binding.navView.getHeaderView(0);
@@ -95,7 +104,7 @@ public class MainActivity extends AppCompatActivity {
                         if (fotoUrl != null && !fotoUrl.isEmpty()) {
                             Glide.with(this).load(fotoUrl).into(ivFoto);
                         } else {
-                            ivFoto.setImageResource(R.drawable.usuario);
+                            ivFoto.setImageResource(R.drawable.usuario_sinfondo);
                         }
                     }
                 });
