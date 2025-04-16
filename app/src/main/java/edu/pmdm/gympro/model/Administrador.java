@@ -7,6 +7,7 @@ public class Administrador {
     private String fechaNacimiento;
     private String email;
     private String dni;
+    private String telefono;
     private String photo;
     private String rol;
 
@@ -14,15 +15,16 @@ public class Administrador {
     public Administrador() {}
 
     // Constructor actualizado con todos los campos
-    public Administrador(String idadministrador, String nombre, String apellidos, String fecha, String email, String dni, String photo) {
+    public Administrador(String idadministrador, String nombre, String apellidos, String fecha, String email, String dni, String telefono, String photo) {
         this.idadministrador = idadministrador;
         this.nombreAdministrador = nombre;
         this.apellidoAdministrador = apellidos;
         this.fechaNacimiento = fecha;
         this.email = email;
         this.dni = dni;
+        this.telefono = telefono;
         this.photo = photo;
-        this.rol = "administrador"; // asignación por defecto
+        this.rol = "administrador";
     }
 
     public String getIdadministrador() {
@@ -47,6 +49,10 @@ public class Administrador {
 
     public String getDni() {
         return dni;
+    }
+
+    public String getTelefono() {
+        return telefono;
     }
 
     public String getPhoto() {

@@ -4,7 +4,6 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -73,6 +72,7 @@ public class RegisterActivity extends AppCompatActivity {
 
         binding.btnRegistrarse.setOnClickListener(v -> registrarAdministrador());
         binding.btnGoToLogin.setOnClickListener(v -> startActivity(new Intent(this, LoginActivity.class)));
+        binding.countryCodePicker.registerCarrierNumberEditText(binding.etTelefono);
 
         // Toggle contraseña
         ImageView ivToggle = binding.ivTogglePassword;
@@ -91,6 +91,68 @@ public class RegisterActivity extends AppCompatActivity {
         // Selección de foto
         binding.btnSeleccionarFoto.setBackgroundTintList(ContextCompat.getColorStateList(this, R.color.blue));
         binding.btnSeleccionarFoto.setOnClickListener(v -> mostrarOpcionesFoto());
+    }
+
+    private void registrarAdministrador() {
+        String nombre = binding.etNombre.getText().toString().trim();
+        String apellidos = binding.etApellidos.getText().toString().trim();
+        String dni = binding.etDni.getText().toString().trim();
+        String fecha = binding.etFechaNacimiento.getText().toString().trim();
+        String email = binding.etEmail.getText().toString().trim();
+        String password = binding.etPassword.getText().toString().trim();
+        String telefono = binding.countryCodePicker.getFullNumberWithPlus().trim();  // ← Usamos CountryCodePicker
+
+        if (!nombre.matches("^[A-Za-zÁÉÍÓÚáéíóúñÑ ]{1,28}$")) {
+            toast("Introduce un nombre válido (solo letras y espacios, máx 28 caracteres)"); return;
+        }
+
+        if (!apellidos.matches("^[A-Za-zÁÉÍÓÚáéíóúñÑ ]{1,28}$")) {
+            toast("Introduce apellidos válidos (solo letras y espacios, máx 28 caracteres)"); return;
+        }
+
+        if (dni.length() != 9 || !dni.matches("\\d{8}[A-Za-z]")) {
+            toast("DNI inválido. Debe tener 8 números y una letra"); return;
+        }
+
+        if (!fecha.matches("\\d{2}/\\d{2}/\\d{4}") || !fechaValida(fecha)) {
+            toast("Fecha inválida. Usa el formato dd/MM/yyyy (con año completo)"); return;
+        }
+
+        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches() || email.length() > 30) {
+            toast("Correo inválido (máx 30 caracteres)"); return;
+        }
+
+        if (password.length() < 8 || password.length() > 15) {
+            toast("La contraseña debe tener entre 8 y 15 caracteres"); return;
+        }
+
+        if (!binding.countryCodePicker.isValidFullNumber()) {
+            toast("Número de teléfono no válido"); return;
+        }
+
+        auth.createUserWithEmailAndPassword(email, password)
+                .addOnSuccessListener(result -> {
+                    String uid = result.getUser().getUid();
+                    String photoUrl = (fotoSeleccionadaUri != null) ? fotoSeleccionadaUri.toString() : "";
+
+                    Administrador admin = new Administrador(uid, nombre, apellidos, fecha, email, dni, telefono, photoUrl);
+
+                    db.collection("administradores").document(uid).set(admin)
+                            .addOnSuccessListener(unused -> {
+                                toast("Administrador registrado correctamente");
+                                startActivity(new Intent(this, LoginActivity.class));
+                                finish();
+                            })
+                            .addOnFailureListener(e -> toast("Error al guardar en Firestore"));
+                })
+                .addOnFailureListener(e -> {
+                    String msg = e.getMessage();
+                    if (msg != null && msg.contains("already in use")) {
+                        toast("El correo electrónico ya está registrado");
+                    } else {
+                        toast("Error: " + msg);
+                    }
+                });
     }
 
     private void mostrarOpcionesFoto() {
@@ -127,68 +189,15 @@ public class RegisterActivity extends AppCompatActivity {
             File storageDir = getExternalFilesDir(null);
             return File.createTempFile("foto_admin_", ".jpg", storageDir);
         } catch (IOException e) {
-            Toast.makeText(this, "Error al crear archivo de imagen", Toast.LENGTH_SHORT).show();
+            toast("Error al crear archivo de imagen");
             return null;
         }
     }
 
-    private void registrarAdministrador() {
-        String nombre = binding.etNombre.getText().toString().trim();
-        String apellidos = binding.etApellidos.getText().toString().trim();
-        String dni = binding.etDni.getText().toString().trim();
-        String fecha = binding.etFechaNacimiento.getText().toString().trim();
-        String email = binding.etEmail.getText().toString().trim();
-        String password = binding.etPassword.getText().toString().trim();
-
-        if (nombre.isEmpty() || nombre.length() > 28) {
-            Toast.makeText(this, "Introduce un nombre válido (máx 28 caracteres)", Toast.LENGTH_SHORT).show(); return;
-        }
-        if (apellidos.isEmpty() || apellidos.length() > 28) {
-            Toast.makeText(this, "Introduce apellidos válidos (máx 28 caracteres)", Toast.LENGTH_SHORT).show(); return;
-        }
-        if (dni.length() != 9 || !dni.matches("\\d{8}[A-Za-z]")) {
-            Toast.makeText(this, "DNI inválido. Debe tener 8 números y una letra", Toast.LENGTH_SHORT).show(); return;
-        }
-        if (!fechaValida(fecha)) {
-            Toast.makeText(this, "Fecha inválida. Usa el formato dd/MM/yyyy", Toast.LENGTH_SHORT).show(); return;
-        }
-        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches() || email.length() > 30) {
-            Toast.makeText(this, "Correo inválido (máx 30 caracteres)", Toast.LENGTH_SHORT).show(); return;
-        }
-        if (password.length() < 8 || password.length() > 15) {
-            Toast.makeText(this, "La contraseña debe tener entre 8 y 15 caracteres", Toast.LENGTH_SHORT).show(); return;
-        }
-
-        auth.createUserWithEmailAndPassword(email, password)
-                .addOnSuccessListener(result -> {
-                    String uid = result.getUser().getUid();
-                    String photoUrl = (fotoSeleccionadaUri != null) ? fotoSeleccionadaUri.toString() : "";
-
-                    Administrador admin = new Administrador(uid, nombre, apellidos, fecha, email, dni, photoUrl);
-
-                    db.collection("administradores").document(uid).set(admin)
-                            .addOnSuccessListener(unused -> {
-                                Toast.makeText(this, "Administrador registrado correctamente", Toast.LENGTH_SHORT).show();
-                                startActivity(new Intent(this, LoginActivity.class));
-                                finish();
-                            })
-                            .addOnFailureListener(e ->
-                                    Toast.makeText(this, "Error al guardar en Firestore", Toast.LENGTH_SHORT).show());
-                })
-                .addOnFailureListener(e -> {
-                    String msg = e.getMessage();
-                    if (msg != null && msg.contains("already in use")) {
-                        Toast.makeText(this, "El correo electrónico ya está registrado", Toast.LENGTH_SHORT).show();
-                    } else {
-                        Toast.makeText(this, "Error: " + msg, Toast.LENGTH_SHORT).show();
-                    }
-                });
-    }
-
     private boolean fechaValida(String fecha) {
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
-        sdf.setLenient(false);
         try {
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+            sdf.setLenient(false);
             sdf.parse(fecha);
             return true;
         } catch (ParseException e) {
@@ -196,14 +205,17 @@ public class RegisterActivity extends AppCompatActivity {
         }
     }
 
-    // Permiso de cámara
+    private void toast(String msg) {
+        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+    }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == REQUEST_CAMERA_PERMISSION && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             abrirCamara();
         } else {
-            Toast.makeText(this, "Permiso de cámara denegado", Toast.LENGTH_SHORT).show();
+            toast("Permiso de cámara denegado");
         }
     }
 }

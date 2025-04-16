@@ -55,5 +55,9 @@ dependencies {
     androidTestImplementation(libs.espresso.core)
     implementation("com.github.bumptech.glide:glide:4.15.1")
     implementation("com.google.android.material:material:1.9.0")
+    implementation(libs.country.code.picker)
+    implementation("com.hbb20:ccp:2.7.3")
+
+
 
 }
