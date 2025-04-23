@@ -158,80 +158,139 @@ public class CrearGrupoActivity extends AppCompatActivity {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         binding.spinnerMonitores.setAdapter(adapter);
 
-        db.collection("empleados")
-                .whereEqualTo("rol", "monitor")
+        String uid = auth.getCurrentUser().getUid(); // UID del administrador autenticado
+
+        db.collection("monitores")
+                .whereEqualTo("idAdministrador", uid)
                 .get()
                 .addOnSuccessListener(querySnapshot -> {
                     for (QueryDocumentSnapshot doc : querySnapshot) {
                         String nombre = doc.getString("nombre") + " " + doc.getString("apellidos");
                         listaMonitores.add(nombre);
                     }
+
                     if (listaMonitores.isEmpty()) {
-                        listaMonitores.add("Sin monitor asignado");
+                        listaMonitores.add("Sin monitores disponibles");
+                        binding.spinnerMonitores.setEnabled(false); // desactiva si no hay
+                    } else {
+                        binding.spinnerMonitores.setEnabled(true);
                     }
+
                     adapter.notifyDataSetChanged();
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "Error al cargar monitores", Toast.LENGTH_SHORT).show();
                 });
     }
+
 
     private void crearGrupo() {
         String nombre = binding.etNombreGrupo.getText().toString().trim();
         String descripcion = binding.etDescripcionGrupo.getText().toString().trim();
-        String monitor = binding.spinnerMonitores.getSelectedItem() != null ? binding.spinnerMonitores.getSelectedItem().toString() : "Sin monitor asignado";
+        final String[] monitor = {binding.spinnerMonitores.getSelectedItem() != null ?
+                binding.spinnerMonitores.getSelectedItem().toString() : "Sin monitor asignado"};
 
         if (nombre.isEmpty() || descripcion.isEmpty()) {
             Toast.makeText(this, "Completa el nombre y la descripción", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        if (monitor.equals("Sin monitores disponibles")) {
-            monitor = "Sin monitor asignado";
+        if (nombre.length() > 30) {
+            Toast.makeText(this, "El nombre no puede tener más de 30 caracteres", Toast.LENGTH_SHORT).show();
+            return;
         }
 
-        String fotoUrl = (imagenUriSeleccionada != null) ? imagenUriSeleccionada.toString() : "logo_por_defecto";
-        String idAdministrador = auth.getCurrentUser().getUid();
-        String idgrupo = UUID.randomUUID().toString();
+        // Verifica si el grupo ya existe
+        db.collection("grupos")
+                .whereEqualTo("nombre", nombre)
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    if (!querySnapshot.isEmpty()) {
+                        Toast.makeText(this, "Ya existe un grupo con ese nombre", Toast.LENGTH_SHORT).show();
+                    } else {
+                        if (monitor[0].equals("Sin monitores disponibles")) {
+                            monitor[0] = "Sin monitor asignado";
+                        }
 
-        Grupo nuevoGrupo = new Grupo(idgrupo, nombre, descripcion, fotoUrl, monitor, idAdministrador);
+                        String fotoUrl = (imagenUriSeleccionada != null) ? imagenUriSeleccionada.toString() : "logo_por_defecto";
+                        String idAdministrador = auth.getCurrentUser().getUid();
+                        String idgrupo = UUID.randomUUID().toString();
 
-        db.collection("grupos").document(idgrupo).set(nuevoGrupo)
-                .addOnSuccessListener(unused -> {
-                    Toast.makeText(this, "Grupo creado correctamente", Toast.LENGTH_SHORT).show();
-                    setResult(RESULT_OK);
-                    finish();
+                        Grupo nuevoGrupo = new Grupo(idgrupo, nombre, descripcion, fotoUrl, monitor[0], idAdministrador);
+
+                        db.collection("grupos").document(idgrupo).set(nuevoGrupo)
+                                .addOnSuccessListener(unused -> {
+                                    Toast.makeText(this, "Grupo creado correctamente", Toast.LENGTH_SHORT).show();
+                                    setResult(RESULT_OK);
+                                    finish();
+                                })
+                                .addOnFailureListener(e -> Toast.makeText(this, "Error al crear grupo", Toast.LENGTH_SHORT).show());
+                    }
                 })
-                .addOnFailureListener(e ->
-                        Toast.makeText(this, "Error al crear grupo", Toast.LENGTH_SHORT).show());
+                .addOnFailureListener(e -> Toast.makeText(this, "Error al comprobar duplicados", Toast.LENGTH_SHORT).show());
     }
+
 
     private void editarGrupo() {
         String nombre = binding.etNombreGrupo.getText().toString().trim();
         String descripcion = binding.etDescripcionGrupo.getText().toString().trim();
-        String monitor = binding.spinnerMonitores.getSelectedItem() != null ? binding.spinnerMonitores.getSelectedItem().toString() : "Sin monitor asignado";
+        final String[] monitor = {binding.spinnerMonitores.getSelectedItem() != null ?
+                binding.spinnerMonitores.getSelectedItem().toString() : "Sin monitor asignado"};
 
         if (nombre.isEmpty() || descripcion.isEmpty()) {
             Toast.makeText(this, "Completa el nombre y la descripción", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        if (monitor.equals("Sin monitores disponibles")) {
-            monitor = "Sin monitor asignado";
+        if (nombre.length() > 30) {
+            Toast.makeText(this, "El nombre no puede tener más de 30 caracteres", Toast.LENGTH_SHORT).show();
+            return;
         }
 
-        String fotoUrl = (imagenUriSeleccionada != null) ? imagenUriSeleccionada.toString() : "logo_por_defecto";
+        if (descripcion.length() > 100) {
+            Toast.makeText(this, "La descripción no puede tener más de 100 caracteres", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
-        db.collection("grupos").document(idGrupoEdicion)
-                .update("nombre", nombre,
-                        "descripcion", descripcion,
-                        "photo", fotoUrl,
-                        "id_empleado", monitor)
-                .addOnSuccessListener(unused -> {
-                    Toast.makeText(this, "Grupo actualizado", Toast.LENGTH_SHORT).show();
-                    setResult(RESULT_OK); // 👈 Notificamos al fragmento que hubo cambios
-                    finish();
+        db.collection("grupos")
+                .whereEqualTo("nombre", nombre)
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    boolean nombreYaExiste = false;
+
+                    for (QueryDocumentSnapshot doc : querySnapshot) {
+                        if (!doc.getId().equals(idGrupoEdicion)) {
+                            nombreYaExiste = true;
+                            break;
+                        }
+                    }
+
+                    if (nombreYaExiste) {
+                        Toast.makeText(this, "Ya existe otro grupo con ese nombre", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    if (monitor[0].equals("Sin monitores disponibles")) {
+                        monitor[0] = "Sin monitor asignado";
+                    }
+
+                    String fotoUrl = (imagenUriSeleccionada != null) ? imagenUriSeleccionada.toString() : "logo_por_defecto";
+
+                    db.collection("grupos").document(idGrupoEdicion)
+                            .update("nombre", nombre,
+                                    "descripcion", descripcion,
+                                    "photo", fotoUrl,
+                                    "id_empleado", monitor[0])
+                            .addOnSuccessListener(unused -> {
+                                Toast.makeText(this, "Grupo actualizado", Toast.LENGTH_SHORT).show();
+                                setResult(RESULT_OK);
+                                finish();
+                            })
+                            .addOnFailureListener(e -> Toast.makeText(this, "Error al actualizar grupo", Toast.LENGTH_SHORT).show());
                 })
-                .addOnFailureListener(e ->
-                        Toast.makeText(this, "Error al actualizar grupo", Toast.LENGTH_SHORT).show());
+                .addOnFailureListener(e -> Toast.makeText(this, "Error al comprobar duplicados", Toast.LENGTH_SHORT).show());
     }
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {

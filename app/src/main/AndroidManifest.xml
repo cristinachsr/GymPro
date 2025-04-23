@@ -51,6 +51,8 @@
         <activity android:name=".MainActivity" />
         <activity android:name=".ui.grupos.CrearGrupoActivity" />
         <activity android:name=".ui.grupos.DetalleGrupoActivity" />
+        <activity android:name=".ui.monitores.CrearMonitorActivity" />
+        <activity android:name=".ui.monitores.DetalleMonitorActivity" />
     </application>
 
 </manifest>
