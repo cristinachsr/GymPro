@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    android:elevation="4dp"
+    android:backgroundTint="@android:color/white">
+
+    <TextView
+        android:id="@+id/tvNombreGrupo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Nombre del grupo"
+        android:textColor="@color/blue"
+        android:textStyle="bold"
+        android:padding="16dp"
+        android:textSize="18sp" />
+</androidx.cardview.widget.CardView>

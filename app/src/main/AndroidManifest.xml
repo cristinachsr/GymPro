@@ -49,6 +49,8 @@
         <activity android:name=".ui.auth.LoginActivity" />
         <activity android:name=".ui.auth.RegisterActivity" />
         <activity android:name=".MainActivity" />
+        <activity android:name=".ui.grupos.CrearGrupoActivity" />
+        <activity android:name=".ui.grupos.DetalleGrupoActivity" />
     </application>
 
 </manifest>

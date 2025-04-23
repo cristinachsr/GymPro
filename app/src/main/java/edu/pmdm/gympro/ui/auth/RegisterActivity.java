@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -11,6 +12,7 @@ import android.text.InputType;
 import android.util.Patterns;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -74,7 +76,25 @@ public class RegisterActivity extends AppCompatActivity {
         binding.btnGoToLogin.setOnClickListener(v -> startActivity(new Intent(this, LoginActivity.class)));
         binding.countryCodePicker.registerCarrierNumberEditText(binding.etTelefono);
 
-        // Toggle contraseña
+        int nightModeFlags = getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
+
+        int color;
+        if (nightModeFlags == Configuration.UI_MODE_NIGHT_YES) {
+            color = ContextCompat.getColor(this, android.R.color.white); // blanco para modo oscuro
+        } else {
+            color = ContextCompat.getColor(this, R.color.blue); // azul para modo claro
+        }
+
+        try {
+            java.lang.reflect.Field field = binding.countryCodePicker.getClass().getDeclaredField("selectedTextView");
+            field.setAccessible(true);
+            TextView selectedTextView = (TextView) field.get(binding.countryCodePicker);
+            selectedTextView.setTextColor(color);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        //contraseña
         ImageView ivToggle = binding.ivTogglePassword;
         EditText etPassword = binding.etPassword;
         ivToggle.setOnClickListener(v -> {
@@ -86,6 +106,21 @@ public class RegisterActivity extends AppCompatActivity {
                 ivToggle.setImageResource(R.drawable.ic_visibility_off_sinfondo);
             }
             etPassword.setSelection(etPassword.getText().length());
+        });
+
+        //confirmar contraseña
+        EditText etConfirmarPassword = binding.etConfirmarPassword;
+        ImageView ivToggleConfirm = binding.ivToggleConfirmPassword;
+
+        ivToggleConfirm.setOnClickListener(v -> {
+            if (etConfirmarPassword.getInputType() == (InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD)) {
+                etConfirmarPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+                ivToggleConfirm.setImageResource(R.drawable.ic_visibility_sinfondo);
+            } else {
+                etConfirmarPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                ivToggleConfirm.setImageResource(R.drawable.ic_visibility_off_sinfondo);
+            }
+            etConfirmarPassword.setSelection(etConfirmarPassword.getText().length());
         });
 
         // Selección de foto
@@ -100,6 +135,7 @@ public class RegisterActivity extends AppCompatActivity {
         String fecha = binding.etFechaNacimiento.getText().toString().trim();
         String email = binding.etEmail.getText().toString().trim();
         String password = binding.etPassword.getText().toString().trim();
+        String confirmarPassword = binding.etConfirmarPassword.getText().toString().trim();
         String telefono = binding.countryCodePicker.getFullNumberWithPlus().trim();  // ← Usamos CountryCodePicker
 
         if (!nombre.matches("^[A-Za-zÁÉÍÓÚáéíóúñÑ ]{1,28}$")) {
@@ -126,9 +162,16 @@ public class RegisterActivity extends AppCompatActivity {
             toast("La contraseña debe tener entre 8 y 15 caracteres"); return;
         }
 
+        if (!password.equals(confirmarPassword)) {
+            toast("Las contraseñas no coinciden");
+            return;
+        }
+
         if (!binding.countryCodePicker.isValidFullNumber()) {
             toast("Número de teléfono no válido"); return;
         }
+
+
 
         auth.createUserWithEmailAndPassword(email, password)
                 .addOnSuccessListener(result -> {

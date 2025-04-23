@@ -106,8 +106,10 @@
                 android:id="@+id/countryCodePicker"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textSize="14sp"
                 app:ccp_defaultNameCode="ES"
                 app:ccp_showFullName="false"
+                app:ccp_showNameCode="false"
                 tools:ignore="MissingClass" />
 
             <EditText
@@ -117,7 +119,7 @@
                 android:layout_weight="1"
                 android:hint="Teléfono"
                 android:inputType="phone"
-                android:maxLength="15"
+                android:maxLength="12"
                 android:textColor="@color/blue"
                 android:textColorHint="@color/blue"
                 android:backgroundTint="@color/blue" />
@@ -163,6 +165,35 @@
                 android:layout_centerVertical="true"
                 android:layout_marginEnd="12dp"
                 android:contentDescription="Ver contraseña" />
+        </RelativeLayout>
+
+        <!-- Confirmar contraseña -->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp">
+
+            <EditText
+                android:id="@+id/etConfirmarPassword"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:backgroundTint="@color/blue"
+                android:hint="Confirmar contraseña"
+                android:inputType="textPassword"
+                android:maxLength="15"
+                android:paddingEnd="48dp"
+                android:textColor="@color/blue"
+                android:textColorHint="@color/blue" />
+
+            <ImageView
+                android:id="@+id/ivToggleConfirmPassword"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_visibility_off_sinfondo"
+                android:layout_alignEnd="@id/etConfirmarPassword"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="12dp"
+                android:contentDescription="Ver confirmar contraseña" />
         </RelativeLayout>
 
         <!-- Botón de registro -->
