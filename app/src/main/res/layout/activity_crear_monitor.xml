@@ -48,7 +48,8 @@
                 android:textColor="@color/blue"
                 android:textColorHint="@color/blue"
                 android:maxLength="30"
-                android:layout_marginBottom="16dp" />
+                android:layout_marginBottom="16dp"
+                />
 
             <!-- Apellidos -->
             <TextView

@@ -101,8 +101,23 @@ public class CrearMonitorActivity extends AppCompatActivity {
         binding.btnSeleccionarFoto.setOnClickListener(v -> mostrarOpcionesFoto());
         binding.btnCancelar.setOnClickListener(v -> finish());
         binding.btnCrearMonitor.setOnClickListener(v -> {
-            if (modoEdicion) editarMonitor();
-            else crearMonitor();
+            String nombre = binding.etNombreMonitor.getText().toString().trim();
+            String apellidos = binding.etApellidosMonitor.getText().toString().trim();
+            String dni = binding.etDni.getText().toString().trim();
+            String fechaNacimiento = binding.etFechaNacimiento.getText().toString().trim();
+            String telefono = binding.etTelefono.getText().toString().trim();
+            String correo = binding.etCorreo.getText().toString().trim();
+            String fotoUrl = (imagenUriSeleccionada != null)
+                    ? imagenUriSeleccionada.toString()
+                    : "logo_por_defecto";
+
+            if (!validarCampos(nombre, apellidos, dni, fechaNacimiento, telefono, correo)) return;
+
+            if (modoEdicion) {
+                editarMonitor();
+            } else {
+                validarYCrearMonitor(nombre, apellidos, dni, fechaNacimiento, telefono, correo, fotoUrl);
+            }
         });
     }
 
@@ -148,34 +163,48 @@ public class CrearMonitorActivity extends AppCompatActivity {
         }
     }
 
-    private void crearMonitor() {
-        String nombre = binding.etNombreMonitor.getText().toString().trim();
-        String apellidos = binding.etApellidosMonitor.getText().toString().trim();
-        String dni = binding.etDni.getText().toString().trim();
-        String fechaNacimiento = binding.etFechaNacimiento.getText().toString().trim();
-        String telefono = binding.etTelefono.getText().toString().trim();
-        String correo = binding.etCorreo.getText().toString().trim();
+    private void validarYCrearMonitor(String nombre, String apellidos, String dni, String fechaNacimiento,
+                                      String telefono, String correo, String fotoUrl) {
 
-        if (!validarCampos(nombre, apellidos, dni, fechaNacimiento, telefono, correo)) return;
+        db.collection("monitores").whereEqualTo("dni", dni).get().addOnSuccessListener(snapshotDni -> {
+            if (!snapshotDni.isEmpty()) {
+                Toast.makeText(this, "Ya existe un monitor con ese DNI", Toast.LENGTH_SHORT).show();
+                return;
+            }
 
-        String fotoUrl = (imagenUriSeleccionada != null)
-                ? imagenUriSeleccionada.toString()
-                : "logo_por_defecto";
+            db.collection("monitores").whereEqualTo("telefono", telefono).get().addOnSuccessListener(snapshotTel -> {
+                if (!snapshotTel.isEmpty()) {
+                    Toast.makeText(this, "Ya existe un monitor con ese número", Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
-        String idAdministrador = auth.getCurrentUser().getUid();
-        String idMonitor = UUID.randomUUID().toString();
+                db.collection("monitores").whereEqualTo("correo", correo).get().addOnSuccessListener(snapshotCorreo -> {
+                    if (!snapshotCorreo.isEmpty()) {
+                        Toast.makeText(this, "Ya existe un monitor con ese correo", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
 
-        Monitor monitor = new Monitor(idMonitor, nombre, apellidos, dni, fechaNacimiento,
-                telefono, correo, fotoUrl, idAdministrador);
+                    // ✅ No existen duplicados: crear monitor
+                    String idAdministrador = auth.getCurrentUser().getUid();
+                    String idMonitor = UUID.randomUUID().toString();
 
-        db.collection("monitores").document(idMonitor).set(monitor)
-                .addOnSuccessListener(unused -> {
-                    Toast.makeText(this, "Monitor creado correctamente", Toast.LENGTH_SHORT).show();
-                    setResult(RESULT_OK);
-                    finish();
-                })
-                .addOnFailureListener(e ->
-                        Toast.makeText(this, "Error al guardar monitor", Toast.LENGTH_SHORT).show());
+                    Monitor monitor = new Monitor(idMonitor, nombre, apellidos, dni, fechaNacimiento,
+                            telefono, correo, fotoUrl, idAdministrador);
+
+                    db.collection("monitores").document(idMonitor).set(monitor)
+                            .addOnSuccessListener(aVoid -> {
+                                Toast.makeText(this, "Monitor creado correctamente", Toast.LENGTH_SHORT).show();
+                                finish();
+                            })
+                            .addOnFailureListener(e -> {
+                                Toast.makeText(this, "Error al guardar monitor", Toast.LENGTH_SHORT).show();
+                            });
+
+                });
+
+            });
+
+        });
     }
 
     private void editarMonitor() {
@@ -207,14 +236,29 @@ public class CrearMonitorActivity extends AppCompatActivity {
     }
 
     private boolean validarCampos(String nombre, String apellidos, String dni, String fechaNacimiento, String telefono, String correo) {
-        if (nombre.isEmpty() || apellidos.isEmpty() || dni.isEmpty() ||
-                fechaNacimiento.isEmpty() || telefono.isEmpty() || correo.isEmpty()) {
+        if (nombre.trim().isEmpty() || apellidos.trim().isEmpty() || dni.trim().isEmpty() ||
+                fechaNacimiento.trim().isEmpty() || telefono.trim().isEmpty() || correo.trim().isEmpty()) {
             Toast.makeText(this, "Todos los campos son obligatorios", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        if (!nombre.matches("^[A-Za-zÁÉÍÓÚáéíóúÑñ ]+$")) {
+            Toast.makeText(this, "El nombre solo puede contener letras y espacios", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        if (!apellidos.matches("^[A-Za-zÁÉÍÓÚáéíóúÑñ ]+$")) {
+            Toast.makeText(this, "Los apellidos solo pueden contener letras y espacios", Toast.LENGTH_SHORT).show();
             return false;
         }
 
         if (!dni.matches("\\d{8}[A-Za-z]")) {
             Toast.makeText(this, "DNI inválido (ejemplo: 12345678A)", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        if (!android.util.Patterns.PHONE.matcher(telefono).matches()) {
+            Toast.makeText(this, "Número de teléfono inválido", Toast.LENGTH_SHORT).show();
             return false;
         }
 
