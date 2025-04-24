@@ -155,7 +155,7 @@ public class CrearGrupoActivity extends AppCompatActivity {
                 R.layout.spinner_item_azul,
                 listaMonitores
         );
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        adapter.setDropDownViewResource(R.layout.spinner_item_azul);
         binding.spinnerMonitores.setAdapter(adapter);
 
         String uid = auth.getCurrentUser().getUid(); // UID del administrador autenticado

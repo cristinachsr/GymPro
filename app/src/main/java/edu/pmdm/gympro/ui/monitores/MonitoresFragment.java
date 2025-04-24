@@ -63,6 +63,7 @@ public class MonitoresFragment extends Fragment {
     private void setupRecyclerView() {
         monitorAdapter = new MonitorAdapter(listaMonitores, monitor -> {
             Intent intent = new Intent(requireContext(), DetalleMonitorActivity.class);
+            intent.putExtra("idMonitor", monitor.getIdMonitor());
             intent.putExtra("nombre", monitor.getNombre());
             intent.putExtra("apellidos", monitor.getApellidos());
             intent.putExtra("dni", monitor.getDni());
@@ -101,8 +102,6 @@ public class MonitoresFragment extends Fragment {
 
                     if (monitoresCargados.isEmpty()) {
                         Toast.makeText(getContext(), "No hay monitores disponibles", Toast.LENGTH_SHORT).show();
-                    } else {
-                        Toast.makeText(getContext(), "Cargados " + monitoresCargados.size() + " monitores", Toast.LENGTH_SHORT).show();
                     }
                 })
                 .addOnFailureListener(e -> {
@@ -111,7 +110,11 @@ public class MonitoresFragment extends Fragment {
                 });
     }
 
-
+    @Override
+    public void onResume() {
+        super.onResume();
+        cargarMonitores(); // Vuelve a cargar la lista cuando regresas al fragmento
+    }
 
     @Override
     public void onDestroyView() {

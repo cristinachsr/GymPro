@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- Toolbar con flecha atrás -->
+    <!-- Toolbar con título y flecha atrás -->
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
@@ -17,7 +17,8 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:padding="16dp">
 
         <LinearLayout
@@ -33,50 +34,164 @@
                 android:layout_gravity="center"
                 android:scaleType="fitCenter"
                 android:src="@drawable/logo_gympro_sinfondo"
-                android:layout_marginBottom="16dp" />
+                android:layout_marginBottom="24dp" />
 
-            <!-- Texto: nombre y apellidos -->
+
+            <!-- Nombre -->
             <TextView
-                android:id="@+id/tvNombreCompleto"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Nombre Apellido"
-                android:textSize="20sp"
+                android:text="Nombre"
                 android:textColor="@color/blue"
+                android:textSize="16sp"
                 android:textStyle="bold"
-                android:layout_marginBottom="12dp" />
+                android:layout_marginBottom="4dp" />
+
+            <EditText
+                android:id="@+id/etNombre"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:enabled="false"
+                android:textSize="14sp"
+                android:background="@drawable/input_borde_azul"
+                android:padding="10dp"
+                android:textColor="@color/blue"
+                android:layout_marginBottom="16dp" />
+
+            <!-- Apellidos -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Apellidos"
+                android:textColor="@color/blue"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="4dp" />
+
+            <EditText
+                android:id="@+id/etApellidos"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:enabled="false"
+                android:textSize="14sp"
+                android:background="@drawable/input_borde_azul"
+                android:padding="10dp"
+                android:textColor="@color/blue"
+                android:layout_marginBottom="16dp" />
 
             <!-- DNI -->
             <TextView
-                android:id="@+id/tvDni"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="DNI:"
-                android:layout_marginBottom="8dp" />
+                android:text="DNI"
+                android:textColor="@color/blue"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="4dp" />
+
+            <EditText
+                android:id="@+id/etDni"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:enabled="false"
+                android:textSize="14sp"
+                android:background="@drawable/input_borde_azul"
+                android:padding="10dp"
+                android:textColor="@color/blue"
+                android:layout_marginBottom="16dp" />
 
             <!-- Fecha nacimiento -->
             <TextView
-                android:id="@+id/tvFechaNacimiento"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Fecha de nacimiento:"
-                android:layout_marginBottom="8dp" />
+                android:text="Fecha de nacimiento"
+                android:textColor="@color/blue"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="4dp" />
+
+            <EditText
+                android:id="@+id/etFechaNacimiento"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:enabled="false"
+                android:textSize="14sp"
+                android:background="@drawable/input_borde_azul"
+                android:padding="10dp"
+                android:textColor="@color/blue"
+                android:layout_marginBottom="16dp" />
 
             <!-- Teléfono -->
             <TextView
-                android:id="@+id/tvTelefono"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Teléfono:"
-                android:layout_marginBottom="8dp" />
+                android:text="Teléfono"
+                android:textColor="@color/blue"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="4dp" />
+
+            <EditText
+                android:id="@+id/etTelefono"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:enabled="false"
+                android:textSize="14sp"
+                android:background="@drawable/input_borde_azul"
+                android:padding="10dp"
+                android:textColor="@color/blue"
+                android:layout_marginBottom="16dp" />
 
             <!-- Correo -->
             <TextView
-                android:id="@+id/tvCorreo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Correo:"
-                android:layout_marginBottom="8dp" />
+                android:text="Correo electrónico"
+                android:textColor="@color/blue"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="4dp" />
+
+            <EditText
+                android:id="@+id/etCorreo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:enabled="false"
+                android:textSize="14sp"
+                android:background="@drawable/input_borde_azul"
+                android:padding="10dp"
+                android:textColor="@color/blue"
+                android:layout_marginBottom="16dp" />
+
+            <!-- Botones acción -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="24dp">
+
+                <Button
+                    android:id="@+id/btnEliminarMonitor"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Eliminar monitor"
+                    android:backgroundTint="@android:color/holo_red_dark"
+                    android:textColor="@android:color/white"
+                    android:layout_marginEnd="8dp" />
+
+                <Button
+                    android:id="@+id/btnEditarMonitor"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Editar monitor"
+                    android:backgroundTint="@color/blue"
+                    android:textColor="@android:color/white"
+                    android:layout_marginStart="8dp" />
+            </LinearLayout>
 
         </LinearLayout>
     </ScrollView>
