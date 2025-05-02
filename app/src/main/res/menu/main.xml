@@ -1,9 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+    <!-- Nueva opción: Editar administrador -->
     <item
-        android:id="@+id/action_settings"
-        android:orderInCategory="100"
-        android:title="@string/action_settings"
+        android:id="@+id/action_edit_admin"
+        android:orderInCategory="101"
+        android:title="Editar perfil"
+        app:showAsAction="never" />
+
+    <!-- Nueva opción: Cambiar idioma -->
+    <item
+        android:id="@+id/action_change_language"
+        android:orderInCategory="102"
+        android:title="Cambiar idioma"
         app:showAsAction="never" />
 </menu>

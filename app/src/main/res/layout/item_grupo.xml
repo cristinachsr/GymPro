@@ -1,18 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp"
-    android:elevation="4dp"
-    android:backgroundTint="@android:color/white">
+    android:orientation="horizontal"
+    android:padding="8dp"
+    android:background="@drawable/input_borde_azul">
 
-    <TextView
-        android:id="@+id/tvNombreGrupo"
-        android:layout_width="match_parent"
+    <ImageView
+        android:id="@+id/ivFotoGrupo"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/logo_gympro_sinfondo"
+        android:layout_marginEnd="12dp"
+        android:background="@drawable/circle_border" />
+
+    <LinearLayout
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Nombre del grupo"
-        android:textColor="@color/blue"
-        android:textStyle="bold"
-        android:padding="16dp"
-        android:textSize="18sp" />
-</androidx.cardview.widget.CardView>
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvNombreGrupo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Nombre del Grupo"
+            android:textColor="@color/blue"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tvDescripcionGrupo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Descripción del grupo"
+            android:textSize="14sp"
+            android:textColor="@color/blue" />
+    </LinearLayout>
+</LinearLayout>

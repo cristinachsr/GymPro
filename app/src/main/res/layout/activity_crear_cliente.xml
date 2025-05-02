@@ -13,8 +13,8 @@
         android:layout_height="?attr/actionBarSize"
         android:background="?attr/colorPrimary"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        android:title="Añadir monitor"
-        android:titleTextColor="@android:color/white"/>
+        android:title="Añadir cliente"
+        android:titleTextColor="@android:color/white" />
 
     <!-- Scroll principal -->
     <ScrollView
@@ -39,7 +39,7 @@
                 android:layout_marginBottom="4dp" />
 
             <EditText
-                android:id="@+id/etNombreMonitor"
+                android:id="@+id/etNombreCliente"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="14sp"
@@ -49,8 +49,7 @@
                 android:textColor="@color/blue"
                 android:textColorHint="@color/blue"
                 android:maxLength="30"
-                android:layout_marginBottom="16dp"
-                />
+                android:layout_marginBottom="16dp" />
 
             <!-- Apellidos -->
             <TextView
@@ -63,7 +62,7 @@
                 android:layout_marginBottom="4dp" />
 
             <EditText
-                android:id="@+id/etApellidosMonitor"
+                android:id="@+id/etApellidosCliente"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="14sp"
@@ -86,7 +85,7 @@
                 android:layout_marginBottom="4dp" />
 
             <EditText
-                android:id="@+id/etDni"
+                android:id="@+id/etDniCliente"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="14sp"
@@ -109,7 +108,7 @@
                 android:layout_marginBottom="4dp" />
 
             <EditText
-                android:id="@+id/etFechaNacimiento"
+                android:id="@+id/etFechaNacimientoCliente"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="14sp"
@@ -138,7 +137,7 @@
                 android:layout_marginBottom="16dp">
 
                 <com.hbb20.CountryCodePicker
-                    android:id="@+id/countryCodePicker"
+                    android:id="@+id/countryCodePickerCliente"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:ccp_defaultNameCode="ES"
@@ -147,7 +146,7 @@
                     tools:ignore="MissingClass" />
 
                 <EditText
-                    android:id="@+id/etTelefono"
+                    android:id="@+id/etTelefonoCliente"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -161,7 +160,7 @@
                     android:textColorHint="@color/blue" />
             </LinearLayout>
 
-            <!-- Correo electrónico -->
+            <!-- Correo -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -172,7 +171,7 @@
                 android:layout_marginBottom="4dp" />
 
             <EditText
-                android:id="@+id/etCorreo"
+                android:id="@+id/etCorreoCliente"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textEmailAddress"
@@ -185,9 +184,45 @@
                 android:maxLength="50"
                 android:layout_marginBottom="16dp" />
 
+            <!-- Seleccionar grupos -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Grupos"
+                android:textColor="@color/blue"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="4dp" />
+
+            <Button
+                android:id="@+id/btnSeleccionarGrupos"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Seleccionar grupos"
+                android:backgroundTint="@color/blue"
+                android:textColor="@android:color/white"
+                android:layout_marginBottom="12dp" />
+
+            <TextView
+                android:id="@+id/tvGruposSeleccionados"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/input_borde_azul"
+                android:padding="12dp"
+                android:textColor="@color/blue"
+                android:textSize="14sp"
+                android:text="Sin grupos seleccionados"
+                android:layout_marginBottom="16dp" />
+
+            <!-- Lista de grupos seleccionados -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvGruposSeleccionados"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp" />
             <!-- Imagen -->
             <ImageView
-                android:id="@+id/ivFotoMonitor"
+                android:id="@+id/ivFotoCliente"
                 android:layout_width="200dp"
                 android:layout_height="200dp"
                 android:layout_gravity="center"
@@ -197,7 +232,7 @@
 
             <!-- Botón elegir imagen -->
             <Button
-                android:id="@+id/btnSeleccionarFoto"
+                android:id="@+id/btnSeleccionarFotoCliente"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Elegir foto"
@@ -214,7 +249,7 @@
                 android:gravity="center">
 
                 <Button
-                    android:id="@+id/btnCancelar"
+                    android:id="@+id/btnCancelarCliente"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -224,11 +259,11 @@
                     android:layout_marginEnd="8dp" />
 
                 <Button
-                    android:id="@+id/btnCrearMonitor"
+                    android:id="@+id/btnCrearCliente"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Crear monitor"
+                    android:text="Crear cliente"
                     android:backgroundTint="@color/blue"
                     android:textColor="@android:color/white"
                     android:layout_marginStart="8dp" />

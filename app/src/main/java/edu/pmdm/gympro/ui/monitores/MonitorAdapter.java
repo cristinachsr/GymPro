@@ -3,10 +3,13 @@ package edu.pmdm.gympro.ui.monitores;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,9 +43,20 @@ public class MonitorAdapter extends RecyclerView.Adapter<MonitorAdapter.MonitorV
     @Override
     public void onBindViewHolder(@NonNull MonitorViewHolder holder, int position) {
         Monitor monitor = listaFiltrada.get(position);
-        holder.tvNombreMonitor.setText(monitor.getNombre() + " " + monitor.getApellidos());
 
-        holder.itemView.setOnClickListener(v -> listener.onMonitorClick(monitor)); // <-- CLICK
+        holder.tvNombreMonitor.setText(monitor.getNombre() + " " + monitor.getApellidos());
+        holder.tvCorreoMonitor.setText(monitor.getCorreo() != null ? monitor.getCorreo() : "Sin correo");
+
+        if (monitor.getFoto() != null && !monitor.getFoto().equals("logo_por_defecto")) {
+            Glide.with(holder.itemView.getContext())
+                    .load(monitor.getFoto())
+                    .placeholder(R.drawable.logo_gympro_sinfondo)
+                    .into(holder.ivFotoMonitor);
+        } else {
+            holder.ivFotoMonitor.setImageResource(R.drawable.logo_gympro_sinfondo);
+        }
+
+        holder.itemView.setOnClickListener(v -> listener.onMonitorClick(monitor));
     }
 
     @Override
@@ -75,11 +89,14 @@ public class MonitorAdapter extends RecyclerView.Adapter<MonitorAdapter.MonitorV
     }
 
     static class MonitorViewHolder extends RecyclerView.ViewHolder {
-        TextView tvNombreMonitor;
+        TextView tvNombreMonitor, tvCorreoMonitor;
+        ImageView ivFotoMonitor;
 
         public MonitorViewHolder(@NonNull View itemView) {
             super(itemView);
             tvNombreMonitor = itemView.findViewById(R.id.tvNombreMonitor);
+            tvCorreoMonitor = itemView.findViewById(R.id.tvCorreoMonitor);
+            ivFotoMonitor = itemView.findViewById(R.id.ivFotoMonitor);
         }
     }
 }

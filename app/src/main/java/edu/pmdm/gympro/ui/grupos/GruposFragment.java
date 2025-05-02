@@ -23,6 +23,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.pmdm.gympro.SpaceItemDecoration;
 import edu.pmdm.gympro.databinding.FragmentGruposBinding;
 import edu.pmdm.gympro.model.Grupo;
 
@@ -77,6 +78,7 @@ public class GruposFragment extends Fragment {
 
         binding.rvGrupos.setLayoutManager(new LinearLayoutManager(getContext()));
         binding.rvGrupos.setAdapter(grupoAdapter);
+        binding.rvGrupos.addItemDecoration(new SpaceItemDecoration(24));
 
     }
 

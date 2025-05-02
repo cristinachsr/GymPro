@@ -1,0 +1,9 @@
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/tvNombreGrupoSeleccionado"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="8dp"
+    android:textSize="16sp"
+    android:textColor="@color/blue"
+    android:background="@drawable/input_borde_azul"
+    android:layout_marginBottom="8dp"/>

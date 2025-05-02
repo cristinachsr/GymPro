@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -21,6 +22,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.pmdm.gympro.SpaceItemDecoration;
 import edu.pmdm.gympro.databinding.FragmentMonitoresBinding;
 import edu.pmdm.gympro.model.Monitor;
 
@@ -76,6 +78,9 @@ public class MonitoresFragment extends Fragment {
 
         binding.rvMonitores.setLayoutManager(new LinearLayoutManager(getContext()));
         binding.rvMonitores.setAdapter(monitorAdapter);
+        //binding.rvMonitores.addItemDecoration(new androidx.recyclerview.widget.DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL));
+        //binding.rvMonitores.addItemDecoration(new androidx.recyclerview.widget.DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL));
+        binding.rvMonitores.addItemDecoration(new SpaceItemDecoration(24));
     }
 
 

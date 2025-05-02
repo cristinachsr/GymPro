@@ -29,6 +29,7 @@ import edu.pmdm.gympro.R;
 import edu.pmdm.gympro.databinding.ActivityCrearMonitorBinding;
 import edu.pmdm.gympro.model.Monitor;
 
+
 public class CrearMonitorActivity extends AppCompatActivity {
 
     private ActivityCrearMonitorBinding binding;
@@ -119,6 +120,10 @@ public class CrearMonitorActivity extends AppCompatActivity {
                 validarYCrearMonitor(nombre, apellidos, dni, fechaNacimiento, telefono, correo, fotoUrl);
             }
         });
+
+        binding.countryCodePicker.registerCarrierNumberEditText(binding.etTelefono);
+
+
     }
 
     private void mostrarOpcionesFoto() {
@@ -212,7 +217,7 @@ public class CrearMonitorActivity extends AppCompatActivity {
         String apellidos = binding.etApellidosMonitor.getText().toString().trim();
         String dni = binding.etDni.getText().toString().trim();
         String fechaNacimiento = binding.etFechaNacimiento.getText().toString().trim();
-        String telefono = binding.etTelefono.getText().toString().trim();
+        String telefono = binding.countryCodePicker.getFullNumberWithPlus().trim();
         String correo = binding.etCorreo.getText().toString().trim();
 
         if (!validarCampos(nombre, apellidos, dni, fechaNacimiento, telefono, correo)) return;
@@ -257,7 +262,7 @@ public class CrearMonitorActivity extends AppCompatActivity {
             return false;
         }
 
-        if (!android.util.Patterns.PHONE.matcher(telefono).matches()) {
+        if (!binding.countryCodePicker.isValidFullNumber()) {
             Toast.makeText(this, "Número de teléfono inválido", Toast.LENGTH_SHORT).show();
             return false;
         }

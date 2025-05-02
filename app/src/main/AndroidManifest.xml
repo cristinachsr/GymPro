@@ -53,6 +53,10 @@
         <activity android:name=".ui.grupos.DetalleGrupoActivity" />
         <activity android:name=".ui.monitores.CrearMonitorActivity" />
         <activity android:name=".ui.monitores.DetalleMonitorActivity" />
+        <activity android:name=".ui.clientes.CrearClienteActivity" />
+        <activity android:name=".ui.clientes.DetalleClienteActivity" />
+        <activity android:name=".EditarAdministradorActivity" />
+        <activity android:name=".CambiarIdiomaActivity" />
     </application>
 
 </manifest>

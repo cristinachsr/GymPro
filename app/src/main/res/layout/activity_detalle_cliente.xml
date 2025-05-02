@@ -1,22 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- Toolbar con título y flecha atrás -->
+    <!-- Toolbar con título -->
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="?attr/colorPrimary"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        android:title="Añadir monitor"
-        android:titleTextColor="@android:color/white"/>
+        android:title="Detalles del cliente"
+        android:titleTextColor="@android:color/white" />
 
-    <!-- Scroll principal -->
+    <!-- Contenido scrollable -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -28,6 +27,16 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
+            <!-- Imagen -->
+            <ImageView
+                android:id="@+id/ivFotoCliente"
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:layout_gravity="center"
+                android:scaleType="fitCenter"
+                android:src="@drawable/logo_gympro_sinfondo"
+                android:layout_marginBottom="24dp" />
+
             <!-- Nombre -->
             <TextView
                 android:layout_width="match_parent"
@@ -35,22 +44,17 @@
                 android:text="Nombre"
                 android:textColor="@color/blue"
                 android:textSize="16sp"
-                android:textStyle="bold"
-                android:layout_marginBottom="4dp" />
-
+                android:textStyle="bold" />
             <EditText
-                android:id="@+id/etNombreMonitor"
+                android:id="@+id/etNombre"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:enabled="false"
                 android:textSize="14sp"
                 android:background="@drawable/input_borde_azul"
                 android:padding="10dp"
-                android:hint="Nombre"
                 android:textColor="@color/blue"
-                android:textColorHint="@color/blue"
-                android:maxLength="30"
-                android:layout_marginBottom="16dp"
-                />
+                android:layout_marginBottom="16dp" />
 
             <!-- Apellidos -->
             <TextView
@@ -59,20 +63,16 @@
                 android:text="Apellidos"
                 android:textColor="@color/blue"
                 android:textSize="16sp"
-                android:textStyle="bold"
-                android:layout_marginBottom="4dp" />
-
+                android:textStyle="bold" />
             <EditText
-                android:id="@+id/etApellidosMonitor"
+                android:id="@+id/etApellidos"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:enabled="false"
                 android:textSize="14sp"
                 android:background="@drawable/input_borde_azul"
                 android:padding="10dp"
-                android:hint="Apellidos"
                 android:textColor="@color/blue"
-                android:textColorHint="@color/blue"
-                android:maxLength="30"
                 android:layout_marginBottom="16dp" />
 
             <!-- DNI -->
@@ -82,131 +82,94 @@
                 android:text="DNI"
                 android:textColor="@color/blue"
                 android:textSize="16sp"
-                android:textStyle="bold"
-                android:layout_marginBottom="4dp" />
-
+                android:textStyle="bold" />
             <EditText
                 android:id="@+id/etDni"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:enabled="false"
                 android:textSize="14sp"
                 android:background="@drawable/input_borde_azul"
-                android:hint="12345678A"
                 android:padding="10dp"
                 android:textColor="@color/blue"
-                android:textColorHint="@color/blue"
-                android:maxLength="9"
                 android:layout_marginBottom="16dp" />
 
-            <!-- Fecha de nacimiento -->
+            <!-- Fecha nacimiento -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Fecha de nacimiento"
                 android:textColor="@color/blue"
                 android:textSize="16sp"
-                android:textStyle="bold"
-                android:layout_marginBottom="4dp" />
-
+                android:textStyle="bold" />
             <EditText
                 android:id="@+id/etFechaNacimiento"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:enabled="false"
                 android:textSize="14sp"
                 android:background="@drawable/input_borde_azul"
-                android:hint="dd/MM/yyyy"
                 android:padding="10dp"
-                android:maxLength="10"
                 android:textColor="@color/blue"
-                android:textColorHint="@color/blue"
                 android:layout_marginBottom="16dp" />
 
-            <!-- Teléfono con CountryCodePicker -->
+            <!-- Teléfono -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Teléfono"
                 android:textColor="@color/blue"
                 android:textSize="16sp"
-                android:textStyle="bold"
-                android:layout_marginBottom="4dp" />
-
-            <LinearLayout
+                android:textStyle="bold" />
+            <EditText
+                android:id="@+id/etTelefono"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="16dp">
+                android:enabled="false"
+                android:textSize="14sp"
+                android:background="@drawable/input_borde_azul"
+                android:padding="10dp"
+                android:textColor="@color/blue"
+                android:layout_marginBottom="16dp" />
 
-                <com.hbb20.CountryCodePicker
-                    android:id="@+id/countryCodePicker"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:ccp_defaultNameCode="ES"
-                    app:ccp_showFullName="false"
-                    app:ccp_showNameCode="false"
-                    tools:ignore="MissingClass" />
-
-                <EditText
-                    android:id="@+id/etTelefono"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:textSize="14sp"
-                    android:background="@drawable/input_borde_azul"
-                    android:hint="Teléfono"
-                    android:padding="10dp"
-                    android:maxLength="15"
-                    android:inputType="phone"
-                    android:textColor="@color/blue"
-                    android:textColorHint="@color/blue" />
-            </LinearLayout>
-
-            <!-- Correo electrónico -->
+            <!-- Correo -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Correo electrónico"
                 android:textColor="@color/blue"
                 android:textSize="16sp"
-                android:textStyle="bold"
-                android:layout_marginBottom="4dp" />
-
+                android:textStyle="bold" />
             <EditText
                 android:id="@+id/etCorreo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textEmailAddress"
+                android:enabled="false"
                 android:textSize="14sp"
                 android:background="@drawable/input_borde_azul"
-                android:hint="Correo"
                 android:padding="10dp"
                 android:textColor="@color/blue"
-                android:textColorHint="@color/blue"
-                android:maxLength="50"
                 android:layout_marginBottom="16dp" />
 
-            <!-- Imagen -->
-            <ImageView
-                android:id="@+id/ivFotoMonitor"
-                android:layout_width="200dp"
-                android:layout_height="200dp"
-                android:layout_gravity="center"
-                android:scaleType="fitCenter"
-                android:src="@drawable/logo_gympro_sinfondo"
-                android:layout_marginBottom="12dp" />
-
-            <!-- Botón elegir imagen -->
-            <Button
-                android:id="@+id/btnSeleccionarFoto"
-                android:layout_width="wrap_content"
+            <!-- Clases (grupos asignados) -->
+            <TextView
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Elegir foto"
-                android:layout_gravity="center"
-                android:backgroundTint="@color/blue"
-                android:textColor="@android:color/white"
+                android:text="Clases asignadas"
+                android:textColor="@color/blue"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+            <TextView
+                android:id="@+id/tvClasesCliente"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/input_borde_azul"
+                android:padding="12dp"
+                android:textColor="@color/blue"
+                android:textSize="14sp"
                 android:layout_marginBottom="24dp" />
 
-            <!-- Botones acción -->
+            <!-- Botones -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -214,21 +177,21 @@
                 android:gravity="center">
 
                 <Button
-                    android:id="@+id/btnCancelar"
+                    android:id="@+id/btnEliminarCliente"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="56dp"
                     android:layout_weight="1"
-                    android:text="Cancelar"
-                    android:backgroundTint="@android:color/darker_gray"
+                    android:text="Eliminar cliente"
+                    android:backgroundTint="@android:color/holo_red_dark"
                     android:textColor="@android:color/white"
                     android:layout_marginEnd="8dp" />
 
                 <Button
-                    android:id="@+id/btnCrearMonitor"
+                    android:id="@+id/btnEditarCliente"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="56dp"
                     android:layout_weight="1"
-                    android:text="Crear monitor"
+                    android:text="Editar cliente"
                     android:backgroundTint="@color/blue"
                     android:textColor="@android:color/white"
                     android:layout_marginStart="8dp" />

@@ -1,0 +1,337 @@
+package edu.pmdm.gympro.ui.clientes;
+
+import android.Manifest;
+import android.app.AlertDialog;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.os.Bundle;
+import android.provider.MediaStore;
+import android.widget.Toast;
+
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
+
+import com.bumptech.glide.Glide;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+import edu.pmdm.gympro.R;
+import edu.pmdm.gympro.databinding.ActivityCrearClienteBinding;
+import edu.pmdm.gympro.model.Cliente;
+
+public class CrearClienteActivity extends AppCompatActivity {
+
+    private ActivityCrearClienteBinding binding;
+    private FirebaseFirestore db;
+    private FirebaseAuth auth;
+    private Uri imagenUriSeleccionada;
+    private Uri imagenUriCamara;
+    private final int REQUEST_CAMERA_PERMISSION = 101;
+    private boolean modoEdicion = false;
+    private String idClienteEdicion;
+
+    private List<String> gruposSeleccionados = new ArrayList<>();
+    private List<String> nombresGruposSeleccionados = new ArrayList<>();
+    private GrupoSeleccionadoAdapter grupoSeleccionadoAdapter;
+
+    private final ActivityResultLauncher<Intent> launcherGaleria =
+            registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+                if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                    imagenUriSeleccionada = result.getData().getData();
+                    Glide.with(this).load(imagenUriSeleccionada).into(binding.ivFotoCliente);
+                }
+            });
+
+    private final ActivityResultLauncher<Intent> launcherCamara =
+            registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+                if (result.getResultCode() == RESULT_OK && imagenUriCamara != null) {
+                    imagenUriSeleccionada = imagenUriCamara;
+                    Glide.with(this).load(imagenUriCamara).into(binding.ivFotoCliente);
+                }
+            });
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        binding = ActivityCrearClienteBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
+
+        db = FirebaseFirestore.getInstance();
+        auth = FirebaseAuth.getInstance();
+
+        setSupportActionBar(binding.toolbar);
+        if (getSupportActionBar() != null)
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        modoEdicion = getIntent().getBooleanExtra("modoEdicion", false);
+
+        if (modoEdicion) {
+            binding.toolbar.setTitle("Editar cliente");
+            binding.btnCrearCliente.setText("Guardar cambios");
+
+            idClienteEdicion = getIntent().getStringExtra("idCliente");
+
+            binding.etNombreCliente.setText(getIntent().getStringExtra("nombre"));
+            binding.etApellidosCliente.setText(getIntent().getStringExtra("apellidos"));
+            binding.etDniCliente.setText(getIntent().getStringExtra("dni"));
+            binding.etFechaNacimientoCliente.setText(getIntent().getStringExtra("fechaNacimiento"));
+            String telefonoCompleto = getIntent().getStringExtra("telefono");
+            if (telefonoCompleto != null && telefonoCompleto.startsWith("+")) {
+                // Asignar el número local sin el prefijo
+                binding.countryCodePickerCliente.setFullNumber(telefonoCompleto.replace("+", ""));
+                String numeroSinPrefijo = telefonoCompleto.replace("+" + binding.countryCodePickerCliente.getSelectedCountryCode(), "");
+                binding.etTelefonoCliente.setText(numeroSinPrefijo);
+            }
+            binding.etCorreoCliente.setText(getIntent().getStringExtra("correo"));
+
+            String foto = getIntent().getStringExtra("foto");
+            if (foto != null && !foto.equals("logo_por_defecto")) {
+                imagenUriSeleccionada = Uri.parse(foto);
+                Glide.with(this).load(imagenUriSeleccionada).into(binding.ivFotoCliente);
+            } else {
+                Glide.with(this).load(R.drawable.logo_gympro_sinfondo).into(binding.ivFotoCliente);
+            }
+
+
+        } else {
+            Glide.with(this).load(R.drawable.logo_gympro_sinfondo).into(binding.ivFotoCliente);
+        }
+
+        binding.btnSeleccionarFotoCliente.setOnClickListener(v -> mostrarOpcionesFoto());
+        binding.btnCancelarCliente.setOnClickListener(v -> finish());
+        binding.btnCrearCliente.setOnClickListener(v -> guardarCliente());
+
+        binding.countryCodePickerCliente.registerCarrierNumberEditText(binding.etTelefonoCliente);
+
+        grupoSeleccionadoAdapter = new GrupoSeleccionadoAdapter(nombresGruposSeleccionados);
+        binding.rvGruposSeleccionados.setAdapter(grupoSeleccionadoAdapter);
+
+        binding.btnSeleccionarGrupos.setOnClickListener(v -> mostrarDialogoSeleccionGrupos());
+
+        List<String> clasesSeleccionadas = getIntent().getStringArrayListExtra("clasesSeleccionadas");
+        if (clasesSeleccionadas != null) {
+            gruposSeleccionados.addAll(clasesSeleccionadas);
+
+            db.collection("grupos")
+                    .get()
+                    .addOnSuccessListener(snapshot -> {
+                        for (var doc : snapshot) {
+                            if (clasesSeleccionadas.contains(doc.getId())) {
+                                String nombreGrupo = doc.getString("nombre");
+                                if (nombreGrupo != null) {
+                                    nombresGruposSeleccionados.add(nombreGrupo);
+                                }
+                            }
+                        }
+                        grupoSeleccionadoAdapter.notifyDataSetChanged();
+                        binding.tvGruposSeleccionados.setText(String.join(", ", nombresGruposSeleccionados));
+                    });
+        }
+    }
+
+    private void mostrarDialogoSeleccionGrupos() {
+        FirebaseFirestore.getInstance()
+                .collection("grupos")
+                .get()
+                .addOnSuccessListener(snapshot -> {
+                    List<String> nombresGrupos = new ArrayList<>();
+                    List<String> idsGrupos = new ArrayList<>();
+
+                    for (var doc : snapshot) {
+                        nombresGrupos.add(doc.getString("nombre"));
+                        idsGrupos.add(doc.getId());
+                    }
+
+                    boolean[] seleccionados = new boolean[nombresGrupos.size()];
+                    for (int i = 0; i < nombresGrupos.size(); i++) {
+                        seleccionados[i] = gruposSeleccionados.contains(idsGrupos.get(i));
+                    }
+
+                    new AlertDialog.Builder(this)
+                            .setTitle("Seleccionar clases")
+                            .setMultiChoiceItems(nombresGrupos.toArray(new String[0]), seleccionados, (dialog, which, isChecked) -> {
+                                if (isChecked) {
+                                    gruposSeleccionados.add(idsGrupos.get(which));
+                                    nombresGruposSeleccionados.add(nombresGrupos.get(which));
+                                } else {
+                                    gruposSeleccionados.remove(idsGrupos.get(which));
+                                    nombresGruposSeleccionados.remove(nombresGrupos.get(which));
+                                }
+                            })
+                            .setPositiveButton("Aceptar", (dialog, which) -> {
+                                grupoSeleccionadoAdapter.notifyDataSetChanged();
+
+                                if (nombresGruposSeleccionados.isEmpty()) {
+                                    binding.tvGruposSeleccionados.setText("Sin grupos seleccionados");
+                                } else {
+                                    binding.tvGruposSeleccionados.setText(String.join(", ", nombresGruposSeleccionados));
+                                }
+                            })
+                            .setNegativeButton("Cancelar", null)
+                            .show();
+                });
+    }
+
+    private void guardarCliente() {
+        String nombre = binding.etNombreCliente.getText().toString().trim();
+        String apellidos = binding.etApellidosCliente.getText().toString().trim();
+        String dni = binding.etDniCliente.getText().toString().trim();
+        String fechaNacimiento = binding.etFechaNacimientoCliente.getText().toString().trim();
+        String telefono = binding.countryCodePickerCliente.getFullNumberWithPlus().trim();
+        String correo = binding.etCorreoCliente.getText().toString().trim();
+        String fotoUrl = (imagenUriSeleccionada != null) ? imagenUriSeleccionada.toString() : "logo_por_defecto";
+
+        if (!validarCampos(nombre, apellidos, dni, fechaNacimiento, telefono, correo)) return;
+
+        if (modoEdicion) {
+            actualizarCliente(nombre, apellidos, dni, fechaNacimiento, telefono, correo, fotoUrl);
+        } else {
+            crearNuevoCliente(nombre, apellidos, dni, fechaNacimiento, telefono, correo, fotoUrl);
+        }
+    }
+
+    private void crearNuevoCliente(String nombre, String apellidos, String dni, String fechaNacimiento,
+                                   String telefono, String correo, String fotoUrl) {
+
+        db.collection("clientes").whereEqualTo("dni", dni).get().addOnSuccessListener(snapshotDni -> {
+            if (!snapshotDni.isEmpty()) {
+                Toast.makeText(this, "Ya existe un cliente con ese DNI", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            db.collection("clientes").whereEqualTo("telefono", telefono).get().addOnSuccessListener(snapshotTel -> {
+                if (!snapshotTel.isEmpty()) {
+                    Toast.makeText(this, "Ya existe un cliente con ese número", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                db.collection("clientes").whereEqualTo("correo", correo).get().addOnSuccessListener(snapshotCorreo -> {
+                    if (!snapshotCorreo.isEmpty()) {
+                        Toast.makeText(this, "Ya existe un cliente con ese correo", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    String idAdministrador = auth.getCurrentUser().getUid();
+                    String idCliente = UUID.randomUUID().toString();
+
+                    Cliente cliente = new Cliente(idCliente, nombre, apellidos, dni, fechaNacimiento,
+                            telefono, correo, fotoUrl, idAdministrador, gruposSeleccionados);
+
+                    db.collection("clientes").document(idCliente).set(cliente)
+                            .addOnSuccessListener(aVoid -> {
+                                Toast.makeText(this, "Cliente creado correctamente", Toast.LENGTH_SHORT).show();
+                                finish();
+                            })
+                            .addOnFailureListener(e -> Toast.makeText(this, "Error al guardar cliente", Toast.LENGTH_SHORT).show());
+                });
+            });
+        });
+    }
+
+    private void actualizarCliente(String nombre, String apellidos, String dni, String fechaNacimiento,
+                                   String telefono, String correo, String fotoUrl) {
+        String idAdministrador = auth.getCurrentUser().getUid();
+
+        Cliente clienteActualizado = new Cliente(idClienteEdicion, nombre, apellidos, dni, fechaNacimiento,
+                telefono, correo, fotoUrl, idAdministrador, gruposSeleccionados);
+
+        db.collection("clientes").document(idClienteEdicion).set(clienteActualizado)
+                .addOnSuccessListener(aVoid -> {
+                    Toast.makeText(this, "Cliente actualizado correctamente", Toast.LENGTH_SHORT).show();
+                    finish();
+                })
+                .addOnFailureListener(e -> Toast.makeText(this, "Error al actualizar cliente", Toast.LENGTH_SHORT).show());
+    }
+
+    private void mostrarOpcionesFoto() {
+        String[] opciones = {"Galería", "Cámara"};
+        new AlertDialog.Builder(this)
+                .setTitle("Seleccionar imagen")
+                .setItems(opciones, (dialog, which) -> {
+                    if (which == 0) abrirGaleria();
+                    else abrirCamara();
+                }).show();
+    }
+
+    private void abrirGaleria() {
+        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        launcherGaleria.launch(intent);
+    }
+
+    private void abrirCamara() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA_PERMISSION);
+        } else {
+            File foto = crearArchivoTemporalImagen();
+            if (foto != null) {
+                imagenUriCamara = FileProvider.getUriForFile(this, getPackageName() + ".fileprovider", foto);
+                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, imagenUriCamara);
+                launcherCamara.launch(intent);
+            }
+        }
+    }
+
+    private File crearArchivoTemporalImagen() {
+        try {
+            File storageDir = getExternalFilesDir(null);
+            return File.createTempFile("foto_cliente_", ".jpg", storageDir);
+        } catch (IOException e) {
+            Toast.makeText(this, "Error al crear archivo de imagen", Toast.LENGTH_SHORT).show();
+            return null;
+        }
+    }
+
+    private boolean validarCampos(String nombre, String apellidos, String dni, String fechaNacimiento, String telefono, String correo) {
+        if (nombre.trim().isEmpty() || apellidos.trim().isEmpty() || dni.trim().isEmpty() ||
+                fechaNacimiento.trim().isEmpty() || telefono.trim().isEmpty() || correo.trim().isEmpty()) {
+            Toast.makeText(this, "Todos los campos son obligatorios", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        if (!nombre.matches("^[A-Za-zÁÉÍÓÚáéíóúÑñ ]+$")) {
+            Toast.makeText(this, "El nombre solo puede contener letras y espacios", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        if (!apellidos.matches("^[A-Za-zÁÉÍÓÚáéíóúÑñ ]+$")) {
+            Toast.makeText(this, "Los apellidos solo pueden contener letras y espacios", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        if (!dni.matches("\\d{8}[A-Za-z]")) {
+            Toast.makeText(this, "DNI inválido (ejemplo: 12345678A)", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        if (!binding.countryCodePickerCliente.isValidFullNumber()) {
+            Toast.makeText(this, "Número de teléfono inválido", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(correo).matches()) {
+            Toast.makeText(this, "Correo electrónico inválido", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        finish();
+        return true;
+    }
+}

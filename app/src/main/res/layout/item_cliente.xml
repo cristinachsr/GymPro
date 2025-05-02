@@ -7,7 +7,7 @@
     android:background="@drawable/input_borde_azul">
 
     <ImageView
-        android:id="@+id/ivFotoMonitor"
+        android:id="@+id/ivFotoCliente"
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:scaleType="centerCrop"
@@ -22,7 +22,7 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/tvNombreMonitor"
+            android:id="@+id/tvNombreCliente"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Nombre Apellido"
@@ -31,7 +31,7 @@
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/tvCorreoMonitor"
+            android:id="@+id/tvCorreoCliente"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="correo@ejemplo.com"

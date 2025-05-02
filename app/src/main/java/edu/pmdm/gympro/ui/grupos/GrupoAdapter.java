@@ -1,14 +1,15 @@
 package edu.pmdm.gympro.ui.grupos;
 
-import android.content.Context;
-import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,6 +45,19 @@ public class GrupoAdapter extends RecyclerView.Adapter<GrupoAdapter.GrupoViewHol
         Grupo grupo = listaFiltrada.get(position);
         holder.tvNombreGrupo.setText(grupo.getNombre());
 
+        // Mostrar descripción del grupo
+        holder.tvDescripcionGrupo.setText(grupo.getDescripcion() != null ? grupo.getDescripcion() : "Sin descripción");
+
+        // Mostrar foto del grupo
+        if (grupo.getPhoto() != null && !grupo.getPhoto().isEmpty() && !grupo.getPhoto().equals("logo_por_defecto")) {
+            Glide.with(holder.itemView.getContext())
+                    .load(grupo.getPhoto())
+                    .placeholder(R.drawable.logo_gympro_sinfondo)
+                    .into(holder.ivFotoGrupo);
+        } else {
+            holder.ivFotoGrupo.setImageResource(R.drawable.logo_gympro_sinfondo);
+        }
+
         holder.itemView.setOnClickListener(v -> listener.onGrupoClick(grupo));
     }
 
@@ -75,11 +89,14 @@ public class GrupoAdapter extends RecyclerView.Adapter<GrupoAdapter.GrupoViewHol
     }
 
     static class GrupoViewHolder extends RecyclerView.ViewHolder {
-        TextView tvNombreGrupo;
+        TextView tvNombreGrupo, tvDescripcionGrupo;
+        ImageView ivFotoGrupo;
 
         public GrupoViewHolder(@NonNull View itemView) {
             super(itemView);
             tvNombreGrupo = itemView.findViewById(R.id.tvNombreGrupo);
+            tvDescripcionGrupo = itemView.findViewById(R.id.tvDescripcionGrupo);
+            ivFotoGrupo = itemView.findViewById(R.id.ivFotoGrupo);
         }
     }
 }
