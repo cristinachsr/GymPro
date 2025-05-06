@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
         NavigationView navigationView = binding.navView;
 
         mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_inicio, R.id.nav_clientes, R.id.nav_grupos, R.id.nav_monitores
+                R.id.nav_inicio, R.id.nav_clientes, R.id.nav_grupos, R.id.nav_monitores, R.id.nav_analisis
         ).setOpenableLayout(drawer).build();
 
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
@@ -56,6 +56,9 @@ public class MainActivity extends AppCompatActivity {
                 navController.popBackStack(R.id.nav_inicio, false);
             } else {
                 navController.navigate(id);
+            }
+            if (id == R.id.nav_analisis) {
+                navController.navigate(R.id.nav_analisis);
             }
 
             drawer.closeDrawers();

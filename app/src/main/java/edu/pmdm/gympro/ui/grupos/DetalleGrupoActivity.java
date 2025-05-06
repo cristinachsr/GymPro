@@ -138,9 +138,15 @@ public class DetalleGrupoActivity extends AppCompatActivity {
                 });
     }
 
+    @Override
+    public void onBackPressed() {
+        setResult(RESULT_OK); // Notifica al fragmento que hubo cambios
+        super.onBackPressed();
+    }
 
     @Override
     public boolean onSupportNavigateUp() {
+        setResult(RESULT_OK);
         finish();
         return true;
     }

@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,7 +32,7 @@ public class GruposFragment extends Fragment {
     private GrupoAdapter grupoAdapter;
     private FirebaseFirestore db;
     private FirebaseAuth auth;
-    private List<Grupo> listaGrupos = new ArrayList<>();
+    private final List<Grupo> listaGrupos = new ArrayList<>();
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -46,12 +45,13 @@ public class GruposFragment extends Fragment {
         setupRecyclerView();
         cargarGruposDelAdministrador();
 
+        // Botón para crear nuevo grupo
         binding.btnCrearGrupo.setOnClickListener(v -> {
             Intent intent = new Intent(requireContext(), CrearGrupoActivity.class);
             crearGrupoLauncher.launch(intent);
         });
 
-
+        // Búsqueda por nombre
         binding.etBuscarGrupo.addTextChangedListener(new TextWatcher() {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -79,7 +79,6 @@ public class GruposFragment extends Fragment {
         binding.rvGrupos.setLayoutManager(new LinearLayoutManager(getContext()));
         binding.rvGrupos.setAdapter(grupoAdapter);
         binding.rvGrupos.addItemDecoration(new SpaceItemDecoration(24));
-
     }
 
     private void cargarGruposDelAdministrador() {
@@ -100,22 +99,20 @@ public class GruposFragment extends Fragment {
     private final ActivityResultLauncher<Intent> crearGrupoLauncher =
             registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
                 if (result.getResultCode() == AppCompatActivity.RESULT_OK) {
-                    cargarGruposDelAdministrador(); // Se actualiza la lista automáticamente
+                    cargarGruposDelAdministrador();
                 }
             });
 
     private final ActivityResultLauncher<Intent> detalleGrupoLauncher =
             registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
                 if (result.getResultCode() == AppCompatActivity.RESULT_OK) {
-                    cargarGruposDelAdministrador(); // se actualiza tras eliminar
+                    cargarGruposDelAdministrador();
                 }
             });
-
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
-        cargarGruposDelAdministrador();
     }
 }

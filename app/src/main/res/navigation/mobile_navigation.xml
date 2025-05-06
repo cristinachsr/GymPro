@@ -28,4 +28,10 @@
         android:name="edu.pmdm.gympro.ui.monitores.MonitoresFragment"
         android:label="@string/menu_monitores"
         tools:layout="@layout/fragment_monitores" />
+
+    <fragment
+        android:id="@+id/nav_analisis"
+        android:name="edu.pmdm.gympro.ui.analisis.AnalisisFragment"
+        android:label="Análisis"
+        tools:layout="@layout/fragment_analisis" />
 </navigation>

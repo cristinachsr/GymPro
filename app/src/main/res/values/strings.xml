@@ -12,4 +12,5 @@
     <string name="menu_clientes">Clientes</string>
     <string name="menu_grupos">Grupos</string>
     <string name="menu_monitores">Monitores</string>
+    <string name="menu_analisis">Analisis</string>
 </resources>

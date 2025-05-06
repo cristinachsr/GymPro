@@ -32,6 +32,7 @@ android {
     }
     buildFeatures {
         viewBinding = true
+        dataBinding = true
     }
 }
 
@@ -57,7 +58,8 @@ dependencies {
     implementation("com.google.android.material:material:1.9.0")
     implementation(libs.country.code.picker)
     implementation("com.hbb20:ccp:2.7.3")
-
+    implementation ("com.google.firebase:firebase-storage:20.2.1")
+    implementation ("com.github.PhilJay:MPAndroidChart:v3.1.0")
 
 
 }

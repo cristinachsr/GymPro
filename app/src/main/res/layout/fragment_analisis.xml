@@ -1,0 +1,75 @@
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+    <data />
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="16dp">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tituloGraficoClientes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Inscripciones por grupo"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="#1976D2"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="4dp" />
+
+            <com.github.mikephil.charting.charts.PieChart
+                android:id="@+id/pieChartClientes"
+                android:layout_width="match_parent"
+                android:layout_height="300dp"
+                android:layout_margin="16dp"/>
+
+            <Button
+                android:id="@+id/btnExportarGrafico"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Exportar clientes por grupo" />
+
+            <Button
+                android:id="@+id/btnExportarCsv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Exportar inscripciones CSV a Power BI" />
+
+            <TextView
+                android:id="@+id/tituloGraficoMonitores"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Grupos por monitor"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="#1976D2"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="4dp" />
+
+            <com.github.mikephil.charting.charts.BarChart
+                android:id="@+id/barChartGruposPorMonitor"
+                android:layout_width="match_parent"
+                android:layout_height="300dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="16dp" />
+
+            <Button
+                android:id="@+id/btnExportarGrafico2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Exportar grupos por monitor" />
+
+            <Button
+                android:id="@+id/btnExportarCsvGruposPorMonitor"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Exportar CSV grupos por monitor" />
+
+        </LinearLayout>
+    </ScrollView>
+</layout>
