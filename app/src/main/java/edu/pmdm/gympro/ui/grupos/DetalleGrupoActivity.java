@@ -9,12 +9,21 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import edu.pmdm.gympro.R;
+import edu.pmdm.gympro.SpaceItemDecoration;
 import edu.pmdm.gympro.databinding.ActivityDetalleGrupoBinding;
+import edu.pmdm.gympro.model.Cliente;
+import edu.pmdm.gympro.ui.clientes.ClienteGrupoAdapter;
 
 public class DetalleGrupoActivity extends AppCompatActivity {
 
@@ -69,6 +78,29 @@ public class DetalleGrupoActivity extends AppCompatActivity {
             String nombreGrupo = binding.etNombreGrupo.getText().toString();
             confirmarEliminacion(nombreGrupo);
         });
+
+        RecyclerView recyclerClientesGrupo = findViewById(R.id.recyclerClientesGrupo);
+        List<Cliente> listaClientesGrupo = new ArrayList<>();
+        ClienteGrupoAdapter adapter = new ClienteGrupoAdapter(this, listaClientesGrupo);
+
+        recyclerClientesGrupo.setLayoutManager(new LinearLayoutManager(this));
+        recyclerClientesGrupo.addItemDecoration(new SpaceItemDecoration(24));
+        recyclerClientesGrupo.setAdapter(adapter);
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        String grupoId = getIntent().getStringExtra("id_grupo");
+
+        db.collection("clientes")
+                .whereArrayContains("clasesSeleccionadas", grupoId)
+                .get()
+                .addOnSuccessListener(query -> {
+                    listaClientesGrupo.clear();
+                    for (DocumentSnapshot doc : query.getDocuments()) {
+                        Cliente cliente = doc.toObject(Cliente.class);
+                        listaClientesGrupo.add(cliente);
+                    }
+                    adapter.notifyDataSetChanged();
+                });
     }
 
     private void confirmarEliminacion(String nombreGrupo) {

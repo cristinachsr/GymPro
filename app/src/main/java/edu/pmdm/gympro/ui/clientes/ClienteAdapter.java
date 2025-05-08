@@ -1,4 +1,4 @@
-package edu.pmdm.gympro.ui.clientes.adapter;
+package edu.pmdm.gympro.ui.clientes;
 
 import android.view.LayoutInflater;
 import android.view.View;

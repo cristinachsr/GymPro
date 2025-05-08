@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -100,6 +100,23 @@
                 android:enabled="false"
                 android:textColor="@color/blue"
                 android:layout_marginBottom="24dp" />
+
+            <TextView
+                android:id="@+id/textViewClientesGrupo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Clientes del grupo"
+                android:textColor="@color/blue"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="4dp" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerClientesGrupo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false"
+                tools:listitem="@layout/item_cliente" />
 
             <!-- Botones -->
             <LinearLayout

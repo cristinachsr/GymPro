@@ -24,7 +24,6 @@ import java.util.List;
 import edu.pmdm.gympro.SpaceItemDecoration;
 import edu.pmdm.gympro.databinding.FragmentClientesBinding;
 import edu.pmdm.gympro.model.Cliente;
-import edu.pmdm.gympro.ui.clientes.adapter.ClienteAdapter;
 
 public class ClientesFragment extends Fragment {
 

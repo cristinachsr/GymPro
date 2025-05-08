@@ -10,8 +10,11 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
@@ -19,6 +22,7 @@ import java.util.List;
 
 import edu.pmdm.gympro.databinding.ActivityDetalleClienteBinding;
 import edu.pmdm.gympro.R;
+import edu.pmdm.gympro.model.Cliente;
 
 public class DetalleClienteActivity extends AppCompatActivity {
 
