@@ -105,9 +105,6 @@ public class MonitoresFragment extends Fragment {
 
                     monitorAdapter.actualizarLista(monitoresCargados); // ← CORRECTO
 
-                    if (monitoresCargados.isEmpty()) {
-                        Toast.makeText(getContext(), "No hay monitores disponibles", Toast.LENGTH_SHORT).show();
-                    }
                 })
                 .addOnFailureListener(e -> {
                     Log.e("FIRESTORE_MONITORES", "Error al cargar monitores: " + e.getMessage());

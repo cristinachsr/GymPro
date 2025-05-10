@@ -7,7 +7,11 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -30,6 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import edu.pmdm.gympro.Horario;
 import edu.pmdm.gympro.R;
 import edu.pmdm.gympro.databinding.ActivityCrearGrupoBinding;
 import edu.pmdm.gympro.model.Grupo;
@@ -44,6 +49,8 @@ public class CrearGrupoActivity extends AppCompatActivity {
     private final int REQUEST_CAMERA_PERMISSION = 100;
     private String idGrupoEdicion = null;
     private boolean esEdicion = false;
+    private final List<Horario> horarios = new ArrayList<>();
+
 
     private final ActivityResultLauncher<Intent> launcherGaleria =
             registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
@@ -84,7 +91,6 @@ public class CrearGrupoActivity extends AppCompatActivity {
         });
         binding.btnCancelar.setOnClickListener(v -> finish());
 
-        // Modo edición
         if (getIntent().hasExtra("modo") && "editar".equals(getIntent().getStringExtra("modo"))) {
             esEdicion = true;
             binding.btnCrearGrupo.setText("Guardar cambios");
@@ -101,13 +107,83 @@ public class CrearGrupoActivity extends AppCompatActivity {
                 binding.ivFotoGrupo.setImageResource(R.drawable.logo_gympro_sinfondo);
             }
 
-            // Si quieres preseleccionar el monitor, puedes hacerlo aquí si tienes un mapa nombre-posición
+            FirebaseFirestore.getInstance()
+                    .collection("grupos")
+                    .document(idGrupoEdicion)
+                    .get()
+                    .addOnSuccessListener(documentSnapshot -> {
+                        Grupo grupo = documentSnapshot.toObject(Grupo.class);
+                        if (grupo != null && grupo.getHorarios() != null) {
+                            horarios.addAll(grupo.getHorarios());
+                            for (Horario h : grupo.getHorarios()) {
+                                agregarVistaHorario(h);
+                            }
+                        }
+                    });
         } else {
             Glide.with(this)
                     .load(R.drawable.logo_gympro_sinfondo)
                     .into(binding.ivFotoGrupo);
         }
+
+        binding.btnAgregarHorario.setOnClickListener(v -> mostrarDialogoHorario());
     }
+
+    private void mostrarDialogoHorario() {
+        String[] dias = {"Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"};
+
+        View dialogView = getLayoutInflater().inflate(R.layout.dialogo_horario, null);
+        Spinner spinnerDia = dialogView.findViewById(R.id.spinnerDia);
+        EditText etHoraInicio = dialogView.findViewById(R.id.etHoraInicio);
+        EditText etHoraFin = dialogView.findViewById(R.id.etHoraFin);
+
+        spinnerDia.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, dias));
+
+        new AlertDialog.Builder(this)
+                .setTitle("Añadir horario")
+                .setView(dialogView)
+                .setPositiveButton("Agregar", (dialog, which) -> {
+                    String dia = spinnerDia.getSelectedItem().toString();
+                    String horaInicio = etHoraInicio.getText().toString();
+                    String horaFin = etHoraFin.getText().toString();
+
+                    if (!horaInicio.isEmpty() && !horaFin.isEmpty()) {
+                        Horario horario = new Horario(dia, horaInicio, horaFin);
+                        horarios.add(horario);
+                        agregarVistaHorario(horario);
+                    } else {
+                        Toast.makeText(this, "Completa todas las horas", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .setNegativeButton("Cancelar", null)
+                .show();
+    }
+
+    private void agregarVistaHorario(Horario horario) {
+        TextView texto = new TextView(this);
+        String textoHorario = horario.getDia() + ": " + horario.getHoraInicio() + " - " + horario.getHoraFin();
+        texto.setText(textoHorario);
+        texto.setTextColor(getResources().getColor(R.color.blue));
+        texto.setPadding(0, 8, 0, 8);
+        texto.setBackground(getResources().getDrawable(R.drawable.input_borde_azul, null));
+
+        // Permite eliminar el horario al hacer clic
+        texto.setOnClickListener(v -> {
+            new AlertDialog.Builder(this)
+                    .setTitle("Eliminar horario")
+                    .setMessage("¿Quieres eliminar este horario?\n" + textoHorario)
+                    .setPositiveButton("Sí", (dialog, which) -> {
+                        horarios.remove(horario);                     // elimina de la lista
+                        binding.layoutHorarios.removeView(texto);     // elimina de la vista
+                    })
+                    .setNegativeButton("No", null)
+                    .show();
+        });
+
+        binding.layoutHorarios.addView(texto);
+    }
+
+
 
     private void mostrarOpcionesFoto() {
         String[] opciones = {"Galería", "Cámara"};
@@ -216,7 +292,13 @@ public class CrearGrupoActivity extends AppCompatActivity {
                         String idAdministrador = auth.getCurrentUser().getUid();
                         String idgrupo = UUID.randomUUID().toString();
 
-                        Grupo nuevoGrupo = new Grupo(idgrupo, nombre, descripcion, fotoUrl, monitor[0], idAdministrador);
+                        if (horarios.isEmpty()) {
+                            Toast.makeText(this, "Debes añadir al menos un horario", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                        Grupo nuevoGrupo = new Grupo(idgrupo, nombre, descripcion, fotoUrl, monitor[0], idAdministrador, horarios);
+
 
                         db.collection("grupos").document(idgrupo).set(nuevoGrupo)
                                 .addOnSuccessListener(unused -> {
@@ -252,44 +334,27 @@ public class CrearGrupoActivity extends AppCompatActivity {
             return;
         }
 
-        db.collection("grupos")
-                .whereEqualTo("nombre", nombre)
-                .get()
-                .addOnSuccessListener(querySnapshot -> {
-                    boolean nombreYaExiste = false;
+        if (horarios.isEmpty()) {
+            Toast.makeText(this, "Debes añadir al menos un horario", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
-                    for (QueryDocumentSnapshot doc : querySnapshot) {
-                        if (!doc.getId().equals(idGrupoEdicion)) {
-                            nombreYaExiste = true;
-                            break;
-                        }
-                    }
+        String fotoUrl = (imagenUriSeleccionada != null) ? imagenUriSeleccionada.toString() : "logo_por_defecto";
 
-                    if (nombreYaExiste) {
-                        Toast.makeText(this, "Ya existe otro grupo con ese nombre", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-
-                    if (monitor[0].equals("Sin monitores disponibles")) {
-                        monitor[0] = "Sin monitor asignado";
-                    }
-
-                    String fotoUrl = (imagenUriSeleccionada != null) ? imagenUriSeleccionada.toString() : "logo_por_defecto";
-
-                    db.collection("grupos").document(idGrupoEdicion)
-                            .update("nombre", nombre,
-                                    "descripcion", descripcion,
-                                    "photo", fotoUrl,
-                                    "id_empleado", monitor[0])
-                            .addOnSuccessListener(unused -> {
-                                Toast.makeText(this, "Grupo actualizado", Toast.LENGTH_SHORT).show();
-                                setResult(RESULT_OK);
-                                finish();
-                            })
-                            .addOnFailureListener(e -> Toast.makeText(this, "Error al actualizar grupo", Toast.LENGTH_SHORT).show());
+        db.collection("grupos").document(idGrupoEdicion)
+                .update("nombre", nombre,
+                        "descripcion", descripcion,
+                        "photo", fotoUrl,
+                        "id_empleado", monitor[0],
+                        "horarios", horarios)
+                .addOnSuccessListener(unused -> {
+                    Toast.makeText(this, "Grupo actualizado", Toast.LENGTH_SHORT).show();
+                    setResult(RESULT_OK);
+                    finish();
                 })
-                .addOnFailureListener(e -> Toast.makeText(this, "Error al comprobar duplicados", Toast.LENGTH_SHORT).show());
+                .addOnFailureListener(e -> Toast.makeText(this, "Error al actualizar grupo", Toast.LENGTH_SHORT).show());
     }
+
 
 
     @Override

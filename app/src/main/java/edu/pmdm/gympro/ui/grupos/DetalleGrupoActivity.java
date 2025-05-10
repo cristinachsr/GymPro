@@ -1,8 +1,8 @@
 package edu.pmdm.gympro.ui.grupos;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -23,12 +23,14 @@ import edu.pmdm.gympro.R;
 import edu.pmdm.gympro.SpaceItemDecoration;
 import edu.pmdm.gympro.databinding.ActivityDetalleGrupoBinding;
 import edu.pmdm.gympro.model.Cliente;
+import edu.pmdm.gympro.model.Grupo;
+import edu.pmdm.gympro.Horario;
 import edu.pmdm.gympro.ui.clientes.ClienteGrupoAdapter;
 
 public class DetalleGrupoActivity extends AppCompatActivity {
 
     private ActivityDetalleGrupoBinding binding;
-    private String idGrupo; // Lo puedes pasar por intent si lo necesitas para editar/eliminar
+    private String idGrupo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,44 +38,39 @@ public class DetalleGrupoActivity extends AppCompatActivity {
         binding = ActivityDetalleGrupoBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        // Toolbar
         setSupportActionBar(binding.toolbar);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
-        // Obtener datos del intent
-        String nombre = getIntent().getStringExtra("nombre");
-        String descripcion = getIntent().getStringExtra("descripcion");
-        String foto = getIntent().getStringExtra("foto");
-        String monitor = getIntent().getStringExtra("id_empleado");
         idGrupo = getIntent().getStringExtra("id_grupo");
+        cargarDatosGrupoDesdeFirestore();
 
-        // Mostrar datos
-        binding.etNombreGrupo.setText(nombre);
-        binding.etDescripcionGrupo.setText(descripcion);
-        binding.etMonitorGrupo.setText((monitor == null || monitor.isEmpty()) ? "Sin monitor asignado" : monitor);
-
-        if (foto != null && !foto.isEmpty() && !foto.equals("logo_por_defecto")) {
-            Glide.with(this).load(foto).into(binding.ivFotoGrupo);
-        } else {
-            binding.ivFotoGrupo.setImageResource(R.drawable.logo_gympro_sinfondo);
-        }
-
-        // Botón Editar (pendiente de implementar)
         binding.btnEditarGrupo.setOnClickListener(v -> {
-            Intent intent = new Intent(this, CrearGrupoActivity.class);
-            intent.putExtra("modo", "editar");
-            intent.putExtra("id_grupo", idGrupo);
-            intent.putExtra("nombre", binding.etNombreGrupo.getText().toString());
-            intent.putExtra("descripcion", binding.etDescripcionGrupo.getText().toString());
-            intent.putExtra("foto", getIntent().getStringExtra("foto"));
-            intent.putExtra("monitor", binding.etMonitorGrupo.getText().toString());
-            editarGrupoLauncher.launch(intent);
+            FirebaseFirestore.getInstance()
+                    .collection("grupos")
+                    .document(idGrupo)
+                    .get()
+                    .addOnSuccessListener(documentSnapshot -> {
+                        if (documentSnapshot.exists()) {
+                            Grupo grupo = documentSnapshot.toObject(Grupo.class);
+                            if (grupo == null) return;
 
+                            String resumenHorarios = generarResumenHorarios(grupo.getHorarios());
+
+                            Intent intent = new Intent(this, CrearGrupoActivity.class);
+                            intent.putExtra("modo", "editar");
+                            intent.putExtra("id_grupo", grupo.getIdgrupo());
+                            intent.putExtra("nombre", grupo.getNombre());
+                            intent.putExtra("descripcion", grupo.getDescripcion());
+                            intent.putExtra("foto", grupo.getPhoto());
+                            intent.putExtra("monitor", grupo.getId_empleado());
+                            intent.putExtra("resumenHorarios", resumenHorarios);
+                            editarGrupoLauncher.launch(intent);
+                        }
+                    });
         });
 
-        // Botón Eliminar
         binding.btnEliminarGrupo.setOnClickListener(v -> {
             String nombreGrupo = binding.etNombreGrupo.getText().toString();
             confirmarEliminacion(nombreGrupo);
@@ -87,11 +84,9 @@ public class DetalleGrupoActivity extends AppCompatActivity {
         recyclerClientesGrupo.addItemDecoration(new SpaceItemDecoration(24));
         recyclerClientesGrupo.setAdapter(adapter);
 
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        String grupoId = getIntent().getStringExtra("id_grupo");
-
-        db.collection("clientes")
-                .whereArrayContains("clasesSeleccionadas", grupoId)
+        FirebaseFirestore.getInstance()
+                .collection("clientes")
+                .whereArrayContains("clasesSeleccionadas", idGrupo)
                 .get()
                 .addOnSuccessListener(query -> {
                     listaClientesGrupo.clear();
@@ -101,6 +96,47 @@ public class DetalleGrupoActivity extends AppCompatActivity {
                     }
                     adapter.notifyDataSetChanged();
                 });
+    }
+
+    private void cargarDatosGrupoDesdeFirestore() {
+        FirebaseFirestore.getInstance()
+                .collection("grupos")
+                .document(idGrupo)
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        Grupo grupo = documentSnapshot.toObject(Grupo.class);
+                        if (grupo == null) return;
+
+                        binding.etNombreGrupo.setText(grupo.getNombre());
+                        binding.etDescripcionGrupo.setText(grupo.getDescripcion());
+                        binding.etMonitorGrupo.setText(
+                                grupo.getId_empleado() == null || grupo.getId_empleado().isEmpty()
+                                        ? "Sin monitor asignado"
+                                        : grupo.getId_empleado()
+                        );
+
+                        if (grupo.getPhoto() != null && !grupo.getPhoto().isEmpty()
+                                && !grupo.getPhoto().equals("logo_por_defecto")) {
+                            Glide.with(this).load(grupo.getPhoto()).into(binding.ivFotoGrupo);
+                        } else {
+                            binding.ivFotoGrupo.setImageResource(R.drawable.logo_gympro_sinfondo);
+                        }
+
+                        String resumenHorarios = generarResumenHorarios(grupo.getHorarios());
+                        TextView tvHorarios = findViewById(R.id.tvHorariosGrupo);
+                        tvHorarios.setText(resumenHorarios.isEmpty() ? "Sin horarios asignados" : resumenHorarios);
+                    }
+                });
+    }
+
+    private String generarResumenHorarios(List<Horario> horarios) {
+        if (horarios == null || horarios.isEmpty()) return "";
+        StringBuilder sb = new StringBuilder();
+        for (Horario h : horarios) {
+            sb.append(h.getDia()).append(" ").append(h.getHoraInicio()).append(" - ").append(h.getHoraFin()).append("\n");
+        }
+        return sb.toString().trim();
     }
 
     private void confirmarEliminacion(String nombreGrupo) {
@@ -131,48 +167,21 @@ public class DetalleGrupoActivity extends AppCompatActivity {
                         Toast.makeText(this, "No se encontró el grupo para eliminar", Toast.LENGTH_SHORT).show();
                     }
                 })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(this, "Error al buscar grupo", Toast.LENGTH_SHORT).show();
-                });
+                .addOnFailureListener(e ->
+                        Toast.makeText(this, "Error al buscar grupo", Toast.LENGTH_SHORT).show());
     }
-
 
     private final ActivityResultLauncher<Intent> editarGrupoLauncher =
             registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
                 if (result.getResultCode() == RESULT_OK) {
                     setResult(RESULT_OK);
-                    recargarGrupoDesdeFirestore(); // 👈 Volvemos a consultar los datos actualizados
+                    cargarDatosGrupoDesdeFirestore();
                 }
             });
 
-    private void recargarGrupoDesdeFirestore() {
-        FirebaseFirestore.getInstance()
-                .collection("grupos")
-                .document(idGrupo)
-                .get()
-                .addOnSuccessListener(documentSnapshot -> {
-                    if (documentSnapshot.exists()) {
-                        String nombre = documentSnapshot.getString("nombre");
-                        String descripcion = documentSnapshot.getString("descripcion");
-                        String foto = documentSnapshot.getString("photo");
-                        String monitor = documentSnapshot.getString("id_empleado");
-
-                        binding.etNombreGrupo.setText(nombre);
-                        binding.etDescripcionGrupo.setText(descripcion);
-                        binding.etMonitorGrupo.setText((monitor == null || monitor.isEmpty()) ? "Sin monitor asignado" : monitor);
-
-                        if (foto != null && !foto.isEmpty() && !foto.equals("logo_por_defecto")) {
-                            Glide.with(this).load(foto).into(binding.ivFotoGrupo);
-                        } else {
-                            binding.ivFotoGrupo.setImageResource(R.drawable.logo_gympro_sinfondo);
-                        }
-                    }
-                });
-    }
-
     @Override
     public void onBackPressed() {
-        setResult(RESULT_OK); // Notifica al fragmento que hubo cambios
+        setResult(RESULT_OK);
         super.onBackPressed();
     }
 

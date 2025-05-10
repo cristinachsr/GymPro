@@ -87,11 +87,30 @@
                 android:background="@drawable/input_borde_azul"
                 android:gravity="top"
                 android:padding="10dp"
-                android:hint="Días y horario"
+                android:hint="Descripción"
                 android:textColor="@color/blue"
                 android:textColorHint="@color/blue"
                 android:layout_marginBottom="16dp"
                 android:maxLength="100"/>
+
+            <Button
+                android:id="@+id/btnAgregarHorario"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Añadir horario"
+                android:layout_gravity="center"
+                android:backgroundTint="@color/blue"
+                android:textColor="@android:color/white"
+                android:layout_marginBottom="12dp"/>
+
+            <LinearLayout
+                android:id="@+id/layoutHorarios"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginBottom="16dp"/>
+
+
 
             <!-- Imagen -->
             <ImageView

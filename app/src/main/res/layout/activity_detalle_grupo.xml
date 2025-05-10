@@ -101,6 +101,28 @@
                 android:textColor="@color/blue"
                 android:layout_marginBottom="24dp" />
 
+            <!-- Horarios -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Horarios"
+                android:textColor="@color/blue"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="4dp" />
+
+            <EditText
+                android:id="@+id/tvHorariosGrupo"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:background="@drawable/input_borde_azul"
+                android:gravity="top"
+                android:padding="10dp"
+                android:textSize="14sp"
+                android:enabled="false"
+                android:textColor="@color/blue"
+                android:layout_marginBottom="24dp"/>
+
             <TextView
                 android:id="@+id/textViewClientesGrupo"
                 android:layout_width="match_parent"
@@ -110,6 +132,7 @@
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:layout_marginBottom="4dp" />
+
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerClientesGrupo"

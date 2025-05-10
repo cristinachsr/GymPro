@@ -93,9 +93,6 @@ public class ClientesFragment extends Fragment {
                     }
                     clienteAdapter.actualizarLista(clientesCargados);
 
-                    if (clientesCargados.isEmpty()) {
-                        Toast.makeText(getContext(), "No hay clientes disponibles", Toast.LENGTH_SHORT).show();
-                    }
                 })
                 .addOnFailureListener(e -> {
                     Log.e("FIRESTORE_CLIENTES", "Error: " + e.getMessage());
