@@ -13,4 +13,5 @@
     <string name="menu_grupos">Grupos</string>
     <string name="menu_monitores">Monitores</string>
     <string name="menu_analisis">Analisis</string>
+    <string name="menu_calendario">Calendario</string>
 </resources>

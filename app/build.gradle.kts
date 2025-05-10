@@ -9,7 +9,7 @@ android {
 
     defaultConfig {
         applicationId = "edu.pmdm.gympro"
-        minSdk = 23
+        minSdk = 26
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
@@ -55,11 +55,11 @@ dependencies {
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
     implementation("com.github.bumptech.glide:glide:4.15.1")
-    implementation("com.google.android.material:material:1.9.0")
     implementation(libs.country.code.picker)
     implementation("com.hbb20:ccp:2.7.3")
     implementation ("com.google.firebase:firebase-storage:20.2.1")
     implementation ("com.github.PhilJay:MPAndroidChart:v3.1.0")
+    implementation ("com.applandeo:material-calendar-view:1.9.2")
 
 
 }

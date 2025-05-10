@@ -34,4 +34,10 @@
         android:name="edu.pmdm.gympro.ui.analisis.AnalisisFragment"
         android:label="Análisis"
         tools:layout="@layout/fragment_analisis" />
+
+    <fragment
+        android:id="@+id/nav_calendario"
+        android:name="edu.pmdm.gympro.ui.calendario.CalendarioFragment"
+        android:label="Calendario"
+        tools:layout="@layout/fragment_calendario" />
 </navigation>
