@@ -34,6 +34,7 @@ public class EditarAdministradorActivity extends AppCompatActivity {
     private String uid;
     private Uri imagenUriSeleccionada;
     private Uri imagenUriCamara;
+    private String fotoActual = null; // ✅ Imagen previa
 
     private final int REQUEST_CAMERA_PERMISSION = 123;
 
@@ -93,10 +94,12 @@ public class EditarAdministradorActivity extends AppCompatActivity {
                         }
 
                         String foto = document.getString("photo");
+                        fotoActual = foto; // ✅ Guardamos imagen original
+
                         if (foto != null && !foto.trim().isEmpty() && !foto.equals("logo_por_defecto")) {
                             Glide.with(this).load(Uri.parse(foto)).into(binding.ivFotoAdmin);
                         } else {
-                            binding.ivFotoAdmin.setImageResource(R.drawable.usuario_sinfondo); // asegúrate que existe
+                            binding.ivFotoAdmin.setImageResource(R.drawable.usuario_sinfondo);
                         }
                     }
                 });
@@ -147,16 +150,17 @@ public class EditarAdministradorActivity extends AppCompatActivity {
         String dni = binding.etDniAdmin.getText().toString().trim();
         String fecha = binding.etFechaAdmin.getText().toString().trim();
         String telefono = binding.countryCodePickerAdmin.getFullNumberWithPlus().trim();
-        String nuevaFoto = (imagenUriSeleccionada != null) ? imagenUriSeleccionada.toString() : null;
+
+        // ✅ Usamos la foto nueva si se seleccionó, si no, mantenemos la anterior
+        String nuevaFoto = (imagenUriSeleccionada != null) ? imagenUriSeleccionada.toString() : fotoActual;
 
         if (nombre.isEmpty() || apellidos.isEmpty() || dni.isEmpty() || fecha.isEmpty() || !binding.countryCodePickerAdmin.isValidFullNumber()) {
             Toast.makeText(this, "Completa todos los campos correctamente", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // Verificar duplicados en otros administradores
         db.collection("administradores")
-                .whereNotEqualTo("email", auth.getCurrentUser().getEmail()) // ignorar el actual
+                .whereNotEqualTo("email", auth.getCurrentUser().getEmail())
                 .get()
                 .addOnSuccessListener(snapshot -> {
                     boolean dniDuplicado = false;
@@ -177,7 +181,6 @@ public class EditarAdministradorActivity extends AppCompatActivity {
                         return;
                     }
 
-                    // Si no hay duplicados, actualizar
                     db.collection("administradores").document(uid).update(
                             "nombreAdministrador", nombre,
                             "apellidoAdministrador", apellidos,
@@ -187,8 +190,8 @@ public class EditarAdministradorActivity extends AppCompatActivity {
                             "photo", (nuevaFoto != null ? nuevaFoto : "logo_por_defecto")
                     ).addOnSuccessListener(aVoid -> {
                         Toast.makeText(this, "Datos actualizados", Toast.LENGTH_SHORT).show();
-                        setResult(RESULT_OK); // ✅ Notificar que hubo cambios
-                        finish();             // ✅ Volver al MainActivity
+                        setResult(RESULT_OK);
+                        finish();
                     }).addOnFailureListener(e ->
                             Toast.makeText(this, "Error al actualizar", Toast.LENGTH_SHORT).show()
                     );

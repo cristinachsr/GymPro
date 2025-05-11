@@ -1,6 +1,7 @@
 package edu.pmdm.gympro;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -139,10 +140,15 @@ public class MainActivity extends AppCompatActivity {
 
                         // Evaluar si hay una foto válida
                         if (fotoUrl != null && !fotoUrl.trim().isEmpty() && !fotoUrl.equals("logo_por_defecto")) {
-                            Glide.with(this).load(fotoUrl).into(ivFoto);
+                            try {
+                                Glide.with(this).load(Uri.parse(fotoUrl)).into(ivFoto); // ✅ Usamos URI
+                            } catch (Exception e) {
+                                ivFoto.setImageResource(R.drawable.usuario_sinfondo);
+                            }
                         } else {
                             ivFoto.setImageResource(R.drawable.usuario_sinfondo);
                         }
+
                     }
                 });
     }

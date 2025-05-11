@@ -1,7 +1,6 @@
 package edu.pmdm.gympro.ui.auth;
 
 import android.Manifest;
-import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
@@ -49,17 +48,26 @@ public class RegisterActivity extends AppCompatActivity {
 
     private final ActivityResultLauncher<Intent> seleccionarImagenLauncher =
             registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
-                if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null && result.getData().getData() != null) {
-                    fotoSeleccionadaUri = result.getData().getData();
-                    binding.ivProfilePic.setImageURI(fotoSeleccionadaUri);
+                if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                    Uri uri = result.getData().getData();
+                    if (uri != null) {
+                        fotoSeleccionadaUri = uri;
+                        binding.ivProfilePic.setImageURI(fotoSeleccionadaUri);
+                        toast("Imagen seleccionada desde galería");
+                    } else {
+                        toast("No se pudo obtener la imagen de galería");
+                    }
                 }
             });
 
     private final ActivityResultLauncher<Intent> tomarFotoLauncher =
             registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
-                if (result.getResultCode() == Activity.RESULT_OK && fotoCamaraUri != null) {
-                    binding.ivProfilePic.setImageURI(fotoCamaraUri);
+                if (result.getResultCode() == RESULT_OK && fotoCamaraUri != null) {
                     fotoSeleccionadaUri = fotoCamaraUri;
+                    binding.ivProfilePic.setImageURI(fotoSeleccionadaUri);
+                    toast("Imagen capturada desde cámara");
+                } else {
+                    toast("No se capturó la imagen correctamente");
                 }
             });
 
@@ -76,54 +84,10 @@ public class RegisterActivity extends AppCompatActivity {
         binding.btnGoToLogin.setOnClickListener(v -> startActivity(new Intent(this, LoginActivity.class)));
         binding.countryCodePicker.registerCarrierNumberEditText(binding.etTelefono);
 
-        int nightModeFlags = getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
+        configurarModoColor();
+        configurarTogglePassword(binding.etPassword, binding.ivTogglePassword);
+        configurarTogglePassword(binding.etConfirmarPassword, binding.ivToggleConfirmPassword);
 
-        int color;
-        if (nightModeFlags == Configuration.UI_MODE_NIGHT_YES) {
-            color = ContextCompat.getColor(this, android.R.color.white); // blanco para modo oscuro
-        } else {
-            color = ContextCompat.getColor(this, R.color.blue); // azul para modo claro
-        }
-
-        try {
-            java.lang.reflect.Field field = binding.countryCodePicker.getClass().getDeclaredField("selectedTextView");
-            field.setAccessible(true);
-            TextView selectedTextView = (TextView) field.get(binding.countryCodePicker);
-            selectedTextView.setTextColor(color);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        //contraseña
-        ImageView ivToggle = binding.ivTogglePassword;
-        EditText etPassword = binding.etPassword;
-        ivToggle.setOnClickListener(v -> {
-            if (etPassword.getInputType() == (InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD)) {
-                etPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
-                ivToggle.setImageResource(R.drawable.ic_visibility_sinfondo);
-            } else {
-                etPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-                ivToggle.setImageResource(R.drawable.ic_visibility_off_sinfondo);
-            }
-            etPassword.setSelection(etPassword.getText().length());
-        });
-
-        //confirmar contraseña
-        EditText etConfirmarPassword = binding.etConfirmarPassword;
-        ImageView ivToggleConfirm = binding.ivToggleConfirmPassword;
-
-        ivToggleConfirm.setOnClickListener(v -> {
-            if (etConfirmarPassword.getInputType() == (InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD)) {
-                etConfirmarPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
-                ivToggleConfirm.setImageResource(R.drawable.ic_visibility_sinfondo);
-            } else {
-                etConfirmarPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-                ivToggleConfirm.setImageResource(R.drawable.ic_visibility_off_sinfondo);
-            }
-            etConfirmarPassword.setSelection(etConfirmarPassword.getText().length());
-        });
-
-        // Selección de foto
         binding.btnSeleccionarFoto.setBackgroundTintList(ContextCompat.getColorStateList(this, R.color.blue));
         binding.btnSeleccionarFoto.setOnClickListener(v -> mostrarOpcionesFoto());
     }
@@ -131,54 +95,70 @@ public class RegisterActivity extends AppCompatActivity {
     private void registrarAdministrador() {
         String nombre = binding.etNombre.getText().toString().trim();
         String apellidos = binding.etApellidos.getText().toString().trim();
-        String dni = binding.etDni.getText().toString().trim();
+        String dni = binding.etDni.getText().toString().trim().toUpperCase();
         String fecha = binding.etFechaNacimiento.getText().toString().trim();
         String email = binding.etEmail.getText().toString().trim();
         String password = binding.etPassword.getText().toString().trim();
         String confirmarPassword = binding.etConfirmarPassword.getText().toString().trim();
-        String telefono = binding.countryCodePicker.getFullNumberWithPlus().trim();  // ← Usamos CountryCodePicker
+        String telefono = binding.countryCodePicker.getFullNumberWithPlus().trim();
 
         if (!nombre.matches("^[A-Za-zÁÉÍÓÚáéíóúñÑ ]{1,28}$")) {
-            toast("Introduce un nombre válido (solo letras y espacios, máx 28 caracteres)"); return;
+            toast("Introduce un nombre válido"); return;
         }
-
         if (!apellidos.matches("^[A-Za-zÁÉÍÓÚáéíóúñÑ ]{1,28}$")) {
-            toast("Introduce apellidos válidos (solo letras y espacios, máx 28 caracteres)"); return;
+            toast("Introduce apellidos válidos"); return;
         }
-
         if (dni.length() != 9 || !dni.matches("\\d{8}[A-Za-z]")) {
-            toast("DNI inválido. Debe tener 8 números y una letra"); return;
+            toast("DNI inválido"); return;
         }
-
         if (!fecha.matches("\\d{2}/\\d{2}/\\d{4}") || !fechaValida(fecha)) {
-            toast("Fecha inválida. Usa el formato dd/MM/yyyy (con año completo)"); return;
+            toast("Fecha inválida"); return;
         }
-
         if (!Patterns.EMAIL_ADDRESS.matcher(email).matches() || email.length() > 30) {
-            toast("Correo inválido (máx 30 caracteres)"); return;
+            toast("Correo inválido"); return;
         }
-
         if (password.length() < 8 || password.length() > 15) {
-            toast("La contraseña debe tener entre 8 y 15 caracteres"); return;
+            toast("Contraseña inválida"); return;
         }
-
         if (!password.equals(confirmarPassword)) {
-            toast("Las contraseñas no coinciden");
-            return;
+            toast("Las contraseñas no coinciden"); return;
         }
-
         if (!binding.countryCodePicker.isValidFullNumber()) {
             toast("Número de teléfono no válido"); return;
         }
 
+        db.collection("administradores")
+                .whereEqualTo("dni", dni)
+                .get()
+                .addOnSuccessListener(snapshotDni -> {
+                    if (!snapshotDni.isEmpty()) {
+                        toast("Ya existe un administrador con este DNI");
+                        return;
+                    }
+                    db.collection("administradores")
+                            .whereEqualTo("telefono", telefono)
+                            .get()
+                            .addOnSuccessListener(snapshotTel -> {
+                                if (!snapshotTel.isEmpty()) {
+                                    toast("Ya existe un administrador con este teléfono");
+                                    return;
+                                }
+                                crearUsuarioFirebase(nombre, apellidos, dni, fecha, email, password, telefono);
+                            })
+                            .addOnFailureListener(e -> toast("Error al verificar teléfono"));
+                })
+                .addOnFailureListener(e -> toast("Error al verificar DNI"));
+    }
 
+    private void crearUsuarioFirebase(String nombre, String apellidos, String dni, String fecha,
+                                      String email, String password, String telefono) {
 
         auth.createUserWithEmailAndPassword(email, password)
                 .addOnSuccessListener(result -> {
                     String uid = result.getUser().getUid();
-                    String photoUrl = (fotoSeleccionadaUri != null) ? fotoSeleccionadaUri.toString() : "";
+                    String fotoUrl = (fotoSeleccionadaUri != null) ? fotoSeleccionadaUri.toString() : "logo_por_defecto";
 
-                    Administrador admin = new Administrador(uid, nombre, apellidos, fecha, email, dni, telefono, photoUrl);
+                    Administrador admin = new Administrador(uid, nombre, apellidos, fecha, email, dni, telefono, fotoUrl);
 
                     db.collection("administradores").document(uid).set(admin)
                             .addOnSuccessListener(unused -> {
@@ -201,7 +181,7 @@ public class RegisterActivity extends AppCompatActivity {
     private void mostrarOpcionesFoto() {
         String[] opciones = {"Galería", "Cámara"};
         new android.app.AlertDialog.Builder(this)
-                .setTitle("Seleccionar foto de perfil")
+                .setTitle("Seleccionar imagen de perfil")
                 .setItems(opciones, (dialog, which) -> {
                     if (which == 0) abrirGaleria();
                     else abrirCamara();
@@ -222,6 +202,7 @@ public class RegisterActivity extends AppCompatActivity {
                 fotoCamaraUri = FileProvider.getUriForFile(this, getPackageName() + ".fileprovider", foto);
                 Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, fotoCamaraUri);
+                intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 tomarFotoLauncher.launch(intent);
             }
         }
@@ -248,14 +229,42 @@ public class RegisterActivity extends AppCompatActivity {
         }
     }
 
+    private void configurarTogglePassword(EditText editText, ImageView toggleIcon) {
+        toggleIcon.setOnClickListener(v -> {
+            boolean visible = (editText.getInputType() != (InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD));
+            editText.setInputType(visible ?
+                    (InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD) :
+                    (InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD));
+            toggleIcon.setImageResource(visible ? R.drawable.ic_visibility_off_sinfondo : R.drawable.ic_visibility_sinfondo);
+            editText.setSelection(editText.getText().length());
+        });
+    }
+
+    private void configurarModoColor() {
+        int nightModeFlags = getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
+        int color = (nightModeFlags == Configuration.UI_MODE_NIGHT_YES) ?
+                ContextCompat.getColor(this, android.R.color.white) :
+                ContextCompat.getColor(this, R.color.blue);
+        try {
+            java.lang.reflect.Field field = binding.countryCodePicker.getClass().getDeclaredField("selectedTextView");
+            field.setAccessible(true);
+            TextView selectedTextView = (TextView) field.get(binding.countryCodePicker);
+            selectedTextView.setTextColor(color);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     private void toast(String msg) {
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == REQUEST_CAMERA_PERMISSION && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+        if (requestCode == REQUEST_CAMERA_PERMISSION && grantResults.length > 0 &&
+                grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             abrirCamara();
         } else {
             toast("Permiso de cámara denegado");
