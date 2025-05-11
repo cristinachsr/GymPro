@@ -23,6 +23,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.UUID;
 
 import edu.pmdm.gympro.R;
@@ -70,7 +71,8 @@ public class CrearMonitorActivity extends AppCompatActivity {
         if (getSupportActionBar() != null)
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        // Comprobar si venimos en modo edición
+        binding.countryCodePicker.registerCarrierNumberEditText(binding.etTelefono);
+
         modoEdicion = getIntent().getBooleanExtra("modoEdicion", false);
 
         if (modoEdicion) {
@@ -83,7 +85,16 @@ public class CrearMonitorActivity extends AppCompatActivity {
             binding.etApellidosMonitor.setText(getIntent().getStringExtra("apellidos"));
             binding.etDni.setText(getIntent().getStringExtra("dni"));
             binding.etFechaNacimiento.setText(getIntent().getStringExtra("fechaNacimiento"));
-            binding.etTelefono.setText(getIntent().getStringExtra("telefono"));
+
+            String telefonoCompleto = getIntent().getStringExtra("telefono");
+            if (telefonoCompleto != null && telefonoCompleto.startsWith("+")) {
+                binding.countryCodePicker.setFullNumber(telefonoCompleto.replace("+", ""));
+                String sinPrefijo = telefonoCompleto.replace("+" + binding.countryCodePicker.getSelectedCountryCode(), "");
+                binding.etTelefono.setText(sinPrefijo);
+            } else {
+                binding.etTelefono.setText(telefonoCompleto);
+            }
+
             binding.etCorreo.setText(getIntent().getStringExtra("correo"));
 
             String foto = getIntent().getStringExtra("foto");
@@ -93,12 +104,10 @@ public class CrearMonitorActivity extends AppCompatActivity {
             } else {
                 Glide.with(this).load(R.drawable.logo_gympro_sinfondo).into(binding.ivFotoMonitor);
             }
-
         } else {
             Glide.with(this).load(R.drawable.logo_gympro_sinfondo).into(binding.ivFotoMonitor);
         }
 
-        // Acciones
         binding.btnSeleccionarFoto.setOnClickListener(v -> mostrarOpcionesFoto());
         binding.btnCancelar.setOnClickListener(v -> finish());
         binding.btnCrearMonitor.setOnClickListener(v -> {
@@ -106,11 +115,9 @@ public class CrearMonitorActivity extends AppCompatActivity {
             String apellidos = binding.etApellidosMonitor.getText().toString().trim();
             String dni = binding.etDni.getText().toString().trim();
             String fechaNacimiento = binding.etFechaNacimiento.getText().toString().trim();
-            String telefono = binding.etTelefono.getText().toString().trim();
+            String telefono = binding.countryCodePicker.getFullNumberWithPlus().trim();
             String correo = binding.etCorreo.getText().toString().trim();
-            String fotoUrl = (imagenUriSeleccionada != null)
-                    ? imagenUriSeleccionada.toString()
-                    : "logo_por_defecto";
+            String fotoUrl = (imagenUriSeleccionada != null) ? imagenUriSeleccionada.toString() : "logo_por_defecto";
 
             if (!validarCampos(nombre, apellidos, dni, fechaNacimiento, telefono, correo)) return;
 
@@ -120,10 +127,6 @@ public class CrearMonitorActivity extends AppCompatActivity {
                 validarYCrearMonitor(nombre, apellidos, dni, fechaNacimiento, telefono, correo, fotoUrl);
             }
         });
-
-        binding.countryCodePicker.registerCarrierNumberEditText(binding.etTelefono);
-
-
     }
 
     private void mostrarOpcionesFoto() {
@@ -228,17 +231,37 @@ public class CrearMonitorActivity extends AppCompatActivity {
 
         String idAdministrador = auth.getCurrentUser().getUid();
 
-        Monitor monitorActualizado = new Monitor(idMonitorEdicion, nombre, apellidos, dni,
-                fechaNacimiento, telefono, correo, fotoUrl, idAdministrador);
+        db.collection("monitores").get().addOnSuccessListener(snapshot -> {
+            for (var doc : snapshot) {
+                if (doc.getId().equals(idMonitorEdicion)) continue;
 
-        db.collection("monitores").document(idMonitorEdicion).set(monitorActualizado)
-                .addOnSuccessListener(aVoid -> {
-                    Toast.makeText(this, "Monitor actualizado", Toast.LENGTH_SHORT).show();
-                    finish();
-                })
-                .addOnFailureListener(e ->
-                        Toast.makeText(this, "Error al actualizar", Toast.LENGTH_SHORT).show());
+                if (dni.equalsIgnoreCase(doc.getString("dni"))) {
+                    Toast.makeText(this, "Ya existe otro monitor con ese DNI", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if (telefono.equals(doc.getString("telefono"))) {
+                    Toast.makeText(this, "Ya existe otro monitor con ese número", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if (correo.equalsIgnoreCase(doc.getString("correo"))) {
+                    Toast.makeText(this, "Ya existe otro monitor con ese correo", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+            }
+
+            // Si pasa todas las comprobaciones
+            Monitor monitorActualizado = new Monitor(idMonitorEdicion, nombre, apellidos, dni,
+                    fechaNacimiento, telefono, correo, fotoUrl, idAdministrador);
+
+            db.collection("monitores").document(idMonitorEdicion).set(monitorActualizado)
+                    .addOnSuccessListener(aVoid -> {
+                        Toast.makeText(this, "Monitor actualizado", Toast.LENGTH_SHORT).show();
+                        finish();
+                    })
+                    .addOnFailureListener(e -> Toast.makeText(this, "Error al actualizar", Toast.LENGTH_SHORT).show());
+        });
     }
+
 
     private boolean validarCampos(String nombre, String apellidos, String dni, String fechaNacimiento, String telefono, String correo) {
         if (nombre.trim().isEmpty() || apellidos.trim().isEmpty() || dni.trim().isEmpty() ||
@@ -262,6 +285,11 @@ public class CrearMonitorActivity extends AppCompatActivity {
             return false;
         }
 
+        if (!fechaNacimiento.matches("^\\d{2}/\\d{2}/\\d{4}$") || !fechaValida(fechaNacimiento)) {
+            Toast.makeText(this, "Fecha inválida. Formato requerido: dd/MM/yyyy", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
         if (!binding.countryCodePicker.isValidFullNumber()) {
             Toast.makeText(this, "Número de teléfono inválido", Toast.LENGTH_SHORT).show();
             return false;
@@ -273,6 +301,17 @@ public class CrearMonitorActivity extends AppCompatActivity {
         }
 
         return true;
+    }
+
+    private boolean fechaValida(String fecha) {
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+            sdf.setLenient(false);
+            sdf.parse(fecha);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     @Override

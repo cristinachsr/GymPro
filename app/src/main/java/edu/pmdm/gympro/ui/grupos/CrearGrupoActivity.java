@@ -144,16 +144,18 @@ public class CrearGrupoActivity extends AppCompatActivity {
                 .setView(dialogView)
                 .setPositiveButton("Agregar", (dialog, which) -> {
                     String dia = spinnerDia.getSelectedItem().toString();
-                    String horaInicio = etHoraInicio.getText().toString();
-                    String horaFin = etHoraFin.getText().toString();
+                    String horaInicio = etHoraInicio.getText().toString().trim();
+                    String horaFin = etHoraFin.getText().toString().trim();
 
-                    if (!horaInicio.isEmpty() && !horaFin.isEmpty()) {
-                        Horario horario = new Horario(dia, horaInicio, horaFin);
-                        horarios.add(horario);
-                        agregarVistaHorario(horario);
-                    } else {
-                        Toast.makeText(this, "Completa todas las horas", Toast.LENGTH_SHORT).show();
+                    // Validar formato exacto hh:mm
+                    if (!horaInicio.matches("^\\d{2}:\\d{2}$") || !horaFin.matches("^\\d{2}:\\d{2}$")) {
+                        Toast.makeText(this, "Formato de hora inválido. Usa hh:mm (ej: 08:30)", Toast.LENGTH_LONG).show();
+                        return;
                     }
+
+                    Horario horario = new Horario(dia, horaInicio, horaFin);
+                    horarios.add(horario);
+                    agregarVistaHorario(horario);
                 })
                 .setNegativeButton("Cancelar", null)
                 .show();

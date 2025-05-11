@@ -7,11 +7,4 @@
         android:orderInCategory="101"
         android:title="Editar perfil"
         app:showAsAction="never" />
-
-    <!-- Nueva opción: Cambiar idioma -->
-    <item
-        android:id="@+id/action_change_language"
-        android:orderInCategory="102"
-        android:title="Cambiar idioma"
-        app:showAsAction="never" />
 </menu>

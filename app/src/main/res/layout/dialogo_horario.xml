@@ -25,7 +25,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Hora inicio (ej: 10:00)"
-        android:inputType="time"
+        android:inputType="number"
+        android:maxLength="5"
+        android:digits="0123456789:"
         android:background="@drawable/input_borde_azul"
         android:padding="8dp"
         android:layout_marginBottom="12dp"/>
@@ -35,7 +37,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Hora fin (ej: 11:00)"
-        android:inputType="time"
+        android:inputType="number"
+        android:maxLength="5"
+        android:digits="0123456789:"
         android:background="@drawable/input_borde_azul"
         android:padding="8dp"/>
+
 </LinearLayout>

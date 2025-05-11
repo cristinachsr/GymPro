@@ -242,18 +242,50 @@ public class CrearClienteActivity extends AppCompatActivity {
 
     private void actualizarCliente(String nombre, String apellidos, String dni, String fechaNacimiento,
                                    String telefono, String correo, String fotoUrl) {
+
         String idAdministrador = auth.getCurrentUser().getUid();
 
-        Cliente clienteActualizado = new Cliente(idClienteEdicion, nombre, apellidos, dni, fechaNacimiento,
-                telefono, correo, fotoUrl, idAdministrador, gruposSeleccionados);
+        db.collection("clientes").get().addOnSuccessListener(snapshot -> {
+            boolean dniDuplicado = false;
+            boolean telDuplicado = false;
+            boolean correoDuplicado = false;
 
-        db.collection("clientes").document(idClienteEdicion).set(clienteActualizado)
-                .addOnSuccessListener(aVoid -> {
-                    Toast.makeText(this, "Cliente actualizado correctamente", Toast.LENGTH_SHORT).show();
-                    finish();
-                })
-                .addOnFailureListener(e -> Toast.makeText(this, "Error al actualizar cliente", Toast.LENGTH_SHORT).show());
+            for (var doc : snapshot) {
+                String id = doc.getId();
+                if (id.equals(idClienteEdicion)) continue; // saltamos al propio cliente
+
+                if (dni.equalsIgnoreCase(doc.getString("dni"))) dniDuplicado = true;
+                if (telefono.equals(doc.getString("telefono"))) telDuplicado = true;
+                if (correo.equalsIgnoreCase(doc.getString("correo"))) correoDuplicado = true;
+            }
+
+            if (dniDuplicado) {
+                Toast.makeText(this, "Ya existe otro cliente con ese DNI", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (telDuplicado) {
+                Toast.makeText(this, "Ya existe otro cliente con ese teléfono", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (correoDuplicado) {
+                Toast.makeText(this, "Ya existe otro cliente con ese correo", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // Si no hay duplicados, actualiza:
+            Cliente clienteActualizado = new Cliente(idClienteEdicion, nombre, apellidos, dni, fechaNacimiento,
+                    telefono, correo, fotoUrl, idAdministrador, gruposSeleccionados);
+
+            db.collection("clientes").document(idClienteEdicion).set(clienteActualizado)
+                    .addOnSuccessListener(aVoid -> {
+                        Toast.makeText(this, "Cliente actualizado correctamente", Toast.LENGTH_SHORT).show();
+                        finish();
+                    })
+                    .addOnFailureListener(e -> Toast.makeText(this, "Error al actualizar cliente", Toast.LENGTH_SHORT).show());
+
+        }).addOnFailureListener(e -> Toast.makeText(this, "Error al verificar duplicados", Toast.LENGTH_SHORT).show());
     }
+
 
     private void mostrarOpcionesFoto() {
         String[] opciones = {"Galería", "Cámara"};
@@ -325,6 +357,17 @@ public class CrearClienteActivity extends AppCompatActivity {
             Toast.makeText(this, "Correo electrónico inválido", Toast.LENGTH_SHORT).show();
             return false;
         }
+
+        if (fechaNacimiento.trim().isEmpty()) {
+            Toast.makeText(this, "Fecha de nacimiento obligatoria", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        if (!fechaNacimiento.matches("^\\d{2}/\\d{2}/\\d{4}$")) {
+            Toast.makeText(this, "Formato de fecha inválido (debe ser dd/MM/yyyy)", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
 
         return true;
     }

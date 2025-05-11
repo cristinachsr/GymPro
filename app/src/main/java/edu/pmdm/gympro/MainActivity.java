@@ -101,13 +101,11 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(this, EditarAdministradorActivity.class);
             startActivityForResult(intent, 100); // Lanzar con requestCode
             return true;
-        } else if (id == R.id.action_change_language) {
-            startActivity(new Intent(this, CambiarIdiomaActivity.class));
-            return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {

@@ -36,6 +36,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -96,16 +97,12 @@ public class AnalisisFragment extends Fragment {
                             .whereEqualTo("idAdministrador", uid)
                             .get()
                             .addOnSuccessListener(clientesSnapshot -> {
-                                int totalInscripciones = 0;
-
                                 for (QueryDocumentSnapshot clienteDoc : clientesSnapshot) {
                                     List<String> clasesSeleccionadas = (List<String>) clienteDoc.get("clasesSeleccionadas");
-
                                     if (clasesSeleccionadas != null) {
                                         for (String idGrupo : clasesSeleccionadas) {
                                             if (conteoPorGrupoId.containsKey(idGrupo)) {
                                                 conteoPorGrupoId.put(idGrupo, conteoPorGrupoId.get(idGrupo) + 1);
-                                                totalInscripciones++;
                                             }
                                         }
                                     }
@@ -125,22 +122,39 @@ public class AnalisisFragment extends Fragment {
                                 }
 
                                 PieDataSet dataSet = new PieDataSet(entries, "");
-                                dataSet.setColors(ColorTemplate.COLORFUL_COLORS);
+                                dataSet.setColors(Arrays.asList(
+                                        Color.parseColor("#1976D2"), // azul
+                                        Color.parseColor("#F48FB1"), // Rosa claro (Light Pink)
+                                        Color.parseColor("#388E3C"), // verde oscuro
+                                        Color.parseColor("#F57C00"), // naranja
+                                        Color.parseColor("#D32F2F"), // rojo
+                                        Color.parseColor("#7B1FA2"), // morado
+                                        Color.parseColor("#FBC02D"), // amarillo oscuro
+                                        Color.parseColor("#0288D1"), // azul claro
+                                        Color.parseColor("#00796B"), // verde azulado
+                                        Color.parseColor("#5D4037"), // marrón
+                                        Color.parseColor("#C2185B")  // rosa oscuro
+                                ));
                                 dataSet.setValueTextSize(14f);
-                                dataSet.setValueFormatter(new PercentFormatter(binding.pieChartClientes));
+                                dataSet.setValueTextColor(Color.BLACK);
+                                dataSet.setSliceSpace(2f);
 
                                 PieData pieData = new PieData(dataSet);
+                                pieData.setValueFormatter(new PercentFormatter(binding.pieChartClientes));
 
-                                binding.pieChartClientes.setData(pieData);
                                 binding.pieChartClientes.setUsePercentValues(true);
-                                binding.pieChartClientes.setEntryLabelColor(Color.BLACK);
+                                binding.pieChartClientes.setData(pieData);
                                 binding.pieChartClientes.setDrawEntryLabels(true);
-                                binding.pieChartClientes.setDrawCenterText(false); // quitar texto del centro
+                                binding.pieChartClientes.setEntryLabelColor(Color.BLACK);
+                                binding.pieChartClientes.setEntryLabelTextSize(12f);
+                                binding.pieChartClientes.setDrawCenterText(false);
+                                binding.pieChartClientes.getLegend().setEnabled(false); // ❌ Ocultar leyenda
                                 binding.pieChartClientes.getDescription().setEnabled(false);
                                 binding.pieChartClientes.invalidate();
                             });
                 });
     }
+
 
 
     private void cargarGraficoGruposPorMonitor() {
