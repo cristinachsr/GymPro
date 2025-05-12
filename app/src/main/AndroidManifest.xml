@@ -40,24 +40,46 @@
             android:name=".LauncherActivity"
             android:exported="true"
             android:label="@string/app_name"
-            android:theme="@style/Theme.GymPro.NoActionBar">
+            android:theme="@style/Theme.GymPro.NoActionBar"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.auth.LoginActivity" />
-        <activity android:name=".ui.auth.RegisterActivity" />
-        <activity android:name=".MainActivity" />
-        <activity android:name=".ui.grupos.CrearGrupoActivity" />
-        <activity android:name=".ui.grupos.DetalleGrupoActivity" />
-        <activity android:name=".ui.monitores.CrearMonitorActivity" />
-        <activity android:name=".ui.monitores.DetalleMonitorActivity" />
-        <activity android:name=".ui.clientes.CrearClienteActivity" />
-        <activity android:name=".ui.clientes.DetalleClienteActivity" />
-        <activity android:name=".EditarAdministradorActivity" />
-        <activity android:name=".ui.pago.VerPagosActivity" />
+
+        <activity android:name=".ui.auth.LoginActivity"
+            android:screenOrientation="portrait" />
+
+        <activity android:name=".ui.auth.RegisterActivity"
+            android:screenOrientation="portrait" />
+
+        <activity android:name=".MainActivity"
+            android:screenOrientation="portrait" />
+
+        <activity android:name=".ui.grupos.CrearGrupoActivity"
+            android:screenOrientation="portrait" />
+
+        <activity android:name=".ui.grupos.DetalleGrupoActivity"
+            android:screenOrientation="portrait" />
+
+        <activity android:name=".ui.monitores.CrearMonitorActivity"
+            android:screenOrientation="portrait" />
+
+        <activity android:name=".ui.monitores.DetalleMonitorActivity"
+            android:screenOrientation="portrait" />
+
+        <activity android:name=".ui.clientes.CrearClienteActivity"
+            android:screenOrientation="portrait" />
+
+        <activity android:name=".ui.clientes.DetalleClienteActivity"
+            android:screenOrientation="portrait" />
+
+        <activity android:name=".EditarAdministradorActivity"
+            android:screenOrientation="portrait" />
+
+        <activity android:name=".ui.pago.VerPagosActivity"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>
