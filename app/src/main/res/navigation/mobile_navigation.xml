@@ -40,4 +40,10 @@
         android:name="edu.pmdm.gympro.ui.calendario.CalendarioFragment"
         android:label="Calendario"
         tools:layout="@layout/fragment_calendario" />
+
+    <fragment
+        android:id="@+id/nav_pago"
+        android:name="edu.pmdm.gympro.ui.pago.PagoFragment"
+        android:label="Pago"
+        tools:layout="@layout/fragment_pago" />
 </navigation>

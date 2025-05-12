@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="16dp">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <!-- Cliente -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Cliente"
+                android:textColor="@color/blue"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="4dp" />
+
+            <Spinner
+                android:id="@+id/spinnerCliente"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/input_borde_azul"
+                android:padding="10dp"
+                android:layout_marginBottom="16dp"
+                android:spinnerMode="dropdown" />
+
+            <!-- Mes -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Mes"
+                android:textColor="@color/blue"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="4dp" />
+
+            <Spinner
+                android:id="@+id/spinnerMes"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/input_borde_azul"
+                android:padding="10dp"
+                android:layout_marginBottom="16dp"
+                android:spinnerMode="dropdown" />
+
+            <!-- Año -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Año"
+                android:textColor="@color/blue"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="4dp" />
+
+            <Spinner
+                android:id="@+id/spinnerAnio"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/input_borde_azul"
+                android:padding="10dp"
+                android:layout_marginBottom="24dp"
+                android:spinnerMode="dropdown" />
+
+            <!-- Botón Registrar -->
+            <Button
+                android:id="@+id/btnRegistrarPago"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Registrar pago"
+                android:textColor="@android:color/white"
+                android:backgroundTint="@color/blue"
+                android:layout_marginBottom="12dp" />
+
+            <!-- Botón Ver Pagos -->
+            <Button
+                android:id="@+id/btnVerPagos"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Ver pagos"
+                android:textColor="@android:color/white"
+                android:backgroundTint="@android:color/darker_gray" />
+
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

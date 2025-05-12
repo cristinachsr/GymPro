@@ -30,5 +30,10 @@
             android:id="@+id/nav_calendario"
             android:icon="@drawable/calendario"
             android:title="@string/menu_calendario" />
+
+        <item
+            android:id="@+id/nav_pago"
+            android:icon="@drawable/pago"
+            android:title="@string/menu_pago" />
     </group>
 </menu>
