@@ -1,4 +1,4 @@
-package edu.pmdm.gympro;
+package edu.pmdm.gympro.model;
 
 public class Horario {
     private String dia;

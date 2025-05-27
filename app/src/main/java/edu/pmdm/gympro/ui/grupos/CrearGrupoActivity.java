@@ -34,7 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import edu.pmdm.gympro.Horario;
+import edu.pmdm.gympro.model.Horario;
 import edu.pmdm.gympro.R;
 import edu.pmdm.gympro.databinding.ActivityCrearGrupoBinding;
 import edu.pmdm.gympro.model.Grupo;

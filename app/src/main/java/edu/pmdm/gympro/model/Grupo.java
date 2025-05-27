@@ -1,7 +1,6 @@
 package edu.pmdm.gympro.model;
 
 import java.util.List;
-import edu.pmdm.gympro.Horario;
 
 public class Grupo {
 

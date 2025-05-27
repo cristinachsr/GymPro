@@ -24,7 +24,7 @@ import edu.pmdm.gympro.SpaceItemDecoration;
 import edu.pmdm.gympro.databinding.ActivityDetalleGrupoBinding;
 import edu.pmdm.gympro.model.Cliente;
 import edu.pmdm.gympro.model.Grupo;
-import edu.pmdm.gympro.Horario;
+import edu.pmdm.gympro.model.Horario;
 import edu.pmdm.gympro.ui.clientes.ClienteGrupoAdapter;
 
 public class DetalleGrupoActivity extends AppCompatActivity {
