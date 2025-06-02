@@ -49,9 +49,9 @@ public class GrupoAdapter extends RecyclerView.Adapter<GrupoAdapter.GrupoViewHol
         holder.tvDescripcionGrupo.setText(grupo.getDescripcion() != null ? grupo.getDescripcion() : "Sin descripción");
 
         // Mostrar foto del grupo
-        if (grupo.getPhoto() != null && !grupo.getPhoto().isEmpty() && !grupo.getPhoto().equals("logo_por_defecto")) {
+        if (grupo.getFoto() != null && !grupo.getFoto().isEmpty() && !grupo.getFoto().equals("logo_por_defecto")) {
             Glide.with(holder.itemView.getContext())
-                    .load(grupo.getPhoto())
+                    .load(grupo.getFoto())
                     .placeholder(R.drawable.logo_gympro_sinfondo)
                     .into(holder.ivFotoGrupo);
         } else {

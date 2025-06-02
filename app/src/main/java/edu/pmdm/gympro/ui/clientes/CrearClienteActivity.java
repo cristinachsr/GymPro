@@ -120,15 +120,18 @@ public class CrearClienteActivity extends AppCompatActivity {
 
         binding.btnSeleccionarGrupos.setOnClickListener(v -> mostrarDialogoSeleccionGrupos());
 
-        List<String> clasesSeleccionadas = getIntent().getStringArrayListExtra("clasesSeleccionadas");
-        if (clasesSeleccionadas != null) {
-            gruposSeleccionados.addAll(clasesSeleccionadas);
+        String uidAdmin = auth.getCurrentUser().getUid();
+
+        List<String> gruposIntent = getIntent().getStringArrayListExtra("gruposSeleccionados");
+        if (gruposIntent != null) {
+            gruposSeleccionados.addAll(gruposIntent);
 
             db.collection("grupos")
+                    .whereEqualTo("idAdministrador", uidAdmin)
                     .get()
                     .addOnSuccessListener(snapshot -> {
                         for (var doc : snapshot) {
-                            if (clasesSeleccionadas.contains(doc.getId())) {
+                            if (gruposSeleccionados.contains(doc.getId())) {
                                 String nombreGrupo = doc.getString("nombre");
                                 if (nombreGrupo != null) {
                                     nombresGruposSeleccionados.add(nombreGrupo);
@@ -142,8 +145,11 @@ public class CrearClienteActivity extends AppCompatActivity {
     }
 
     private void mostrarDialogoSeleccionGrupos() {
+        String uidAdmin = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
         FirebaseFirestore.getInstance()
                 .collection("grupos")
+                .whereEqualTo("idAdministrador", uidAdmin) // Solo grupos del admin actual
                 .get()
                 .addOnSuccessListener(snapshot -> {
                     List<String> nombresGrupos = new ArrayList<>();
@@ -160,7 +166,7 @@ public class CrearClienteActivity extends AppCompatActivity {
                     }
 
                     new AlertDialog.Builder(this)
-                            .setTitle("Seleccionar clases")
+                            .setTitle("Seleccionar grupos")
                             .setMultiChoiceItems(nombresGrupos.toArray(new String[0]), seleccionados, (dialog, which, isChecked) -> {
                                 if (isChecked) {
                                     gruposSeleccionados.add(idsGrupos.get(which));

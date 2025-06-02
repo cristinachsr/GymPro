@@ -1,20 +1,13 @@
 package edu.pmdm.gympro.ui.clientes;
 
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
@@ -22,7 +15,6 @@ import java.util.List;
 
 import edu.pmdm.gympro.databinding.ActivityDetalleClienteBinding;
 import edu.pmdm.gympro.R;
-import edu.pmdm.gympro.model.Cliente;
 
 public class DetalleClienteActivity extends AppCompatActivity {
 
@@ -70,7 +62,7 @@ public class DetalleClienteActivity extends AppCompatActivity {
                     .get()
                     .addOnSuccessListener(documentSnapshot -> {
                         if (documentSnapshot.exists()) {
-                            ArrayList<String> clasesSeleccionadas = (ArrayList<String>) documentSnapshot.get("clasesSeleccionadas");
+                            ArrayList<String> gruposSeleccionados = (ArrayList<String>) documentSnapshot.get("gruposSeleccionados");
 
                             Intent intent = new Intent(this, CrearClienteActivity.class);
                             intent.putExtra("modoEdicion", true);
@@ -82,7 +74,7 @@ public class DetalleClienteActivity extends AppCompatActivity {
                             intent.putExtra("telefono", telefono);
                             intent.putExtra("correo", correo);
                             intent.putExtra("foto", foto);
-                            intent.putStringArrayListExtra("clasesSeleccionadas", clasesSeleccionadas);
+                            intent.putStringArrayListExtra("gruposSeleccionados", gruposSeleccionados);
 
                             startActivity(intent);
                             finish();
@@ -92,16 +84,16 @@ public class DetalleClienteActivity extends AppCompatActivity {
 
         binding.btnEliminarCliente.setOnClickListener(v -> confirmarEliminacion(nombre));
 
-        List<String> idsClases = getIntent().getStringArrayListExtra("clasesSeleccionadas");
+        List<String> idsGrupos = getIntent().getStringArrayListExtra("gruposSeleccionados");
 
-        if (idsClases != null && !idsClases.isEmpty()) {
+        if (idsGrupos != null && !idsGrupos.isEmpty()) {
             FirebaseFirestore.getInstance()
                     .collection("grupos")
                     .get()
                     .addOnSuccessListener(snapshot -> {
                         List<String> nombresClases = new ArrayList<>();
                         for (var doc : snapshot) {
-                            if (idsClases.contains(doc.getId())) {
+                            if (idsGrupos.contains(doc.getId())) {
                                 String nombreGrupo = doc.getString("nombre");
                                 if (nombreGrupo != null) {
                                     nombresClases.add(nombreGrupo);

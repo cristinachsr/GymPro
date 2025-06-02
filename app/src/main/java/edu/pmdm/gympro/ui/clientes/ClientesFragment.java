@@ -70,7 +70,7 @@ public class ClientesFragment extends Fragment {
             intent.putExtra("telefono", cliente.getTelefono());
             intent.putExtra("correo", cliente.getCorreo());
             intent.putExtra("foto", cliente.getFoto());
-            intent.putStringArrayListExtra("clasesSeleccionadas", new ArrayList<>(cliente.getClasesSeleccionadas()));
+            intent.putStringArrayListExtra("gruposSeleccionados", new ArrayList<>(cliente.getGruposSeleccionados()));
             startActivity(intent);
         });
 

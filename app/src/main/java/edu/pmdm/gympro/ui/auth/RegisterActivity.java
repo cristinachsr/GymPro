@@ -97,7 +97,7 @@ public class RegisterActivity extends AppCompatActivity {
         String apellidos = binding.etApellidos.getText().toString().trim();
         String dni = binding.etDni.getText().toString().trim().toUpperCase();
         String fecha = binding.etFechaNacimiento.getText().toString().trim();
-        String email = binding.etEmail.getText().toString().trim();
+        String correo = binding.etEmail.getText().toString().trim();
         String password = binding.etPassword.getText().toString().trim();
         String confirmarPassword = binding.etConfirmarPassword.getText().toString().trim();
         String telefono = binding.countryCodePicker.getFullNumberWithPlus().trim();
@@ -114,7 +114,7 @@ public class RegisterActivity extends AppCompatActivity {
         if (!fecha.matches("\\d{2}/\\d{2}/\\d{4}") || !fechaValida(fecha)) {
             toast("Fecha inválida"); return;
         }
-        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches() || email.length() > 30) {
+        if (!Patterns.EMAIL_ADDRESS.matcher(correo).matches() || correo.length() > 30) {
             toast("Correo inválido"); return;
         }
         if (password.length() < 8 || password.length() > 15) {
@@ -143,7 +143,7 @@ public class RegisterActivity extends AppCompatActivity {
                                     toast("Ya existe un administrador con este teléfono");
                                     return;
                                 }
-                                crearUsuarioFirebase(nombre, apellidos, dni, fecha, email, password, telefono);
+                                crearUsuarioFirebase(nombre, apellidos, dni, fecha, correo, password, telefono);
                             })
                             .addOnFailureListener(e -> toast("Error al verificar teléfono"));
                 })
@@ -151,14 +151,15 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void crearUsuarioFirebase(String nombre, String apellidos, String dni, String fecha,
-                                      String email, String password, String telefono) {
+                                      String correo, String password, String telefono) {
 
-        auth.createUserWithEmailAndPassword(email, password)
+        auth.createUserWithEmailAndPassword(correo, password)
                 .addOnSuccessListener(result -> {
                     String uid = result.getUser().getUid();
                     String fotoUrl = (fotoSeleccionadaUri != null) ? fotoSeleccionadaUri.toString() : "logo_por_defecto";
 
-                    Administrador admin = new Administrador(uid, nombre, apellidos, fecha, email, dni, telefono, fotoUrl);
+                    Administrador admin = new Administrador(uid, nombre, apellidos, fecha, correo, dni, telefono, fotoUrl);
+
 
                     db.collection("administradores").document(uid).set(admin)
                             .addOnSuccessListener(unused -> {

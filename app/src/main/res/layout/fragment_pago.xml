@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <!-- ScrollView para desplazar el contenido -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -24,14 +25,32 @@
                 android:textStyle="bold"
                 android:layout_marginBottom="4dp" />
 
-            <Spinner
-                android:id="@+id/spinnerCliente"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/input_borde_azul"
-                android:padding="10dp"
-                android:layout_marginBottom="16dp"
-                android:spinnerMode="dropdown" />
+                android:orientation="horizontal"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:id="@+id/tvClienteSeleccionado"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Selecciona un cliente"
+                    android:padding="10dp"
+                    android:background="@drawable/input_borde_azul"
+                    android:textColor="@color/blue"
+                    android:textSize="14sp" />
+
+                <Button
+                    android:id="@+id/btnSeleccionarCliente"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Buscar"
+                    android:layout_marginStart="8dp"
+                    android:backgroundTint="@color/blue"
+                    android:textColor="@android:color/white" />
+            </LinearLayout>
 
             <!-- Mes -->
             <TextView
@@ -89,7 +108,6 @@
                 android:text="Ver pagos"
                 android:textColor="@android:color/white"
                 android:backgroundTint="@android:color/darker_gray" />
-
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

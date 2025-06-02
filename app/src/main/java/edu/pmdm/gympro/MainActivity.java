@@ -130,7 +130,7 @@ public class MainActivity extends AppCompatActivity {
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
                         String nombre = documentSnapshot.getString("nombreAdministrador");
-                        String correo = documentSnapshot.getString("email");
+                        String correo = documentSnapshot.getString("correo");
                         String fotoUrl = documentSnapshot.getString("photo");
 
                         tvNombre.setText(nombre != null ? nombre : "Admin");

@@ -123,23 +123,15 @@
                 android:textColor="@color/blue"
                 android:layout_marginBottom="24dp"/>
 
-            <TextView
-                android:id="@+id/textViewClientesGrupo"
+            <Button
+                android:id="@+id/btnVerClientes"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Clientes del grupo"
-                android:textColor="@color/blue"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:layout_marginBottom="4dp" />
-
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerClientesGrupo"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:nestedScrollingEnabled="false"
-                tools:listitem="@layout/item_cliente" />
+                android:text="Ver clientes del grupo"
+                android:backgroundTint="@color/blue"
+                android:textColor="@android:color/white"
+                android:drawableStart="@android:drawable/ic_menu_view"
+                android:layout_marginBottom="24dp" />
 
             <!-- Botones -->
             <LinearLayout

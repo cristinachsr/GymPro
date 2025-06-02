@@ -52,28 +52,28 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void iniciarSesion() {
-        String email = binding.etLoginEmail.getText().toString().trim();
+        String correo = binding.etLoginEmail.getText().toString().trim();
         String password = binding.etLoginPassword.getText().toString().trim();
 
-        if (email.isEmpty() || password.isEmpty()) {
+        if (correo.isEmpty() || password.isEmpty()) {
             Toast.makeText(this, "Completa todos los campos", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+        if (!Patterns.EMAIL_ADDRESS.matcher(correo).matches()) {
             Toast.makeText(this, "El formato del correo no es válido", Toast.LENGTH_SHORT).show();
             return;
         }
 
         // Usamos la colección "administradores" en lugar de "empleados"
         db.collection("administradores")
-                .whereEqualTo("email", email)
+                .whereEqualTo("correo", correo)
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     if (queryDocumentSnapshots.isEmpty()) {
                         Toast.makeText(this, "El correo electrónico no está registrado", Toast.LENGTH_SHORT).show();
                     } else {
-                        auth.signInWithEmailAndPassword(email, password)
+                        auth.signInWithEmailAndPassword(correo, password)
                                 .addOnSuccessListener(authResult -> {
                                     String uid = auth.getCurrentUser().getUid();
                                     db.collection("administradores").document(uid).get()

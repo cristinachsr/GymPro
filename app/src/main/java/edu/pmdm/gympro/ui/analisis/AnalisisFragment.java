@@ -13,9 +13,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
-import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.Chart;
-import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
@@ -23,7 +21,6 @@ import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
-import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.github.mikephil.charting.formatter.PercentFormatter;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.github.mikephil.charting.utils.ColorTemplate;
@@ -98,9 +95,9 @@ public class AnalisisFragment extends Fragment {
                             .get()
                             .addOnSuccessListener(clientesSnapshot -> {
                                 for (QueryDocumentSnapshot clienteDoc : clientesSnapshot) {
-                                    List<String> clasesSeleccionadas = (List<String>) clienteDoc.get("clasesSeleccionadas");
-                                    if (clasesSeleccionadas != null) {
-                                        for (String idGrupo : clasesSeleccionadas) {
+                                    List<String> gruposSeleccionados = (List<String>) clienteDoc.get("gruposSeleccionados");
+                                    if (gruposSeleccionados != null) {
+                                        for (String idGrupo : gruposSeleccionados) {
                                             if (conteoPorGrupoId.containsKey(idGrupo)) {
                                                 conteoPorGrupoId.put(idGrupo, conteoPorGrupoId.get(idGrupo) + 1);
                                             }
@@ -148,7 +145,7 @@ public class AnalisisFragment extends Fragment {
                                 binding.pieChartClientes.setEntryLabelColor(Color.BLACK);
                                 binding.pieChartClientes.setEntryLabelTextSize(12f);
                                 binding.pieChartClientes.setDrawCenterText(false);
-                                binding.pieChartClientes.getLegend().setEnabled(false); // ❌ Ocultar leyenda
+                                binding.pieChartClientes.getLegend().setEnabled(false); // Ocultar leyenda
                                 binding.pieChartClientes.getDescription().setEnabled(false);
                                 binding.pieChartClientes.invalidate();
                             });
@@ -164,62 +161,95 @@ public class AnalisisFragment extends Fragment {
                 .whereEqualTo("idAdministrador", uid)
                 .get()
                 .addOnSuccessListener(snapshot -> {
-                    Map<String, String> idToNombreMonitor = new HashMap<>();
-                    Map<String, Integer> monitorConteo = new HashMap<>();
+                    Map<String, Integer> conteoPorMonitorId = new HashMap<>();
 
                     for (QueryDocumentSnapshot doc : snapshot) {
-                        String nombreCompleto = doc.getString("id_empleado"); // contiene nombre y apellidos
+                        String idMonitor = doc.getString("idMonitor");
 
-                        // Extraer solo el primer nombre
-                        String soloNombre = (nombreCompleto != null && !nombreCompleto.isEmpty())
-                                ? nombreCompleto.split(" ")[0]
-                                : "Sin asignar";
-
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                            monitorConteo.put(soloNombre, monitorConteo.getOrDefault(soloNombre, 0) + 1);
+                        if (idMonitor != null && !idMonitor.isEmpty()) {
+                            conteoPorMonitorId.put(idMonitor, conteoPorMonitorId.getOrDefault(idMonitor, 0) + 1);
                         }
                     }
 
-                    List<IBarDataSet> dataSets = new ArrayList<>();
-                    int index = 0;
+                    List<String> idsMonitorConGrupos = new ArrayList<>(conteoPorMonitorId.keySet());
 
-                    for (Map.Entry<String, Integer> entry : monitorConteo.entrySet()) {
-                        List<BarEntry> barEntries = new ArrayList<>();
-                        barEntries.add(new BarEntry(index, entry.getValue()));
-
-                        BarDataSet set = new BarDataSet(barEntries, entry.getKey()); // solo nombre
-                        set.setColor(ColorTemplate.COLORFUL_COLORS[index % ColorTemplate.COLORFUL_COLORS.length]);
-                        set.setValueTextSize(10f);
-                        dataSets.add(set);
-                        index++;
+                    if (idsMonitorConGrupos.isEmpty()) {
+                        Toast.makeText(getContext(), "No hay monitores con grupos asignados", Toast.LENGTH_SHORT).show();
+                        return;
                     }
 
-                    BarData barData = new BarData(dataSets);
-                    barData.setBarWidth(0.5f); // barras más finas
-                    binding.barChartGruposPorMonitor.setData(barData);
+                    db.collection("monitores")
+                            .whereIn("idMonitor", idsMonitorConGrupos)
+                            .get()
+                            .addOnSuccessListener(monitoresSnapshot -> {
+                                Map<String, String> idToNombre = new HashMap<>();
 
-                    // Configurar leyenda (abajo, alineada izquierda y pequeña)
-                    Legend legend = binding.barChartGruposPorMonitor.getLegend();
-                    legend.setEnabled(true);
-                    legend.setForm(Legend.LegendForm.SQUARE);
-                    legend.setTextSize(10f);
-                    legend.setFormSize(10f);
-                    legend.setHorizontalAlignment(Legend.LegendHorizontalAlignment.LEFT);
-                    legend.setVerticalAlignment(Legend.LegendVerticalAlignment.BOTTOM);
-                    legend.setOrientation(Legend.LegendOrientation.HORIZONTAL);
-                    legend.setDrawInside(false);
+                                for (QueryDocumentSnapshot monitorDoc : monitoresSnapshot) {
+                                    String id = monitorDoc.getString("idMonitor");
+                                    String nombre = monitorDoc.getString("nombre") + " " + monitorDoc.getString("apellidos");
+                                    idToNombre.put(id, nombre);
+                                }
 
-                    // Eje X sin etiquetas (porque están en leyenda)
-                    binding.barChartGruposPorMonitor.getXAxis().setDrawLabels(false);
-                    binding.barChartGruposPorMonitor.getXAxis().setGranularity(1f);
-                    binding.barChartGruposPorMonitor.getXAxis().setGranularityEnabled(true);
-
-                    binding.barChartGruposPorMonitor.setFitBars(true);
-                    binding.barChartGruposPorMonitor.setDrawValueAboveBar(true);
-                    binding.barChartGruposPorMonitor.getDescription().setEnabled(false);
-
-                    binding.barChartGruposPorMonitor.invalidate();
+                                mostrarGraficoGruposPorMonitor(idToNombre, conteoPorMonitorId);
+                            })
+                            .addOnFailureListener(e ->
+                                    Toast.makeText(getContext(), "Error al cargar monitores", Toast.LENGTH_SHORT).show());
                 });
+    }
+
+    private void mostrarGraficoGruposPorMonitor(Map<String, String> idToNombre, Map<String, Integer> conteo) {
+        List<IBarDataSet> dataSets = new ArrayList<>();
+        int index = 0;
+
+        for (Map.Entry<String, Integer> entry : conteo.entrySet()) {
+            String idMonitor = entry.getKey();
+            int cantidad = entry.getValue();
+
+            // Mostrar solo si el monitor aún existe
+            if (!idToNombre.containsKey(idMonitor)) continue;
+
+            String nombre = idToNombre.get(idMonitor);
+
+            List<BarEntry> barEntries = new ArrayList<>();
+            barEntries.add(new BarEntry(index, cantidad));
+
+            BarDataSet set = new BarDataSet(barEntries, nombre);
+            set.setColor(ColorTemplate.COLORFUL_COLORS[index % ColorTemplate.COLORFUL_COLORS.length]);
+            set.setValueTextSize(10f);
+            dataSets.add(set);
+            index++;
+        }
+
+        if (dataSets.isEmpty()) {
+            Toast.makeText(getContext(), "No hay datos para mostrar en el gráfico", Toast.LENGTH_SHORT).show();
+            binding.barChartGruposPorMonitor.clear();
+            binding.barChartGruposPorMonitor.invalidate();
+            return;
+        }
+
+        BarData barData = new BarData(dataSets);
+        barData.setBarWidth(0.5f);
+        binding.barChartGruposPorMonitor.setData(barData);
+
+        Legend legend = binding.barChartGruposPorMonitor.getLegend();
+        legend.setEnabled(true);
+        legend.setForm(Legend.LegendForm.SQUARE);
+        legend.setTextSize(10f);
+        legend.setFormSize(10f);
+        legend.setHorizontalAlignment(Legend.LegendHorizontalAlignment.LEFT);
+        legend.setVerticalAlignment(Legend.LegendVerticalAlignment.BOTTOM);
+        legend.setOrientation(Legend.LegendOrientation.HORIZONTAL);
+        legend.setDrawInside(false);
+
+        binding.barChartGruposPorMonitor.getXAxis().setDrawLabels(false);
+        binding.barChartGruposPorMonitor.getXAxis().setGranularity(1f);
+        binding.barChartGruposPorMonitor.getXAxis().setGranularityEnabled(true);
+
+        binding.barChartGruposPorMonitor.setFitBars(true);
+        binding.barChartGruposPorMonitor.setDrawValueAboveBar(true);
+        binding.barChartGruposPorMonitor.getDescription().setEnabled(false);
+
+        binding.barChartGruposPorMonitor.invalidate();
     }
 
 
@@ -264,10 +294,10 @@ public class AnalisisFragment extends Fragment {
                             .get()
                             .addOnSuccessListener(clientesSnapshot -> {
                                 for (QueryDocumentSnapshot clienteDoc : clientesSnapshot) {
-                                    List<String> clasesSeleccionadas = (List<String>) clienteDoc.get("clasesSeleccionadas");
+                                    List<String> gruposSeleccionados = (List<String>) clienteDoc.get("gruposSeleccionados");
 
-                                    if (clasesSeleccionadas != null) {
-                                        for (String idGrupo : clasesSeleccionadas) {
+                                    if (gruposSeleccionados != null) {
+                                        for (String idGrupo : gruposSeleccionados) {
                                             if (conteoPorGrupoId.containsKey(idGrupo)) {
                                                 conteoPorGrupoId.put(idGrupo, conteoPorGrupoId.get(idGrupo) + 1);
                                             }
@@ -309,7 +339,7 @@ public class AnalisisFragment extends Fragment {
                     Map<String, Integer> monitorConteo = new HashMap<>();
 
                     for (QueryDocumentSnapshot doc : snapshot) {
-                        String nombreCompleto = doc.getString("id_empleado");
+                        String nombreCompleto = doc.getString("idMonitor");
 
                         String soloNombre = (nombreCompleto != null && !nombreCompleto.isEmpty())
                                 ? nombreCompleto.split(" ")[0]

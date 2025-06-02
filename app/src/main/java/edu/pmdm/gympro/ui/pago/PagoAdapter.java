@@ -9,14 +9,18 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
+import java.util.Map;
 
 import edu.pmdm.gympro.model.Pago;
+import edu.pmdm.gympro.R;
 
 public class PagoAdapter extends RecyclerView.Adapter<PagoAdapter.PagoViewHolder> {
     private List<Pago> listaPagos;
+    private Map<String, String> nombresClientes;
 
-    public PagoAdapter(List<Pago> listaPagos) {
+    public PagoAdapter(List<Pago> listaPagos, Map<String, String> nombresClientes) {
         this.listaPagos = listaPagos;
+        this.nombresClientes = nombresClientes;
     }
 
     public static class PagoViewHolder extends RecyclerView.ViewHolder {
@@ -39,7 +43,8 @@ public class PagoAdapter extends RecyclerView.Adapter<PagoAdapter.PagoViewHolder
     @Override
     public void onBindViewHolder(@NonNull PagoViewHolder holder, int position) {
         Pago pago = listaPagos.get(position);
-        holder.tvPago.setText("✓ " + pago.getNombreCliente());
+        String nombre = nombresClientes.getOrDefault(pago.getIdCliente(), "Desconocido");
+        holder.tvPago.setText("✓ " + nombre);
     }
 
     @Override
@@ -47,8 +52,9 @@ public class PagoAdapter extends RecyclerView.Adapter<PagoAdapter.PagoViewHolder
         return listaPagos.size();
     }
 
-    public void actualizarLista(List<Pago> nuevaLista) {
+    public void actualizarDatos(List<Pago> nuevaLista, Map<String, String> nuevosNombres) {
         this.listaPagos = nuevaLista;
+        this.nombresClientes = nuevosNombres;
         notifyDataSetChanged();
     }
 }

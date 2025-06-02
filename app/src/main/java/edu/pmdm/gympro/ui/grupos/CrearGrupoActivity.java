@@ -50,6 +50,9 @@ public class CrearGrupoActivity extends AppCompatActivity {
     private String idGrupoEdicion = null;
     private boolean esEdicion = false;
     private final List<Horario> horarios = new ArrayList<>();
+    private List<String> listaNombresMonitores = new ArrayList<>();
+    private List<String> listaIdsMonitores = new ArrayList<>();
+    private String idMonitorDelGrupo = null;
 
 
     private final ActivityResultLauncher<Intent> launcherGaleria =
@@ -96,9 +99,11 @@ public class CrearGrupoActivity extends AppCompatActivity {
             binding.btnCrearGrupo.setText("Guardar cambios");
 
             idGrupoEdicion = getIntent().getStringExtra("id_grupo");
+            idMonitorDelGrupo = getIntent().getStringExtra("idMonitor");
             binding.etNombreGrupo.setText(getIntent().getStringExtra("nombre"));
             binding.etDescripcionGrupo.setText(getIntent().getStringExtra("descripcion"));
             String foto = getIntent().getStringExtra("foto");
+
 
             if (foto != null && !foto.isEmpty() && !foto.equals("logo_por_defecto")) {
                 Glide.with(this).load(foto).into(binding.ivFotoGrupo);
@@ -227,34 +232,48 @@ public class CrearGrupoActivity extends AppCompatActivity {
     }
 
     private void cargarMonitores() {
-        List<String> listaMonitores = new ArrayList<>();
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
                 this,
                 R.layout.spinner_item_azul,
-                listaMonitores
+                listaNombresMonitores
         );
         adapter.setDropDownViewResource(R.layout.spinner_item_azul);
         binding.spinnerMonitores.setAdapter(adapter);
 
-        String uid = auth.getCurrentUser().getUid(); // UID del administrador autenticado
+        String uid = auth.getCurrentUser().getUid();
 
         db.collection("monitores")
                 .whereEqualTo("idAdministrador", uid)
                 .get()
                 .addOnSuccessListener(querySnapshot -> {
+                    listaNombresMonitores.clear();
+                    listaIdsMonitores.clear();
+
                     for (QueryDocumentSnapshot doc : querySnapshot) {
-                        String nombre = doc.getString("nombre") + " " + doc.getString("apellidos");
-                        listaMonitores.add(nombre);
+                        String nombreCompleto = doc.getString("nombre") + " " + doc.getString("apellidos");
+                        String id = doc.getString("idMonitor");
+
+                        listaNombresMonitores.add(nombreCompleto);
+                        listaIdsMonitores.add(id);
                     }
 
-                    if (listaMonitores.isEmpty()) {
-                        listaMonitores.add("Sin monitores disponibles");
-                        binding.spinnerMonitores.setEnabled(false); // desactiva si no hay
+                    if (listaNombresMonitores.isEmpty()) {
+                        listaNombresMonitores.add("Sin monitores disponibles");
+                        listaIdsMonitores.add("sin_monitor");
+                        binding.spinnerMonitores.setEnabled(false);
                     } else {
                         binding.spinnerMonitores.setEnabled(true);
                     }
 
                     adapter.notifyDataSetChanged();
+
+                    // Seleccionar el monitor si es edición
+                    if (esEdicion && idMonitorDelGrupo != null) {
+                        int posicion = listaIdsMonitores.indexOf(idMonitorDelGrupo);
+                        if (posicion >= 0) {
+                            binding.spinnerMonitores.setSelection(posicion);
+                        }
+                    }
                 })
                 .addOnFailureListener(e -> {
                     Toast.makeText(this, "Error al cargar monitores", Toast.LENGTH_SHORT).show();
@@ -265,8 +284,11 @@ public class CrearGrupoActivity extends AppCompatActivity {
     private void crearGrupo() {
         String nombre = binding.etNombreGrupo.getText().toString().trim();
         String descripcion = binding.etDescripcionGrupo.getText().toString().trim();
-        final String[] monitor = {binding.spinnerMonitores.getSelectedItem() != null ?
-                binding.spinnerMonitores.getSelectedItem().toString() : "Sin monitor asignado"};
+
+        int posSeleccionada = binding.spinnerMonitores.getSelectedItemPosition();
+        String idMonitorSeleccionado = (posSeleccionada >= 0 && posSeleccionada < listaIdsMonitores.size())
+                ? listaIdsMonitores.get(posSeleccionada)
+                : "sin_monitor";
 
         if (nombre.isEmpty() || descripcion.isEmpty()) {
             Toast.makeText(this, "Completa el nombre y la descripción", Toast.LENGTH_SHORT).show();
@@ -278,7 +300,11 @@ public class CrearGrupoActivity extends AppCompatActivity {
             return;
         }
 
-        // Verifica si el grupo ya existe
+        if (horarios.isEmpty()) {
+            Toast.makeText(this, "Debes añadir al menos un horario", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         db.collection("grupos")
                 .whereEqualTo("nombre", nombre)
                 .get()
@@ -286,21 +312,11 @@ public class CrearGrupoActivity extends AppCompatActivity {
                     if (!querySnapshot.isEmpty()) {
                         Toast.makeText(this, "Ya existe un grupo con ese nombre", Toast.LENGTH_SHORT).show();
                     } else {
-                        if (monitor[0].equals("Sin monitores disponibles")) {
-                            monitor[0] = "Sin monitor asignado";
-                        }
-
                         String fotoUrl = (imagenUriSeleccionada != null) ? imagenUriSeleccionada.toString() : "logo_por_defecto";
                         String idAdministrador = auth.getCurrentUser().getUid();
                         String idgrupo = UUID.randomUUID().toString();
 
-                        if (horarios.isEmpty()) {
-                            Toast.makeText(this, "Debes añadir al menos un horario", Toast.LENGTH_SHORT).show();
-                            return;
-                        }
-
-                        Grupo nuevoGrupo = new Grupo(idgrupo, nombre, descripcion, fotoUrl, monitor[0], idAdministrador, horarios);
-
+                        Grupo nuevoGrupo = new Grupo(idgrupo, nombre, descripcion, fotoUrl, idMonitorSeleccionado, idAdministrador, horarios);
 
                         db.collection("grupos").document(idgrupo).set(nuevoGrupo)
                                 .addOnSuccessListener(unused -> {
@@ -318,8 +334,11 @@ public class CrearGrupoActivity extends AppCompatActivity {
     private void editarGrupo() {
         String nombre = binding.etNombreGrupo.getText().toString().trim();
         String descripcion = binding.etDescripcionGrupo.getText().toString().trim();
-        final String[] monitor = {binding.spinnerMonitores.getSelectedItem() != null ?
-                binding.spinnerMonitores.getSelectedItem().toString() : "Sin monitor asignado"};
+
+        int posSeleccionada = binding.spinnerMonitores.getSelectedItemPosition();
+        String idMonitorSeleccionado = (posSeleccionada >= 0 && posSeleccionada < listaIdsMonitores.size())
+                ? listaIdsMonitores.get(posSeleccionada)
+                : "sin_monitor";
 
         if (nombre.isEmpty() || descripcion.isEmpty()) {
             Toast.makeText(this, "Completa el nombre y la descripción", Toast.LENGTH_SHORT).show();
@@ -346,8 +365,8 @@ public class CrearGrupoActivity extends AppCompatActivity {
         db.collection("grupos").document(idGrupoEdicion)
                 .update("nombre", nombre,
                         "descripcion", descripcion,
-                        "photo", fotoUrl,
-                        "id_empleado", monitor[0],
+                        "foto", fotoUrl,
+                        "idMonitor", idMonitorSeleccionado,
                         "horarios", horarios)
                 .addOnSuccessListener(unused -> {
                     Toast.makeText(this, "Grupo actualizado", Toast.LENGTH_SHORT).show();
@@ -356,6 +375,7 @@ public class CrearGrupoActivity extends AppCompatActivity {
                 })
                 .addOnFailureListener(e -> Toast.makeText(this, "Error al actualizar grupo", Toast.LENGTH_SHORT).show());
     }
+
 
 
 

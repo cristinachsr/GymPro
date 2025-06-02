@@ -16,7 +16,9 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import edu.pmdm.gympro.R;
 import edu.pmdm.gympro.SimpleItemSelectedListener;
@@ -86,18 +88,43 @@ public class VerPagosActivity extends AppCompatActivity {
                 .whereEqualTo("idAdministrador", uid)
                 .get()
                 .addOnSuccessListener(snapshot -> {
-                    List<String> pagosTexto = new ArrayList<>();
+                    List<Pago> listaPagos = new ArrayList<>();
+                    List<String> idsClientes = new ArrayList<>();
+
                     for (QueryDocumentSnapshot doc : snapshot) {
                         Pago pago = doc.toObject(Pago.class);
-                        pagosTexto.add(pago.getNombreCliente() + " - " + (pago.isPagado() ? "Pagado" : "No pagado"));
+                        listaPagos.add(pago);
+                        idsClientes.add(pago.getIdCliente());
                     }
 
-                    if (pagosTexto.isEmpty()) {
-                        pagosTexto.add("No hay pagos registrados para este mes.");
+                    if (listaPagos.isEmpty()) {
+                        List<String> mensaje = new ArrayList<>();
+                        mensaje.add("No hay pagos registrados para este mes.");
+                        listViewPagos.setAdapter(new ArrayAdapter<>(this, R.layout.spinner_item_azul, mensaje));
+                        return;
                     }
 
-                    ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.spinner_item_azul, pagosTexto);
-                    listViewPagos.setAdapter(adapter);
+                    // Obtener nombres de los clientes
+                    db.collection("clientes")
+                            .whereIn("idCliente", idsClientes)
+                            .get()
+                            .addOnSuccessListener(clientesSnapshot -> {
+                                Map<String, String> nombresClientes = new HashMap<>();
+                                for (QueryDocumentSnapshot doc : clientesSnapshot) {
+                                    String id = doc.getString("idCliente");
+                                    String nombre = doc.getString("nombre");
+                                    String apellidos = doc.getString("apellidos");
+                                    nombresClientes.put(id, nombre + " " + apellidos);
+                                }
+
+                                List<String> pagosTexto = new ArrayList<>();
+                                for (Pago pago : listaPagos) {
+                                    String nombre = nombresClientes.getOrDefault(pago.getIdCliente(), "Desconocido");
+                                    pagosTexto.add(nombre + " - " + (pago.isPagado() ? "Pagado" : "No pagado"));
+                                }
+
+                                listViewPagos.setAdapter(new ArrayAdapter<>(this, R.layout.spinner_item_azul, pagosTexto));
+                            });
                 })
                 .addOnFailureListener(e ->
                         Toast.makeText(this, "Error al cargar pagos", Toast.LENGTH_SHORT).show());

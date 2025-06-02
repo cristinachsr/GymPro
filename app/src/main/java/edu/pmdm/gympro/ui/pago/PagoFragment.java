@@ -1,5 +1,6 @@
 package edu.pmdm.gympro.ui.pago;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -13,22 +14,26 @@ import androidx.fragment.app.Fragment;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
+
+import java.util.*;
 
 import edu.pmdm.gympro.R;
 import edu.pmdm.gympro.model.Cliente;
 import edu.pmdm.gympro.model.Pago;
 
-import java.util.*;
-
 public class PagoFragment extends Fragment {
 
-    private Spinner spinnerClientes, spinnerMes, spinnerAnio;
-    private Button btnRegistrarPago;
+    private static final int REQUEST_SELECCIONAR_CLIENTE = 100;
+
     private FirebaseFirestore db;
     private FirebaseAuth auth;
-    private List<Cliente> listaClientes = new ArrayList<>();
-    private Button btnVerPagos;
+
+    private TextView tvClienteSeleccionado;
+    private Button btnSeleccionarCliente;
+    private Spinner spinnerMes, spinnerAnio;
+    private Button btnRegistrarPago, btnVerPagos;
+
+    private Cliente clienteSeleccionado;
 
     @Nullable
     @Override
@@ -39,17 +44,22 @@ public class PagoFragment extends Fragment {
         db = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
 
-        spinnerClientes = view.findViewById(R.id.spinnerCliente);
+        tvClienteSeleccionado = view.findViewById(R.id.tvClienteSeleccionado);
+        btnSeleccionarCliente = view.findViewById(R.id.btnSeleccionarCliente);
         spinnerMes = view.findViewById(R.id.spinnerMes);
         spinnerAnio = view.findViewById(R.id.spinnerAnio);
         btnRegistrarPago = view.findViewById(R.id.btnRegistrarPago);
+        btnVerPagos = view.findViewById(R.id.btnVerPagos);
 
-        cargarClientes();
         configurarSpinners();
+
+        btnSeleccionarCliente.setOnClickListener(v -> {
+            Intent intent = new Intent(getContext(), SeleccionarClienteActivity.class);
+            startActivityForResult(intent, REQUEST_SELECCIONAR_CLIENTE);
+        });
 
         btnRegistrarPago.setOnClickListener(v -> registrarPago());
 
-        Button btnVerPagos = view.findViewById(R.id.btnVerPagos);
         btnVerPagos.setOnClickListener(v ->
                 startActivity(new Intent(requireContext(), VerPagosActivity.class))
         );
@@ -73,36 +83,15 @@ public class PagoFragment extends Fragment {
         spinnerAnio.setSelection(0);
     }
 
-    private void cargarClientes() {
-        String uid = auth.getCurrentUser().getUid();
-
-        db.collection("clientes")
-                .whereEqualTo("idAdministrador", uid)
-                .get()
-                .addOnSuccessListener(snapshot -> {
-                    List<String> nombres = new ArrayList<>();
-                    for (QueryDocumentSnapshot doc : snapshot) {
-                        Cliente cliente = doc.toObject(Cliente.class);
-                        listaClientes.add(cliente);
-                        nombres.add(cliente.getNombre() + " " + cliente.getApellidos());
-                    }
-                    ArrayAdapter<String> adapterClientes = new ArrayAdapter<>(requireContext(), R.layout.spinner_item_azul, nombres);
-                    spinnerClientes.setAdapter(adapterClientes);
-                });
-    }
-
     private void registrarPago() {
-        int posicion = spinnerClientes.getSelectedItemPosition();
-        if (posicion < 0) {
+        if (clienteSeleccionado == null) {
             Toast.makeText(getContext(), "Selecciona un cliente", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        Cliente cliente = listaClientes.get(posicion);
         int mes = spinnerMes.getSelectedItemPosition() + 1;
         int año = Integer.parseInt(spinnerAnio.getSelectedItem().toString());
 
-        // Verificar que no sea mes anterior al actual
         Calendar hoy = Calendar.getInstance();
         int mesActual = hoy.get(Calendar.MONTH) + 1;
         int añoActual = hoy.get(Calendar.YEAR);
@@ -114,9 +103,8 @@ public class PagoFragment extends Fragment {
 
         String uidAdmin = auth.getCurrentUser().getUid();
 
-        // Verificar si ya existe
         db.collection("pagos")
-                .whereEqualTo("idCliente", cliente.getIdCliente())
+                .whereEqualTo("idCliente", clienteSeleccionado.getIdCliente())
                 .whereEqualTo("mes", mes)
                 .whereEqualTo("año", año)
                 .get()
@@ -125,8 +113,7 @@ public class PagoFragment extends Fragment {
                         Toast.makeText(getContext(), "Este cliente ya tiene un pago registrado en ese mes", Toast.LENGTH_SHORT).show();
                     } else {
                         String idPago = UUID.randomUUID().toString();
-                        Pago nuevoPago = new Pago(idPago, cliente.getIdCliente(), cliente.getNombre() + " " + cliente.getApellidos(),
-                                mes, año, true, uidAdmin); // pagado = true
+                        Pago nuevoPago = new Pago(idPago, clienteSeleccionado.getIdCliente(), mes, año, true, uidAdmin);
 
                         db.collection("pagos").document(idPago).set(nuevoPago)
                                 .addOnSuccessListener(unused ->
@@ -135,5 +122,20 @@ public class PagoFragment extends Fragment {
                                         Toast.makeText(getContext(), "Error al guardar el pago", Toast.LENGTH_SHORT).show());
                     }
                 });
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == REQUEST_SELECCIONAR_CLIENTE && resultCode == Activity.RESULT_OK && data != null) {
+            String idCliente = data.getStringExtra("clienteId");
+            String nombreCliente = data.getStringExtra("clienteNombre");
+
+            clienteSeleccionado = new Cliente();
+            clienteSeleccionado.setIdCliente(idCliente);
+
+            tvClienteSeleccionado.setText(nombreCliente);
+        }
     }
 }

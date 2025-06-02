@@ -4,7 +4,6 @@ public class Pago {
 
     private String idPago;
     private String idCliente;
-    private String nombreCliente;
     private int mes;
     private int año;
     private boolean pagado;
@@ -14,10 +13,9 @@ public class Pago {
         // Requerido por Firestore
     }
 
-    public Pago(String idPago, String idCliente, String nombreCliente, int mes, int año, boolean pagado, String idAdministrador) {
+    public Pago(String idPago, String idCliente, int mes, int año, boolean pagado, String idAdministrador) {
         this.idPago = idPago;
         this.idCliente = idCliente;
-        this.nombreCliente = nombreCliente;
         this.mes = mes;
         this.año = año;
         this.pagado = pagado;
@@ -30,10 +28,6 @@ public class Pago {
 
     public String getIdCliente() {
         return idCliente;
-    }
-
-    public String getNombreCliente() {
-        return nombreCliente;
     }
 
     public int getMes() {

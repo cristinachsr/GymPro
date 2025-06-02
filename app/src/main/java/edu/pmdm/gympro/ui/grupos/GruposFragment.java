@@ -71,8 +71,8 @@ public class GruposFragment extends Fragment {
             intent.putExtra("id_grupo", grupo.getIdgrupo());
             intent.putExtra("nombre", grupo.getNombre());
             intent.putExtra("descripcion", grupo.getDescripcion());
-            intent.putExtra("foto", grupo.getPhoto());
-            intent.putExtra("id_empleado", grupo.getId_empleado());
+            intent.putExtra("foto", grupo.getFoto());
+            intent.putExtra("idMonitor", grupo.getIdMonitor());
             detalleGrupoLauncher.launch(intent);
         });
 

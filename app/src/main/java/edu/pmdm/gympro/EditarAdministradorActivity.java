@@ -34,7 +34,7 @@ public class EditarAdministradorActivity extends AppCompatActivity {
     private String uid;
     private Uri imagenUriSeleccionada;
     private Uri imagenUriCamara;
-    private String fotoActual = null; // ✅ Imagen previa
+    private String fotoActual = null; //Imagen previa
 
     private final int REQUEST_CAMERA_PERMISSION = 123;
 
@@ -83,7 +83,7 @@ public class EditarAdministradorActivity extends AppCompatActivity {
                         binding.etApellidosAdmin.setText(document.getString("apellidoAdministrador"));
                         binding.etDniAdmin.setText(document.getString("dni"));
                         binding.etFechaAdmin.setText(document.getString("fechaNacimiento"));
-                        binding.etCorreoAdmin.setText(document.getString("email"));
+                        binding.etCorreoAdmin.setText(document.getString("correo"));
 
                         String telefonoCompleto = document.getString("telefono");
                         if (telefonoCompleto != null && telefonoCompleto.startsWith("+")) {
@@ -93,7 +93,7 @@ public class EditarAdministradorActivity extends AppCompatActivity {
                             binding.etTelefonoAdmin.setText(sinPrefijo);
                         }
 
-                        String foto = document.getString("photo");
+                        String foto = document.getString("foto");
                         fotoActual = foto; // ✅ Guardamos imagen original
 
                         if (foto != null && !foto.trim().isEmpty() && !foto.equals("logo_por_defecto")) {
@@ -160,7 +160,7 @@ public class EditarAdministradorActivity extends AppCompatActivity {
         }
 
         db.collection("administradores")
-                .whereNotEqualTo("email", auth.getCurrentUser().getEmail())
+                .whereNotEqualTo("correo", auth.getCurrentUser().getEmail())
                 .get()
                 .addOnSuccessListener(snapshot -> {
                     boolean dniDuplicado = false;
@@ -187,7 +187,7 @@ public class EditarAdministradorActivity extends AppCompatActivity {
                             "dni", dni,
                             "fechaNacimiento", fecha,
                             "telefono", telefono,
-                            "photo", (nuevaFoto != null ? nuevaFoto : "logo_por_defecto")
+                            "foto", (nuevaFoto != null ? nuevaFoto : "logo_por_defecto")
                     ).addOnSuccessListener(aVoid -> {
                         Toast.makeText(this, "Datos actualizados", Toast.LENGTH_SHORT).show();
                         setResult(RESULT_OK);

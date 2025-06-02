@@ -5,25 +5,25 @@ public class Administrador {
     private String nombreAdministrador;
     private String apellidoAdministrador;
     private String fechaNacimiento;
-    private String email;
+    private String correo;
     private String dni;
     private String telefono;
-    private String photo;
+    private String foto;
     private String rol;
 
     // Constructor vacío requerido por Firestore
     public Administrador() {}
 
     // Constructor actualizado con todos los campos
-    public Administrador(String idadministrador, String nombre, String apellidos, String fecha, String email, String dni, String telefono, String photo) {
+    public Administrador(String idadministrador, String nombre, String apellidos, String fecha, String correo, String dni, String telefono, String foto){
         this.idadministrador = idadministrador;
         this.nombreAdministrador = nombre;
         this.apellidoAdministrador = apellidos;
         this.fechaNacimiento = fecha;
-        this.email = email;
+        this.correo = correo;
         this.dni = dni;
         this.telefono = telefono;
-        this.photo = photo;
+        this.foto = foto;
         this.rol = "administrador";
     }
 
@@ -43,8 +43,8 @@ public class Administrador {
         return fechaNacimiento;
     }
 
-    public String getEmail() {
-        return email;
+    public String getCorreo() {
+        return correo;
     }
 
     public String getDni() {
@@ -55,8 +55,8 @@ public class Administrador {
         return telefono;
     }
 
-    public String getPhoto() {
-        return photo;
+    public String getFoto() {
+        return foto;
     }
 
     public String getRol() {

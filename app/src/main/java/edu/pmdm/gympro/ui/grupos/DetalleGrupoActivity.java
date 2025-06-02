@@ -63,8 +63,8 @@ public class DetalleGrupoActivity extends AppCompatActivity {
                             intent.putExtra("id_grupo", grupo.getIdgrupo());
                             intent.putExtra("nombre", grupo.getNombre());
                             intent.putExtra("descripcion", grupo.getDescripcion());
-                            intent.putExtra("foto", grupo.getPhoto());
-                            intent.putExtra("monitor", grupo.getId_empleado());
+                            intent.putExtra("foto", grupo.getFoto());
+                            intent.putExtra("idMonitor", grupo.getIdMonitor());
                             intent.putExtra("resumenHorarios", resumenHorarios);
                             editarGrupoLauncher.launch(intent);
                         }
@@ -76,26 +76,11 @@ public class DetalleGrupoActivity extends AppCompatActivity {
             confirmarEliminacion(nombreGrupo);
         });
 
-        RecyclerView recyclerClientesGrupo = findViewById(R.id.recyclerClientesGrupo);
-        List<Cliente> listaClientesGrupo = new ArrayList<>();
-        ClienteGrupoAdapter adapter = new ClienteGrupoAdapter(this, listaClientesGrupo);
-
-        recyclerClientesGrupo.setLayoutManager(new LinearLayoutManager(this));
-        recyclerClientesGrupo.addItemDecoration(new SpaceItemDecoration(24));
-        recyclerClientesGrupo.setAdapter(adapter);
-
-        FirebaseFirestore.getInstance()
-                .collection("clientes")
-                .whereArrayContains("clasesSeleccionadas", idGrupo)
-                .get()
-                .addOnSuccessListener(query -> {
-                    listaClientesGrupo.clear();
-                    for (DocumentSnapshot doc : query.getDocuments()) {
-                        Cliente cliente = doc.toObject(Cliente.class);
-                        listaClientesGrupo.add(cliente);
-                    }
-                    adapter.notifyDataSetChanged();
-                });
+        binding.btnVerClientes.setOnClickListener(v -> {
+            Intent intent = new Intent(this, ListaClientesGrupoActivity.class);
+            intent.putExtra("id_grupo", idGrupo);
+            startActivity(intent);
+        });
     }
 
     private void cargarDatosGrupoDesdeFirestore() {
@@ -110,15 +95,31 @@ public class DetalleGrupoActivity extends AppCompatActivity {
 
                         binding.etNombreGrupo.setText(grupo.getNombre());
                         binding.etDescripcionGrupo.setText(grupo.getDescripcion());
-                        binding.etMonitorGrupo.setText(
-                                grupo.getId_empleado() == null || grupo.getId_empleado().isEmpty()
-                                        ? "Sin monitor asignado"
-                                        : grupo.getId_empleado()
-                        );
+                        if (grupo.getIdMonitor() == null || grupo.getIdMonitor().isEmpty()) {
+                            binding.etMonitorGrupo.setText("Sin monitor asignado");
+                        } else {
+                            FirebaseFirestore.getInstance()
+                                    .collection("monitores")
+                                    .whereEqualTo("idMonitor", grupo.getIdMonitor())
+                                    .get()
+                                    .addOnSuccessListener(querySnapshot -> {
+                                        if (!querySnapshot.isEmpty()) {
+                                            DocumentSnapshot monitorDoc = querySnapshot.getDocuments().get(0);
+                                            String nombre = monitorDoc.getString("nombre");
+                                            String apellidos = monitorDoc.getString("apellidos");
+                                            binding.etMonitorGrupo.setText(nombre + " " + apellidos);
+                                        } else {
+                                            binding.etMonitorGrupo.setText("Sin monitor asignado");
+                                        }
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        binding.etMonitorGrupo.setText("Error al cargar monitor");
+                                    });
+                        }
 
-                        if (grupo.getPhoto() != null && !grupo.getPhoto().isEmpty()
-                                && !grupo.getPhoto().equals("logo_por_defecto")) {
-                            Glide.with(this).load(grupo.getPhoto()).into(binding.ivFotoGrupo);
+                        if (grupo.getFoto() != null && !grupo.getFoto().isEmpty()
+                                && !grupo.getFoto().equals("logo_por_defecto")) {
+                            Glide.with(this).load(grupo.getFoto()).into(binding.ivFotoGrupo);
                         } else {
                             binding.ivFotoGrupo.setImageResource(R.drawable.logo_gympro_sinfondo);
                         }
