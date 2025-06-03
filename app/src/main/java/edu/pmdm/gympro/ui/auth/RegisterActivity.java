@@ -31,6 +31,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
+import edu.pmdm.gympro.CryptoUtils;
 import edu.pmdm.gympro.R;
 import edu.pmdm.gympro.databinding.ActivityRegisterBinding;
 import edu.pmdm.gympro.model.Administrador;
@@ -95,7 +96,7 @@ public class RegisterActivity extends AppCompatActivity {
     private void registrarAdministrador() {
         String nombre = binding.etNombre.getText().toString().trim();
         String apellidos = binding.etApellidos.getText().toString().trim();
-        String dni = binding.etDni.getText().toString().trim().toUpperCase();
+        String dni = binding.etDni.getText().toString().trim();
         String fecha = binding.etFechaNacimiento.getText().toString().trim();
         String correo = binding.etEmail.getText().toString().trim();
         String password = binding.etPassword.getText().toString().trim();
@@ -108,17 +109,18 @@ public class RegisterActivity extends AppCompatActivity {
         if (!apellidos.matches("^[A-Za-zÁÉÍÓÚáéíóúñÑ ]{1,28}$")) {
             toast("Introduce apellidos válidos"); return;
         }
-        if (dni.length() != 9 || !dni.matches("\\d{8}[A-Za-z]")) {
+        if (dni.length() != 9 || !dni.matches("\\d{8}[A-Z]")) {
             toast("DNI inválido"); return;
         }
         if (!fecha.matches("\\d{2}/\\d{2}/\\d{4}") || !fechaValida(fecha)) {
             toast("Fecha inválida"); return;
         }
-        if (!Patterns.EMAIL_ADDRESS.matcher(correo).matches() || correo.length() > 30) {
-            toast("Correo inválido"); return;
+        if (!correo.matches("^[a-zA-Z0-9._%+-]+@(gmail|hotmail)\\.(com|es)$") || correo.length() > 30) {
+            toast("Correo inválido. Escribe un correo válido como ejemplo@gmail.com o ejemplo@hotmail.es"); return;
         }
-        if (password.length() < 8 || password.length() > 15) {
-            toast("Contraseña inválida"); return;
+        if (!password.matches("^(?=.*[A-Z])(?=.*\\d)(?=.*[!@#\\$%\\^&\\*._-]).{8,15}$")) {
+            toast("La contraseña debe tener entre 8 y 15 caracteres, incluir al menos una mayúscula, un número y un símbolo (como . o @)");
+            return;
         }
         if (!password.equals(confirmarPassword)) {
             toast("Las contraseñas no coinciden"); return;
@@ -127,23 +129,45 @@ public class RegisterActivity extends AppCompatActivity {
             toast("Número de teléfono no válido"); return;
         }
 
+        // 🔒 Cifrar los datos antes de consultar Firestore
+        String dniCifrado = CryptoUtils.encrypt(dni);
+        String telefonoCifrado = CryptoUtils.encrypt(telefono);
+        String correoCifrado = CryptoUtils.encrypt(correo);
+
+        // Buscar por DNI cifrado
         db.collection("administradores")
-                .whereEqualTo("dni", dni)
+                .whereEqualTo("dni", dniCifrado)
                 .get()
                 .addOnSuccessListener(snapshotDni -> {
                     if (!snapshotDni.isEmpty()) {
                         toast("Ya existe un administrador con este DNI");
                         return;
                     }
+
+                    // Buscar por teléfono cifrado
                     db.collection("administradores")
-                            .whereEqualTo("telefono", telefono)
+                            .whereEqualTo("telefono", telefonoCifrado)
                             .get()
                             .addOnSuccessListener(snapshotTel -> {
                                 if (!snapshotTel.isEmpty()) {
                                     toast("Ya existe un administrador con este teléfono");
                                     return;
                                 }
-                                crearUsuarioFirebase(nombre, apellidos, dni, fecha, correo, password, telefono);
+
+                                // Buscar por correo cifrado
+                                db.collection("administradores")
+                                        .whereEqualTo("correo", correoCifrado)
+                                        .get()
+                                        .addOnSuccessListener(snapshotCorreo -> {
+                                            if (!snapshotCorreo.isEmpty()) {
+                                                toast("Ya existe un administrador con este correo");
+                                                return;
+                                            }
+
+                                            // Ningún campo está duplicado, proceder a crear el usuario
+                                            crearUsuarioFirebase(nombre, apellidos, dni, fecha, correo, password, telefono);
+                                        })
+                                        .addOnFailureListener(e -> toast("Error al verificar correo"));
                             })
                             .addOnFailureListener(e -> toast("Error al verificar teléfono"));
                 })
@@ -158,8 +182,13 @@ public class RegisterActivity extends AppCompatActivity {
                     String uid = result.getUser().getUid();
                     String fotoUrl = (fotoSeleccionadaUri != null) ? fotoSeleccionadaUri.toString() : "logo_por_defecto";
 
-                    Administrador admin = new Administrador(uid, nombre, apellidos, fecha, correo, dni, telefono, fotoUrl);
+                    // Cifrar campos sensibles antes de guardar en Firestore
+                    String fechaCifrada = CryptoUtils.encrypt(fecha);
+                    String correoCifrado = CryptoUtils.encrypt(correo);
+                    String dniCifrado = CryptoUtils.encrypt(dni);
+                    String telefonoCifrado = CryptoUtils.encrypt(telefono);
 
+                    Administrador admin = new Administrador(uid, nombre, apellidos, fechaCifrada, correoCifrado, dniCifrado, telefonoCifrado, fotoUrl);
 
                     db.collection("administradores").document(uid).set(admin)
                             .addOnSuccessListener(unused -> {
@@ -220,6 +249,18 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private boolean fechaValida(String fecha) {
+        // Validar formato con regex antes de parsear
+        if (!fecha.matches("^\\d{2}/\\d{2}/\\d{4}$")) return false;
+
+        String[] partes = fecha.split("/");
+        int dia = Integer.parseInt(partes[0]);
+        int mes = Integer.parseInt(partes[1]);
+        int año = Integer.parseInt(partes[2]);
+
+        // Validar valores lógicos de día, mes y año
+        if (dia < 1 || dia > 31 || mes < 1 || mes > 12 || año < 1900) return false;
+
+        // Validación estricta usando SimpleDateFormat
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
             sdf.setLenient(false);
@@ -229,6 +270,7 @@ public class RegisterActivity extends AppCompatActivity {
             return false;
         }
     }
+
 
     private void configurarTogglePassword(EditText editText, ImageView toggleIcon) {
         toggleIcon.setOnClickListener(v -> {

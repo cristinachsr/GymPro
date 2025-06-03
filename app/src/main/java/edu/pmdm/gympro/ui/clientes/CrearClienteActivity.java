@@ -23,13 +23,17 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
 
 import edu.pmdm.gympro.R;
 import edu.pmdm.gympro.databinding.ActivityCrearClienteBinding;
 import edu.pmdm.gympro.model.Cliente;
+import edu.pmdm.gympro.CryptoUtils;
 
 public class CrearClienteActivity extends AppCompatActivity {
 
@@ -211,19 +215,25 @@ public class CrearClienteActivity extends AppCompatActivity {
     private void crearNuevoCliente(String nombre, String apellidos, String dni, String fechaNacimiento,
                                    String telefono, String correo, String fotoUrl) {
 
-        db.collection("clientes").whereEqualTo("dni", dni).get().addOnSuccessListener(snapshotDni -> {
+        // Ciframos los datos ANTES de comprobar duplicados
+        String dniCifrado = CryptoUtils.encrypt(dni);
+        String telefonoCifrado = CryptoUtils.encrypt(telefono);
+        String correoCifrado = CryptoUtils.encrypt(correo);
+        String fechaCifrada = CryptoUtils.encrypt(fechaNacimiento);
+
+        db.collection("clientes").whereEqualTo("dni", dniCifrado).get().addOnSuccessListener(snapshotDni -> {
             if (!snapshotDni.isEmpty()) {
                 Toast.makeText(this, "Ya existe un cliente con ese DNI", Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            db.collection("clientes").whereEqualTo("telefono", telefono).get().addOnSuccessListener(snapshotTel -> {
+            db.collection("clientes").whereEqualTo("telefono", telefonoCifrado).get().addOnSuccessListener(snapshotTel -> {
                 if (!snapshotTel.isEmpty()) {
                     Toast.makeText(this, "Ya existe un cliente con ese número", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
-                db.collection("clientes").whereEqualTo("correo", correo).get().addOnSuccessListener(snapshotCorreo -> {
+                db.collection("clientes").whereEqualTo("correo", correoCifrado).get().addOnSuccessListener(snapshotCorreo -> {
                     if (!snapshotCorreo.isEmpty()) {
                         Toast.makeText(this, "Ya existe un cliente con ese correo", Toast.LENGTH_SHORT).show();
                         return;
@@ -232,8 +242,18 @@ public class CrearClienteActivity extends AppCompatActivity {
                     String idAdministrador = auth.getCurrentUser().getUid();
                     String idCliente = UUID.randomUUID().toString();
 
-                    Cliente cliente = new Cliente(idCliente, nombre, apellidos, dni, fechaNacimiento,
-                            telefono, correo, fotoUrl, idAdministrador, gruposSeleccionados);
+                    Cliente cliente = new Cliente(
+                            idCliente,
+                            nombre,
+                            apellidos,
+                            dniCifrado,
+                            fechaCifrada,
+                            telefonoCifrado,
+                            correoCifrado,
+                            fotoUrl,
+                            idAdministrador,
+                            gruposSeleccionados
+                    );
 
                     db.collection("clientes").document(idCliente).set(cliente)
                             .addOnSuccessListener(aVoid -> {
@@ -251,6 +271,12 @@ public class CrearClienteActivity extends AppCompatActivity {
 
         String idAdministrador = auth.getCurrentUser().getUid();
 
+        // Ciframos los datos que vamos a comparar
+        String dniCifrado = CryptoUtils.encrypt(dni);
+        String telefonoCifrado = CryptoUtils.encrypt(telefono);
+        String correoCifrado = CryptoUtils.encrypt(correo);
+        String fechaCifrada = CryptoUtils.encrypt(fechaNacimiento);
+
         db.collection("clientes").get().addOnSuccessListener(snapshot -> {
             boolean dniDuplicado = false;
             boolean telDuplicado = false;
@@ -258,11 +284,11 @@ public class CrearClienteActivity extends AppCompatActivity {
 
             for (var doc : snapshot) {
                 String id = doc.getId();
-                if (id.equals(idClienteEdicion)) continue; // saltamos al propio cliente
+                if (id.equals(idClienteEdicion)) continue; // Saltar al cliente que estamos editando
 
-                if (dni.equalsIgnoreCase(doc.getString("dni"))) dniDuplicado = true;
-                if (telefono.equals(doc.getString("telefono"))) telDuplicado = true;
-                if (correo.equalsIgnoreCase(doc.getString("correo"))) correoDuplicado = true;
+                if (dniCifrado.equals(doc.getString("dni"))) dniDuplicado = true;
+                if (telefonoCifrado.equals(doc.getString("telefono"))) telDuplicado = true;
+                if (correoCifrado.equals(doc.getString("correo"))) correoDuplicado = true;
             }
 
             if (dniDuplicado) {
@@ -278,9 +304,18 @@ public class CrearClienteActivity extends AppCompatActivity {
                 return;
             }
 
-            // Si no hay duplicados, actualiza:
-            Cliente clienteActualizado = new Cliente(idClienteEdicion, nombre, apellidos, dni, fechaNacimiento,
-                    telefono, correo, fotoUrl, idAdministrador, gruposSeleccionados);
+            Cliente clienteActualizado = new Cliente(
+                    idClienteEdicion,
+                    nombre,
+                    apellidos,
+                    dniCifrado,
+                    fechaCifrada,
+                    telefonoCifrado,
+                    correoCifrado,
+                    fotoUrl,
+                    idAdministrador,
+                    gruposSeleccionados
+            );
 
             db.collection("clientes").document(idClienteEdicion).set(clienteActualizado)
                     .addOnSuccessListener(aVoid -> {
@@ -349,7 +384,7 @@ public class CrearClienteActivity extends AppCompatActivity {
             return false;
         }
 
-        if (!dni.matches("\\d{8}[A-Za-z]")) {
+        if (!dni.matches("\\d{8}[A-Z]")) {
             Toast.makeText(this, "DNI inválido (ejemplo: 12345678A)", Toast.LENGTH_SHORT).show();
             return false;
         }
@@ -359,8 +394,8 @@ public class CrearClienteActivity extends AppCompatActivity {
             return false;
         }
 
-        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(correo).matches()) {
-            Toast.makeText(this, "Correo electrónico inválido", Toast.LENGTH_SHORT).show();
+        if (!correo.matches("^[a-zA-Z0-9._%+-]+@(gmail|hotmail)\\.(com|es)$") || correo.length() > 30) {
+            Toast.makeText(this, "Correo inválido. Escribe un correo válido como ejemplo@gmail.com o ejemplo@hotmail.es", Toast.LENGTH_SHORT).show();
             return false;
         }
 
@@ -369,13 +404,36 @@ public class CrearClienteActivity extends AppCompatActivity {
             return false;
         }
 
-        if (!fechaNacimiento.matches("^\\d{2}/\\d{2}/\\d{4}$")) {
-            Toast.makeText(this, "Formato de fecha inválido (debe ser dd/MM/yyyy)", Toast.LENGTH_SHORT).show();
+        if (!fechaValida(fechaNacimiento)) {
+            Toast.makeText(this, "Fecha inválida. Asegúrate de escribir un día, mes y año reales en formato dd/MM/yyyy", Toast.LENGTH_SHORT).show();
             return false;
         }
 
 
         return true;
+    }
+
+    private boolean fechaValida(String fecha) {
+        // Validar formato con regex antes de parsear
+        if (!fecha.matches("^\\d{2}/\\d{2}/\\d{4}$")) return false;
+
+        String[] partes = fecha.split("/");
+        int dia = Integer.parseInt(partes[0]);
+        int mes = Integer.parseInt(partes[1]);
+        int año = Integer.parseInt(partes[2]);
+
+        // Validar valores lógicos de día, mes y año
+        if (dia < 1 || dia > 31 || mes < 1 || mes > 12 || año < 1900) return false;
+
+        // Validación estricta usando SimpleDateFormat
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+            sdf.setLenient(false);
+            sdf.parse(fecha);
+            return true;
+        } catch (ParseException e) {
+            return false;
+        }
     }
 
     @Override

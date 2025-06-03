@@ -23,7 +23,7 @@ import java.util.List;
 
 import edu.pmdm.gympro.SpaceItemDecoration;
 import edu.pmdm.gympro.databinding.FragmentClientesBinding;
-import edu.pmdm.gympro.model.Cliente;
+import edu.pmdm.gympro.model.Cliente;import edu.pmdm.gympro.CryptoUtils;
 
 public class ClientesFragment extends Fragment {
 
@@ -81,18 +81,36 @@ public class ClientesFragment extends Fragment {
 
     private void cargarClientes() {
         String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        Log.d("CLIENTES_FRAGMENT", "UID del administrador: " + uid);
 
         db.collection("clientes")
                 .whereEqualTo("idAdministrador", uid)
                 .get()
                 .addOnSuccessListener(snapshot -> {
                     List<Cliente> clientesCargados = new ArrayList<>();
+                    Log.d("CLIENTES_FRAGMENT", "Número de documentos recibidos: " + snapshot.size());
+
                     for (QueryDocumentSnapshot doc : snapshot) {
                         Cliente cliente = doc.toObject(Cliente.class);
+
+                        // Descifrado con logs
+                        try {
+                            Log.d("CLIENTES_FRAGMENT", "Cliente obtenido (cifrado): " + cliente.getNombre());
+                            cliente.setDni(CryptoUtils.decrypt(cliente.getDni()));
+                            cliente.setCorreo(CryptoUtils.decrypt(cliente.getCorreo()));
+                            cliente.setTelefono(CryptoUtils.decrypt(cliente.getTelefono()));
+                            cliente.setFechaNacimiento(CryptoUtils.decrypt(cliente.getFechaNacimiento()));
+                            Log.d("CLIENTES_FRAGMENT", "Cliente descifrado: " + cliente.getNombre() + " - " + cliente.getCorreo());
+                        } catch (Exception e) {
+                            Log.e("DECRYPT_ERROR", "Error al descifrar cliente: " + e.getMessage());
+                            continue; // omitir cliente corrupto
+                        }
+
                         clientesCargados.add(cliente);
                     }
-                    clienteAdapter.actualizarLista(clientesCargados);
 
+                    Log.d("CLIENTES_FRAGMENT", "Clientes cargados y descifrados: " + clientesCargados.size());
+                    clienteAdapter.actualizarLista(clientesCargados);
                 })
                 .addOnFailureListener(e -> {
                     Log.e("FIRESTORE_CLIENTES", "Error: " + e.getMessage());

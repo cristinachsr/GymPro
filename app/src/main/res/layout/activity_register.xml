@@ -21,7 +21,7 @@
             android:src="@drawable/logo_gympro_sinfondo"
             android:contentDescription="Logo" />
 
-        <!-- Título -->
+        <!-- Título principal -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -31,6 +31,7 @@
             android:textColor="@color/blue"
             android:layout_marginBottom="24dp" />
 
+        <!-- Imagen de perfil -->
         <ImageView
             android:id="@+id/ivProfilePic"
             android:layout_width="120dp"
@@ -48,57 +49,98 @@
             android:layout_gravity="center"
             android:layout_marginBottom="16dp"
             android:backgroundTint="@color/blue"
-            android:textColor="@android:color/white"/>
+            android:textColor="@android:color/white" />
 
         <!-- Nombre -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Nombre"
+            android:textColor="@color/blue"
+            android:textStyle="bold"
+            android:textSize="16sp" />
         <EditText
             android:id="@+id/etNombre"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:textSize="14sp"
             android:hint="Nombre"
             android:maxLength="28"
             android:textColor="@color/blue"
             android:textColorHint="@color/blue"
-            android:backgroundTint="@color/blue"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:backgroundTint="@color/blue" />
 
         <!-- Apellidos -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Apellidos"
+            android:textColor="@color/blue"
+            android:textStyle="bold"
+            android:textSize="16sp" />
         <EditText
             android:id="@+id/etApellidos"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:textSize="14sp"
             android:hint="Apellidos"
             android:maxLength="28"
             android:textColor="@color/blue"
             android:textColorHint="@color/blue"
-            android:backgroundTint="@color/blue"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:backgroundTint="@color/blue" />
 
         <!-- DNI -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="DNI"
+            android:textColor="@color/blue"
+            android:textStyle="bold"
+            android:textSize="16sp" />
         <EditText
             android:id="@+id/etDni"
-            android:hint="DNI"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:textSize="14sp"
+            android:hint="12345678A"
             android:maxLength="9"
             android:textColor="@color/blue"
             android:textColorHint="@color/blue"
-            android:backgroundTint="@color/blue"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:backgroundTint="@color/blue" />
 
-        <!-- Teléfono con selector de país -->
+        <!-- Fecha de nacimiento -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Fecha de nacimiento"
+            android:textColor="@color/blue"
+            android:textStyle="bold"
+            android:textSize="16sp" />
         <EditText
             android:id="@+id/etFechaNacimiento"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:backgroundTint="@color/blue"
-            android:hint="Fecha de nacimiento"
+            android:layout_height="40dp"
+            android:textSize="14sp"
+            android:hint="dd/mm/yyyy"
             android:maxLength="10"
             android:textColor="@color/blue"
-            android:textColorHint="@color/blue" />
+            android:textColorHint="@color/blue"
+            android:backgroundTint="@color/blue" />
 
+        <!-- Teléfono -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Teléfono"
+            android:textColor="@color/blue"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:layout_marginTop="8dp" />
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginTop="16dp">
+            android:layout_marginBottom="8dp">
 
             <com.hbb20.CountryCodePicker
                 android:id="@+id/countryCodePicker"
@@ -113,8 +155,9 @@
             <EditText
                 android:id="@+id/etTelefono"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="40dp"
                 android:layout_weight="1"
+                android:textSize="14sp"
                 android:hint="Teléfono"
                 android:inputType="phone"
                 android:maxLength="12"
@@ -123,36 +166,51 @@
                 android:backgroundTint="@color/blue" />
         </LinearLayout>
 
-
-        <!-- Email -->
+        <!-- Correo -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Correo electrónico"
+            android:textColor="@color/blue"
+            android:textStyle="bold"
+            android:textSize="16sp" />
         <EditText
             android:id="@+id/etEmail"
-            android:hint="Email"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:textSize="14sp"
+            android:hint="ejemplo@gmail.com"
             android:inputType="textEmailAddress"
             android:maxLength="28"
             android:textColor="@color/blue"
             android:textColorHint="@color/blue"
-            android:backgroundTint="@color/blue"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:backgroundTint="@color/blue" />
 
-        <!-- Contraseña con icono -->
-        <RelativeLayout
+        <!-- Contraseña -->
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp">
+            android:text="Contraseña"
+            android:textColor="@color/blue"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:layout_marginTop="8dp" />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
             <EditText
                 android:id="@+id/etPassword"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:backgroundTint="@color/blue"
+                android:layout_height="40dp"
+                android:textSize="14sp"
                 android:hint="Contraseña"
                 android:inputType="textPassword"
                 android:maxLength="15"
                 android:paddingEnd="48dp"
                 android:textColor="@color/blue"
-                android:textColorHint="@color/blue" />
+                android:textColorHint="@color/blue"
+                android:backgroundTint="@color/blue" />
 
             <ImageView
                 android:id="@+id/ivTogglePassword"
@@ -166,22 +224,30 @@
         </RelativeLayout>
 
         <!-- Confirmar contraseña -->
-        <RelativeLayout
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp">
+            android:text="Confirmar contraseña"
+            android:textColor="@color/blue"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:layout_marginTop="8dp" />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
             <EditText
                 android:id="@+id/etConfirmarPassword"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:backgroundTint="@color/blue"
+                android:layout_height="40dp"
+                android:textSize="14sp"
                 android:hint="Confirmar contraseña"
                 android:inputType="textPassword"
                 android:maxLength="15"
                 android:paddingEnd="48dp"
                 android:textColor="@color/blue"
-                android:textColorHint="@color/blue" />
+                android:textColorHint="@color/blue"
+                android:backgroundTint="@color/blue" />
 
             <ImageView
                 android:id="@+id/ivToggleConfirmPassword"
@@ -204,7 +270,7 @@
             android:backgroundTint="@color/blue"
             android:textColor="@android:color/white" />
 
-        <!-- Enlace para ir a login -->
+        <!-- Enlace a login -->
         <TextView
             android:id="@+id/btnGoToLogin"
             android:layout_width="wrap_content"

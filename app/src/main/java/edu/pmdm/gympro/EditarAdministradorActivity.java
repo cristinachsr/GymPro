@@ -81,11 +81,11 @@ public class EditarAdministradorActivity extends AppCompatActivity {
                     if (document.exists()) {
                         binding.etNombreAdmin.setText(document.getString("nombreAdministrador"));
                         binding.etApellidosAdmin.setText(document.getString("apellidoAdministrador"));
-                        binding.etDniAdmin.setText(document.getString("dni"));
-                        binding.etFechaAdmin.setText(document.getString("fechaNacimiento"));
-                        binding.etCorreoAdmin.setText(document.getString("correo"));
+                        binding.etDniAdmin.setText(tryDecrypt(document.getString("dni")));
+                        binding.etFechaAdmin.setText(tryDecrypt(document.getString("fechaNacimiento")));
+                        binding.etCorreoAdmin.setText(tryDecrypt(document.getString("correo")));
 
-                        String telefonoCompleto = document.getString("telefono");
+                        String telefonoCompleto = tryDecrypt(document.getString("telefono"));
                         if (telefonoCompleto != null && telefonoCompleto.startsWith("+")) {
                             binding.countryCodePickerAdmin.registerCarrierNumberEditText(binding.etTelefonoAdmin);
                             binding.countryCodePickerAdmin.setFullNumber(telefonoCompleto.replace("+", ""));
@@ -94,8 +94,7 @@ public class EditarAdministradorActivity extends AppCompatActivity {
                         }
 
                         String foto = document.getString("foto");
-                        fotoActual = foto; // ✅ Guardamos imagen original
-
+                        fotoActual = foto;
                         if (foto != null && !foto.trim().isEmpty() && !foto.equals("logo_por_defecto")) {
                             Glide.with(this).load(Uri.parse(foto)).into(binding.ivFotoAdmin);
                         } else {
@@ -144,6 +143,14 @@ public class EditarAdministradorActivity extends AppCompatActivity {
         }
     }
 
+    private String tryDecrypt(String valor) {
+        try {
+            return CryptoUtils.decrypt(valor);
+        } catch (Exception e) {
+            return valor; // ya estaba en texto plano o corrupto
+        }
+    }
+
     private void guardarCambios() {
         String nombre = binding.etNombreAdmin.getText().toString().trim();
         String apellidos = binding.etApellidosAdmin.getText().toString().trim();
@@ -159,16 +166,25 @@ public class EditarAdministradorActivity extends AppCompatActivity {
             return;
         }
 
+        if (!dni.matches("\\d{8}[A-Z]")) {
+            Toast.makeText(this, "El DNI debe tener 8 dígitos seguidos de una letra en mayúscula", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         db.collection("administradores")
-                .whereNotEqualTo("correo", auth.getCurrentUser().getEmail())
                 .get()
                 .addOnSuccessListener(snapshot -> {
                     boolean dniDuplicado = false;
                     boolean telDuplicado = false;
 
                     for (var doc : snapshot) {
-                        if (dni.equals(doc.getString("dni"))) dniDuplicado = true;
-                        if (telefono.equals(doc.getString("telefono"))) telDuplicado = true;
+                        if (doc.getId().equals(uid)) continue; // 🔥 saltamos nuestro propio documento
+
+                        String dniCifrado = CryptoUtils.encrypt(dni);
+                        String telefonoCifrado = CryptoUtils.encrypt(telefono);
+
+                        if (dniCifrado.equals(doc.getString("dni"))) dniDuplicado = true;
+                        if (telefonoCifrado.equals(doc.getString("telefono"))) telDuplicado = true;
                     }
 
                     if (dniDuplicado) {
@@ -184,9 +200,10 @@ public class EditarAdministradorActivity extends AppCompatActivity {
                     db.collection("administradores").document(uid).update(
                             "nombreAdministrador", nombre,
                             "apellidoAdministrador", apellidos,
-                            "dni", dni,
-                            "fechaNacimiento", fecha,
-                            "telefono", telefono,
+                            "dni", CryptoUtils.encrypt(dni),
+                            "fechaNacimiento", CryptoUtils.encrypt(fecha),
+                            "telefono", CryptoUtils.encrypt(telefono),
+                            "correo", CryptoUtils.encrypt(auth.getCurrentUser().getEmail()),
                             "foto", (nuevaFoto != null ? nuevaFoto : "logo_por_defecto")
                     ).addOnSuccessListener(aVoid -> {
                         Toast.makeText(this, "Datos actualizados", Toast.LENGTH_SHORT).show();

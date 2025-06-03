@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import edu.pmdm.gympro.CryptoUtils;
 import edu.pmdm.gympro.R;
 import edu.pmdm.gympro.databinding.ActivityLoginBinding;
 
@@ -65,14 +66,18 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
-        // Usamos la colección "administradores" en lugar de "empleados"
-        db.collection("administradores")
-                .whereEqualTo("correo", correo)
-                .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    if (queryDocumentSnapshots.isEmpty()) {
-                        Toast.makeText(this, "El correo electrónico no está registrado", Toast.LENGTH_SHORT).show();
-                    } else {
+        db.collection("administradores").get().addOnSuccessListener(snapshot -> {
+            boolean correoEncontrado = false;
+
+            for (var doc : snapshot) {
+                String correoCifrado = doc.getString("correo");
+
+                try {
+                    String correoDescifrado = CryptoUtils.decrypt(correoCifrado);
+                    if (correo.equals(correoDescifrado)) {
+                        correoEncontrado = true;
+
+                        // ✅ Intentar login con Firebase Auth (usa texto plano)
                         auth.signInWithEmailAndPassword(correo, password)
                                 .addOnSuccessListener(authResult -> {
                                     String uid = auth.getCurrentUser().getUid();
@@ -97,10 +102,20 @@ public class LoginActivity extends AppCompatActivity {
                                 .addOnFailureListener(e -> {
                                     Toast.makeText(this, "La contraseña es incorrecta", Toast.LENGTH_SHORT).show();
                                 });
+
+                        break; // ya hemos encontrado el correo
                     }
-                })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(this, "Error al verificar el correo: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                });
+                } catch (Exception e) {
+                    // El correo no estaba cifrado o falló la desencriptación
+                    continue;
+                }
+            }
+
+            if (!correoEncontrado) {
+                Toast.makeText(this, "El correo electrónico no está registrado", Toast.LENGTH_SHORT).show();
+            }
+        }).addOnFailureListener(e -> {
+            Toast.makeText(this, "Error al verificar el correo: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+        });
     }
 }

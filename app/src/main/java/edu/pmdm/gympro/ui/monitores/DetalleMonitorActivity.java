@@ -13,6 +13,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import edu.pmdm.gympro.R;
 import edu.pmdm.gympro.databinding.ActivityDetalleMonitorBinding;
+import edu.pmdm.gympro.CryptoUtils;
 
 public class DetalleMonitorActivity extends AppCompatActivity {
 
@@ -31,10 +32,10 @@ public class DetalleMonitorActivity extends AppCompatActivity {
         // Obtener datos del intent
         String nombre = getIntent().getStringExtra("nombre");
         String apellidos = getIntent().getStringExtra("apellidos");
-        String dni = getIntent().getStringExtra("dni");
-        String fecha = getIntent().getStringExtra("fechaNacimiento");
-        String telefono = getIntent().getStringExtra("telefono");
-        String correo = getIntent().getStringExtra("correo");
+        String dni = CryptoUtils.decrypt(getIntent().getStringExtra("dni"));
+        String fecha = CryptoUtils.decrypt(getIntent().getStringExtra("fechaNacimiento"));
+        String telefono = CryptoUtils.decrypt(getIntent().getStringExtra("telefono"));
+        String correo = CryptoUtils.decrypt(getIntent().getStringExtra("correo"));
         String foto = getIntent().getStringExtra("foto");
 
         // Mostrar datos en los EditText deshabilitados

@@ -25,6 +25,7 @@ import java.util.List;
 import edu.pmdm.gympro.SpaceItemDecoration;
 import edu.pmdm.gympro.databinding.FragmentMonitoresBinding;
 import edu.pmdm.gympro.model.Monitor;
+import edu.pmdm.gympro.CryptoUtils;
 
 public class MonitoresFragment extends Fragment {
 
@@ -99,18 +100,29 @@ public class MonitoresFragment extends Fragment {
 
                     for (QueryDocumentSnapshot doc : querySnapshot) {
                         Monitor monitor = doc.toObject(Monitor.class);
+
+                        try {
+                            monitor.setDni(CryptoUtils.decrypt(monitor.getDni()));
+                            monitor.setCorreo(CryptoUtils.decrypt(monitor.getCorreo()));
+                            monitor.setTelefono(CryptoUtils.decrypt(monitor.getTelefono()));
+                            monitor.setFechaNacimiento(CryptoUtils.decrypt(monitor.getFechaNacimiento()));
+                            Log.d("FIRESTORE_MONITORES", "Monitor descifrado: " + monitor.getNombre() + " - " + monitor.getCorreo());
+                        } catch (Exception e) {
+                            Log.e("DECRYPT_MONITOR", "Error al descifrar monitor: " + e.getMessage());
+                            continue; // omitir si el descifrado falla
+                        }
+
                         monitoresCargados.add(monitor);
-                        Log.d("FIRESTORE_MONITORES", "Nombre: " + monitor.getNombre() + ", Apellidos: " + monitor.getApellidos());
                     }
 
                     monitorAdapter.actualizarLista(monitoresCargados); // ← CORRECTO
-
                 })
                 .addOnFailureListener(e -> {
                     Log.e("FIRESTORE_MONITORES", "Error al cargar monitores: " + e.getMessage());
                     Toast.makeText(getContext(), "Error al cargar monitores", Toast.LENGTH_SHORT).show();
                 });
     }
+
 
     @Override
     public void onResume() {

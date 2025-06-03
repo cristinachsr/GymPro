@@ -130,11 +130,14 @@ public class MainActivity extends AppCompatActivity {
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
                         String nombre = documentSnapshot.getString("nombreAdministrador");
-                        String correo = documentSnapshot.getString("correo");
                         String fotoUrl = documentSnapshot.getString("photo");
 
                         tvNombre.setText(nombre != null ? nombre : "Admin");
-                        tvCorreo.setText(correo != null ? correo : "correo@ejemplo.com");
+
+                        //correo cifrado
+                        String correoCifrado = documentSnapshot.getString("correo");
+                        String correoDescifrado = correoCifrado != null ? CryptoUtils.decrypt(correoCifrado) : "correo@ejemplo.com";
+                        tvCorreo.setText(correoDescifrado);
 
                         // Evaluar si hay una foto válida
                         if (fotoUrl != null && !fotoUrl.trim().isEmpty() && !fotoUrl.equals("logo_por_defecto")) {

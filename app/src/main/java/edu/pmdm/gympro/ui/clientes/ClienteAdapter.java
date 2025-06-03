@@ -1,5 +1,6 @@
 package edu.pmdm.gympro.ui.clientes;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,16 +44,20 @@ public class ClienteAdapter extends RecyclerView.Adapter<ClienteAdapter.ClienteV
     @Override
     public void onBindViewHolder(@NonNull ClienteViewHolder holder, int position) {
         Cliente cliente = listaFiltrada.get(position);
+        Log.d("CLIENTE_ADAPTER", "Bind cliente: " + cliente.getNombre() + " " + cliente.getApellidos());
+
         holder.tvNombre.setText(cliente.getNombre() + " " + cliente.getApellidos());
         holder.tvCorreo.setText(cliente.getCorreo());
 
         // Cargar imagen
         if (cliente.getFoto() != null && !cliente.getFoto().equals("logo_por_defecto")) {
+            Log.d("CLIENTE_ADAPTER", "Cargando imagen: " + cliente.getFoto());
             Glide.with(holder.itemView.getContext())
                     .load(cliente.getFoto())
                     .placeholder(R.drawable.logo_gympro_sinfondo)
                     .into(holder.ivFoto);
         } else {
+            Log.d("CLIENTE_ADAPTER", "Usando imagen por defecto");
             holder.ivFoto.setImageResource(R.drawable.logo_gympro_sinfondo);
         }
 

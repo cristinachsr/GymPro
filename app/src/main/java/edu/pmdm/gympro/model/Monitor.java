@@ -33,35 +33,71 @@ public class Monitor {
         return idMonitor;
     }
 
+    public void setIdMonitor(String idMonitor) {
+        this.idMonitor = idMonitor;
+    }
+
     public String getNombre() {
         return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
     }
 
     public String getApellidos() {
         return apellidos;
     }
 
+    public void setApellidos(String apellidos) {
+        this.apellidos = apellidos;
+    }
+
     public String getDni() {
         return dni;
+    }
+
+    public void setDni(String dni) {
+        this.dni = dni;
     }
 
     public String getFechaNacimiento() {
         return fechaNacimiento;
     }
 
+    public void setFechaNacimiento(String fechaNacimiento) {
+        this.fechaNacimiento = fechaNacimiento;
+    }
+
     public String getTelefono() {
         return telefono;
+    }
+
+    public void setTelefono(String telefono) {
+        this.telefono = telefono;
     }
 
     public String getCorreo() {
         return correo;
     }
 
+    public void setCorreo(String correo) {
+        this.correo = correo;
+    }
+
     public String getFoto() {
         return foto;
     }
 
+    public void setFoto(String foto) {
+        this.foto = foto;
+    }
+
     public String getIdAdministrador() {
         return idAdministrador;
+    }
+
+    public void setIdAdministrador(String idAdministrador) {
+        this.idAdministrador = idAdministrador;
     }
 }

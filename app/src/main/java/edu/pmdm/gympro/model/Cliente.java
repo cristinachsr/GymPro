@@ -13,7 +13,7 @@ public class Cliente {
     private String correo;
     private String foto;
     private String idAdministrador;
-    private List<String> gruposSeleccionados; // ← Lista de clases del cliente
+    private List<String> gruposSeleccionados;
 
     public Cliente() {
         // Constructor vacío requerido por Firestore
@@ -46,5 +46,41 @@ public class Cliente {
 
     public void setIdCliente(String idCliente) {
         this.idCliente = idCliente;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public void setApellidos(String apellidos) {
+        this.apellidos = apellidos;
+    }
+
+    public void setDni(String dni) {
+        this.dni = dni;
+    }
+
+    public void setFechaNacimiento(String fechaNacimiento) {
+        this.fechaNacimiento = fechaNacimiento;
+    }
+
+    public void setTelefono(String telefono) {
+        this.telefono = telefono;
+    }
+
+    public void setCorreo(String correo) {
+        this.correo = correo;
+    }
+
+    public void setFoto(String foto) {
+        this.foto = foto;
+    }
+
+    public void setIdAdministrador(String idAdministrador) {
+        this.idAdministrador = idAdministrador;
+    }
+
+    public void setGruposSeleccionados(List<String> gruposSeleccionados) {
+        this.gruposSeleccionados = gruposSeleccionados;
     }
 }

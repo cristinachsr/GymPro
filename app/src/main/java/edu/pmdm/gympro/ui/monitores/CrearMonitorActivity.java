@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -23,9 +24,12 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Locale;
 import java.util.UUID;
 
+import edu.pmdm.gympro.CryptoUtils;
 import edu.pmdm.gympro.R;
 import edu.pmdm.gympro.databinding.ActivityCrearMonitorBinding;
 import edu.pmdm.gympro.model.Monitor;
@@ -174,46 +178,53 @@ public class CrearMonitorActivity extends AppCompatActivity {
     private void validarYCrearMonitor(String nombre, String apellidos, String dni, String fechaNacimiento,
                                       String telefono, String correo, String fotoUrl) {
 
-        db.collection("monitores").whereEqualTo("dni", dni).get().addOnSuccessListener(snapshotDni -> {
-            if (!snapshotDni.isEmpty()) {
-                Toast.makeText(this, "Ya existe un monitor con ese DNI", Toast.LENGTH_SHORT).show();
-                return;
-            }
+        if (!validarCampos(nombre, apellidos, dni, fechaNacimiento, telefono, correo)) return;
 
-            db.collection("monitores").whereEqualTo("telefono", telefono).get().addOnSuccessListener(snapshotTel -> {
-                if (!snapshotTel.isEmpty()) {
+        db.collection("monitores").get().addOnSuccessListener(snapshot -> {
+            for (var doc : snapshot) {
+                String dniDescifrado = CryptoUtils.decrypt(doc.getString("dni"));
+                String telDescifrado = CryptoUtils.decrypt(doc.getString("telefono"));
+                String correoDescifrado = CryptoUtils.decrypt(doc.getString("correo"));
+
+                if (dni.equalsIgnoreCase(dniDescifrado)) {
+                    Toast.makeText(this, "Ya existe un monitor con ese DNI", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                if (telefono.equals(telDescifrado)) {
                     Toast.makeText(this, "Ya existe un monitor con ese número", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
-                db.collection("monitores").whereEqualTo("correo", correo).get().addOnSuccessListener(snapshotCorreo -> {
-                    if (!snapshotCorreo.isEmpty()) {
-                        Toast.makeText(this, "Ya existe un monitor con ese correo", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
+                if (correo.equalsIgnoreCase(correoDescifrado)) {
+                    Toast.makeText(this, "Ya existe un monitor con ese correo", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+            }
 
-                    // ✅ No existen duplicados: crear monitor
-                    String idAdministrador = auth.getCurrentUser().getUid();
-                    String idMonitor = UUID.randomUUID().toString();
+            // ✅ Todo válido: crear
+            String idAdministrador = auth.getCurrentUser().getUid();
+            String idMonitor = UUID.randomUUID().toString();
 
-                    Monitor monitor = new Monitor(idMonitor, nombre, apellidos, dni, fechaNacimiento,
-                            telefono, correo, fotoUrl, idAdministrador);
+            String encryptedDni = CryptoUtils.encrypt(dni);
+            String encryptedFecha = CryptoUtils.encrypt(fechaNacimiento);
+            String encryptedTelefono = CryptoUtils.encrypt(telefono);
+            String encryptedCorreo = CryptoUtils.encrypt(correo);
 
-                    db.collection("monitores").document(idMonitor).set(monitor)
-                            .addOnSuccessListener(aVoid -> {
-                                Toast.makeText(this, "Monitor creado correctamente", Toast.LENGTH_SHORT).show();
-                                finish();
-                            })
-                            .addOnFailureListener(e -> {
-                                Toast.makeText(this, "Error al guardar monitor", Toast.LENGTH_SHORT).show();
-                            });
+            Monitor monitor = new Monitor(idMonitor, nombre, apellidos, encryptedDni, encryptedFecha,
+                    encryptedTelefono, encryptedCorreo, fotoUrl, idAdministrador);
 
-                });
-
-            });
-
+            db.collection("monitores").document(idMonitor).set(monitor)
+                    .addOnSuccessListener(aVoid -> {
+                        Toast.makeText(this, "Monitor creado correctamente", Toast.LENGTH_SHORT).show();
+                        finish();
+                    })
+                    .addOnFailureListener(e -> {
+                        Toast.makeText(this, "Error al guardar monitor", Toast.LENGTH_SHORT).show();
+                    });
         });
     }
+
 
     private void editarMonitor() {
         String nombre = binding.etNombreMonitor.getText().toString().trim();
@@ -225,6 +236,12 @@ public class CrearMonitorActivity extends AppCompatActivity {
 
         if (!validarCampos(nombre, apellidos, dni, fechaNacimiento, telefono, correo)) return;
 
+        // Cifrado antes de guardar
+        String encryptedDni = CryptoUtils.encrypt(dni);
+        String encryptedFecha = CryptoUtils.encrypt(fechaNacimiento);
+        String encryptedTelefono = CryptoUtils.encrypt(telefono);
+        String encryptedCorreo = CryptoUtils.encrypt(correo);
+
         String fotoUrl = (imagenUriSeleccionada != null)
                 ? imagenUriSeleccionada.toString()
                 : "logo_por_defecto";
@@ -235,23 +252,33 @@ public class CrearMonitorActivity extends AppCompatActivity {
             for (var doc : snapshot) {
                 if (doc.getId().equals(idMonitorEdicion)) continue;
 
-                if (dni.equalsIgnoreCase(doc.getString("dni"))) {
-                    Toast.makeText(this, "Ya existe otro monitor con ese DNI", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                if (telefono.equals(doc.getString("telefono"))) {
-                    Toast.makeText(this, "Ya existe otro monitor con ese número", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                if (correo.equalsIgnoreCase(doc.getString("correo"))) {
-                    Toast.makeText(this, "Ya existe otro monitor con ese correo", Toast.LENGTH_SHORT).show();
-                    return;
+                try {
+                    String dniDescifrado = CryptoUtils.decrypt(doc.getString("dni"));
+                    String telefonoDescifrado = CryptoUtils.decrypt(doc.getString("telefono"));
+                    String correoDescifrado = CryptoUtils.decrypt(doc.getString("correo"));
+
+                    if (dni.equalsIgnoreCase(dniDescifrado)) {
+                        Toast.makeText(this, "Ya existe otro monitor con ese DNI", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    if (telefono.equals(telefonoDescifrado)) {
+                        Toast.makeText(this, "Ya existe otro monitor con ese número", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    if (correo.equalsIgnoreCase(correoDescifrado)) {
+                        Toast.makeText(this, "Ya existe otro monitor con ese correo", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                } catch (Exception e) {
+                    Log.e("DESCIFRADO", "Error al descifrar campos: " + e.getMessage());
+                    continue;
                 }
             }
 
-            // Si pasa todas las comprobaciones
-            Monitor monitorActualizado = new Monitor(idMonitorEdicion, nombre, apellidos, dni,
-                    fechaNacimiento, telefono, correo, fotoUrl, idAdministrador);
+            Monitor monitorActualizado = new Monitor(idMonitorEdicion, nombre, apellidos, encryptedDni,
+                    encryptedFecha, encryptedTelefono, encryptedCorreo, fotoUrl, idAdministrador);
 
             db.collection("monitores").document(idMonitorEdicion).set(monitorActualizado)
                     .addOnSuccessListener(aVoid -> {
@@ -280,13 +307,13 @@ public class CrearMonitorActivity extends AppCompatActivity {
             return false;
         }
 
-        if (!dni.matches("\\d{8}[A-Za-z]")) {
+        if (!dni.matches("\\d{8}[A-Z]")) {
             Toast.makeText(this, "DNI inválido (ejemplo: 12345678A)", Toast.LENGTH_SHORT).show();
             return false;
         }
 
-        if (!fechaNacimiento.matches("^\\d{2}/\\d{2}/\\d{4}$") || !fechaValida(fechaNacimiento)) {
-            Toast.makeText(this, "Fecha inválida. Formato requerido: dd/MM/yyyy", Toast.LENGTH_SHORT).show();
+        if (!fechaValida(fechaNacimiento)) {
+            Toast.makeText(this, "Fecha inválida. Asegúrate de escribir un día, mes y año reales en formato dd/MM/yyyy", Toast.LENGTH_SHORT).show();
             return false;
         }
 
@@ -295,8 +322,8 @@ public class CrearMonitorActivity extends AppCompatActivity {
             return false;
         }
 
-        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(correo).matches()) {
-            Toast.makeText(this, "Correo electrónico inválido", Toast.LENGTH_SHORT).show();
+        if (!correo.matches("^[a-zA-Z0-9._%+-]+@(gmail|hotmail)\\.(com|es)$") || correo.length() > 30) {
+            Toast.makeText(this, "Correo inválido. Escribe un correo válido como ejemplo@gmail.com o ejemplo@hotmail.es", Toast.LENGTH_SHORT).show();
             return false;
         }
 
@@ -304,12 +331,24 @@ public class CrearMonitorActivity extends AppCompatActivity {
     }
 
     private boolean fechaValida(String fecha) {
+        // Validar formato con regex antes de parsear
+        if (!fecha.matches("^\\d{2}/\\d{2}/\\d{4}$")) return false;
+
+        String[] partes = fecha.split("/");
+        int dia = Integer.parseInt(partes[0]);
+        int mes = Integer.parseInt(partes[1]);
+        int año = Integer.parseInt(partes[2]);
+
+        // Validar valores lógicos de día, mes y año
+        if (dia < 1 || dia > 31 || mes < 1 || mes > 12 || año < 1900) return false;
+
+        // Validación estricta usando SimpleDateFormat
         try {
-            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
             sdf.setLenient(false);
             sdf.parse(fecha);
             return true;
-        } catch (Exception e) {
+        } catch (ParseException e) {
             return false;
         }
     }
