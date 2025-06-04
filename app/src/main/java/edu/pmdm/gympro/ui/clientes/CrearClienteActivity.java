@@ -93,7 +93,6 @@ public class CrearClienteActivity extends AppCompatActivity {
             binding.etFechaNacimientoCliente.setText(getIntent().getStringExtra("fechaNacimiento"));
             String telefonoCompleto = getIntent().getStringExtra("telefono");
             if (telefonoCompleto != null && telefonoCompleto.startsWith("+")) {
-                // Asignar el número local sin el prefijo
                 binding.countryCodePickerCliente.setFullNumber(telefonoCompleto.replace("+", ""));
                 String numeroSinPrefijo = telefonoCompleto.replace("+" + binding.countryCodePickerCliente.getSelectedCountryCode(), "");
                 binding.etTelefonoCliente.setText(numeroSinPrefijo);
@@ -215,7 +214,6 @@ public class CrearClienteActivity extends AppCompatActivity {
     private void crearNuevoCliente(String nombre, String apellidos, String dni, String fechaNacimiento,
                                    String telefono, String correo, String fotoUrl) {
 
-        // Ciframos los datos ANTES de comprobar duplicados
         String dniCifrado = CryptoUtils.encrypt(dni);
         String telefonoCifrado = CryptoUtils.encrypt(telefono);
         String correoCifrado = CryptoUtils.encrypt(correo);
@@ -270,8 +268,6 @@ public class CrearClienteActivity extends AppCompatActivity {
                                    String telefono, String correo, String fotoUrl) {
 
         String idAdministrador = auth.getCurrentUser().getUid();
-
-        // Ciframos los datos que vamos a comparar
         String dniCifrado = CryptoUtils.encrypt(dni);
         String telefonoCifrado = CryptoUtils.encrypt(telefono);
         String correoCifrado = CryptoUtils.encrypt(correo);
@@ -284,7 +280,7 @@ public class CrearClienteActivity extends AppCompatActivity {
 
             for (var doc : snapshot) {
                 String id = doc.getId();
-                if (id.equals(idClienteEdicion)) continue; // Saltar al cliente que estamos editando
+                if (id.equals(idClienteEdicion)) continue;
 
                 if (dniCifrado.equals(doc.getString("dni"))) dniDuplicado = true;
                 if (telefonoCifrado.equals(doc.getString("telefono"))) telDuplicado = true;
@@ -414,7 +410,6 @@ public class CrearClienteActivity extends AppCompatActivity {
     }
 
     private boolean fechaValida(String fecha) {
-        // Validar formato con regex antes de parsear
         if (!fecha.matches("^\\d{2}/\\d{2}/\\d{4}$")) return false;
 
         String[] partes = fecha.split("/");
@@ -422,10 +417,8 @@ public class CrearClienteActivity extends AppCompatActivity {
         int mes = Integer.parseInt(partes[1]);
         int año = Integer.parseInt(partes[2]);
 
-        // Validar valores lógicos de día, mes y año
         if (dia < 1 || dia > 31 || mes < 1 || mes > 12 || año < 1900) return false;
 
-        // Validación estricta usando SimpleDateFormat
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
             sdf.setLenient(false);

@@ -13,7 +13,6 @@ public class Grupo {
     private List<Horario> horarios;
 
     public Grupo() {
-        // Constructor vacío necesario para Firestore
     }
 
     public Grupo(String idgrupo, String nombre, String descripcion, String foto,
@@ -27,7 +26,6 @@ public class Grupo {
         this.horarios = horarios;
     }
 
-    // Getters
     public String getIdgrupo() { return idgrupo; }
     public String getNombre() { return nombre; }
     public String getDescripcion() { return descripcion; }
@@ -36,7 +34,6 @@ public class Grupo {
     public String getIdAdministrador() { return idAdministrador; }
     public List<Horario> getHorarios() { return horarios; }
 
-    // Setters
     public void setIdgrupo(String idgrupo) { this.idgrupo = idgrupo; }
     public void setNombre(String nombre) { this.nombre = nombre; }
     public void setDescripcion(String descripcion) { this.descripcion = descripcion; }

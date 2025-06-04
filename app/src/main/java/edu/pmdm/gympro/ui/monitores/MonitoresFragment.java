@@ -47,7 +47,6 @@ public class MonitoresFragment extends Fragment {
         cargarMonitores();
 
         binding.btnCrearMonitor.setOnClickListener(v -> {
-            // Aquí iría la actividad para crear un monitor
             startActivity(new Intent(requireContext(), CrearMonitorActivity.class));
         });
 
@@ -79,8 +78,6 @@ public class MonitoresFragment extends Fragment {
 
         binding.rvMonitores.setLayoutManager(new LinearLayoutManager(getContext()));
         binding.rvMonitores.setAdapter(monitorAdapter);
-        //binding.rvMonitores.addItemDecoration(new androidx.recyclerview.widget.DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL));
-        //binding.rvMonitores.addItemDecoration(new androidx.recyclerview.widget.DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL));
         binding.rvMonitores.addItemDecoration(new SpaceItemDecoration(24));
     }
 
@@ -88,13 +85,10 @@ public class MonitoresFragment extends Fragment {
     private void cargarMonitores() {
         String uid = FirebaseAuth.getInstance().getCurrentUser().getUid(); // Obtener UID del administrador
 
-        Log.d("FIRESTORE_MONITORES", "UID actual: " + uid);
-
         db.collection("monitores")
                 .whereEqualTo("idAdministrador", uid)
                 .get()
                 .addOnSuccessListener(querySnapshot -> {
-                    Log.d("FIRESTORE_MONITORES", "Documentos obtenidos: " + querySnapshot.size());
 
                     List<Monitor> monitoresCargados = new ArrayList<>();
 
@@ -106,9 +100,7 @@ public class MonitoresFragment extends Fragment {
                             monitor.setCorreo(CryptoUtils.decrypt(monitor.getCorreo()));
                             monitor.setTelefono(CryptoUtils.decrypt(monitor.getTelefono()));
                             monitor.setFechaNacimiento(CryptoUtils.decrypt(monitor.getFechaNacimiento()));
-                            Log.d("FIRESTORE_MONITORES", "Monitor descifrado: " + monitor.getNombre() + " - " + monitor.getCorreo());
                         } catch (Exception e) {
-                            Log.e("DECRYPT_MONITOR", "Error al descifrar monitor: " + e.getMessage());
                             continue; // omitir si el descifrado falla
                         }
 
@@ -118,7 +110,6 @@ public class MonitoresFragment extends Fragment {
                     monitorAdapter.actualizarLista(monitoresCargados); // ← CORRECTO
                 })
                 .addOnFailureListener(e -> {
-                    Log.e("FIRESTORE_MONITORES", "Error al cargar monitores: " + e.getMessage());
                     Toast.makeText(getContext(), "Error al cargar monitores", Toast.LENGTH_SHORT).show();
                 });
     }
@@ -127,7 +118,7 @@ public class MonitoresFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        cargarMonitores(); // Vuelve a cargar la lista cuando regresas al fragmento
+        cargarMonitores();
     }
 
     @Override

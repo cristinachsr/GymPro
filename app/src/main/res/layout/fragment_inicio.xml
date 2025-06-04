@@ -3,7 +3,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- Fondo normal -->
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -11,13 +10,12 @@
         android:src="@drawable/chica_gym1"
         android:contentDescription="Fondo" />
 
-    <!-- Capa semitransparente para efecto de aclarado -->
     <View
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#66FFFFFF" /> <!-- Blanco con 40% opacidad -->
+        android:background="#66FFFFFF" />
 
-    <!-- Contenido alineado abajo -->
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -25,9 +23,7 @@
         android:orientation="vertical"
         android:padding="24dp">
 
-        <!-- LOGO ENCIMA DE LOS BOTONES -->
 
-        <!-- Fila: Clientes y Grupos -->
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -35,7 +31,7 @@
             android:layout_marginBottom="16dp"
             android:gravity="center">
 
-            <!-- CLIENTES -->
+
             <FrameLayout
                 android:id="@+id/btnClientes"
                 android:layout_width="120dp"
@@ -55,7 +51,7 @@
                     android:contentDescription="Clientes" />
             </FrameLayout>
 
-            <!-- GRUPOS -->
+
             <FrameLayout
                 android:id="@+id/btnGrupos"
                 android:layout_width="120dp"
@@ -76,7 +72,7 @@
             </FrameLayout>
         </LinearLayout>
 
-        <!-- MONITORES -->
+
         <FrameLayout
             android:id="@+id/btnMonitores"
             android:layout_width="120dp"

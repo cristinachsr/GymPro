@@ -22,7 +22,6 @@
     <include layout="@layout/content_main" />
 
 
-    <!-- Botón flotante -->
     <FrameLayout
         android:id="@+id/logoDecorativo"
         android:layout_width="70dp"

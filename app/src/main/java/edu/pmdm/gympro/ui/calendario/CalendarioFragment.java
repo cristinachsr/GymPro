@@ -99,7 +99,6 @@ public class CalendarioFragment extends Fragment {
                         }
                     }
 
-                    // Marcar días en el calendario
                     List<EventDay> eventos = new ArrayList<>();
                     Calendar inicio = Calendar.getInstance();
                     inicio.set(Calendar.DAY_OF_MONTH, 1);

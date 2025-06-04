@@ -14,13 +14,11 @@ public class LauncherActivity extends AppCompatActivity {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
         if (user != null) {
-            // Usuario logueado → va al panel principal
             startActivity(new Intent(this, MainActivity.class));
         } else {
-            // No logueado → va al login
             startActivity(new Intent(this, edu.pmdm.gympro.ui.auth.LoginActivity.class));
         }
 
-        finish(); // Cerramos esta actividad para que no pueda volver atrás
+        finish();
     }
 }

@@ -174,7 +174,6 @@ public class CrearGrupoActivity extends AppCompatActivity {
         texto.setPadding(0, 8, 0, 8);
         texto.setBackground(getResources().getDrawable(R.drawable.input_borde_azul, null));
 
-        // Permite eliminar el horario al hacer clic
         texto.setOnClickListener(v -> {
             new AlertDialog.Builder(this)
                     .setTitle("Eliminar horario")
@@ -189,8 +188,6 @@ public class CrearGrupoActivity extends AppCompatActivity {
 
         binding.layoutHorarios.addView(texto);
     }
-
-
 
     private void mostrarOpcionesFoto() {
         String[] opciones = {"Galería", "Cámara"};
@@ -267,7 +264,6 @@ public class CrearGrupoActivity extends AppCompatActivity {
 
                     adapter.notifyDataSetChanged();
 
-                    // Seleccionar el monitor si es edición
                     if (esEdicion && idMonitorDelGrupo != null) {
                         int posicion = listaIdsMonitores.indexOf(idMonitorDelGrupo);
                         if (posicion >= 0) {

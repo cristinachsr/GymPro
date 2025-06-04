@@ -5,7 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- Toolbar con título y flecha atrás -->
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
@@ -26,7 +25,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <!-- Imagen del monitor -->
             <ImageView
                 android:id="@+id/ivFotoMonitor"
                 android:layout_width="200dp"
@@ -36,8 +34,6 @@
                 android:src="@drawable/logo_gympro_sinfondo"
                 android:layout_marginBottom="24dp" />
 
-
-            <!-- Nombre -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -58,7 +54,6 @@
                 android:textColor="@color/blue"
                 android:layout_marginBottom="16dp" />
 
-            <!-- Apellidos -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -79,7 +74,6 @@
                 android:textColor="@color/blue"
                 android:layout_marginBottom="16dp" />
 
-            <!-- DNI -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -100,7 +94,6 @@
                 android:textColor="@color/blue"
                 android:layout_marginBottom="16dp" />
 
-            <!-- Fecha nacimiento -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -121,7 +114,6 @@
                 android:textColor="@color/blue"
                 android:layout_marginBottom="16dp" />
 
-            <!-- Teléfono -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -142,7 +134,6 @@
                 android:textColor="@color/blue"
                 android:layout_marginBottom="16dp" />
 
-            <!-- Correo -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -163,7 +154,6 @@
                 android:textColor="@color/blue"
                 android:layout_marginBottom="16dp" />
 
-            <!-- Botones acción -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -192,7 +182,6 @@
                     android:textColor="@android:color/white"
                     android:layout_marginStart="8dp" />
             </LinearLayout>
-
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

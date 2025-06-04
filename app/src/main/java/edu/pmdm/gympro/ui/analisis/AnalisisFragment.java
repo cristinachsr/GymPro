@@ -151,14 +151,12 @@ public class AnalisisFragment extends Fragment {
                                 binding.pieChartClientes.setEntryLabelColor(Color.BLACK);
                                 binding.pieChartClientes.setEntryLabelTextSize(12f);
                                 binding.pieChartClientes.setDrawCenterText(false);
-                                binding.pieChartClientes.getLegend().setEnabled(false); // Ocultar leyenda
+                                binding.pieChartClientes.getLegend().setEnabled(false);
                                 binding.pieChartClientes.getDescription().setEnabled(false);
                                 binding.pieChartClientes.invalidate();
                             });
                 });
     }
-
-
 
     private void cargarGraficoGruposPorMonitor() {
         String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
@@ -252,7 +250,7 @@ public class AnalisisFragment extends Fragment {
         xAxis.setDrawGridLines(false);
         xAxis.setDrawAxisLine(true);
         xAxis.setTextSize(10f);
-        xAxis.setLabelRotationAngle(-45);  // Inclinar etiquetas
+        xAxis.setLabelRotationAngle(-45);
         xAxis.setValueFormatter(new ValueFormatter() {
             @Override
             public String getFormattedValue(float value) {
@@ -261,12 +259,8 @@ public class AnalisisFragment extends Fragment {
             }
         });
         binding.barChartGruposPorMonitor.setExtraBottomOffset(32f);
-
-
         binding.barChartGruposPorMonitor.invalidate();
     }
-
-
 
     private void exportarGraficoComoImagen(Chart<?> chart, String nombreBase) {
         chart.setDrawingCacheEnabled(true);

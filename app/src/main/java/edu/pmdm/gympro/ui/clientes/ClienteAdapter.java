@@ -49,7 +49,6 @@ public class ClienteAdapter extends RecyclerView.Adapter<ClienteAdapter.ClienteV
         holder.tvNombre.setText(cliente.getNombre() + " " + cliente.getApellidos());
         holder.tvCorreo.setText(cliente.getCorreo());
 
-        // Cargar imagen
         if (cliente.getFoto() != null && !cliente.getFoto().equals("logo_por_defecto")) {
             Log.d("CLIENTE_ADAPTER", "Cargando imagen: " + cliente.getFoto());
             Glide.with(holder.itemView.getContext())

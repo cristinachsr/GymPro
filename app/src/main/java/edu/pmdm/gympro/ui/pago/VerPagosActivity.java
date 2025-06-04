@@ -36,7 +36,6 @@ public class VerPagosActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ver_pago);
 
-        // Configurar Toolbar
         androidx.appcompat.widget.Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
@@ -104,7 +103,6 @@ public class VerPagosActivity extends AppCompatActivity {
                         return;
                     }
 
-                    // Obtener nombres de los clientes
                     db.collection("clientes")
                             .whereIn("idCliente", idsClientes)
                             .get()

@@ -8,7 +8,7 @@ import javax.crypto.spec.SecretKeySpec;
 public class CryptoUtils {
 
     private static final String AES = "AES";
-    private static final String SECRET_KEY = "1234567890123456"; // Debe tener 16 caracteres
+    private static final String SECRET_KEY = "1234567890123456";
 
     public static String encrypt(String data) {
         try {

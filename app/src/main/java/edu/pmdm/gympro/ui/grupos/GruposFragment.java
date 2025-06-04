@@ -45,13 +45,11 @@ public class GruposFragment extends Fragment {
         setupRecyclerView();
         cargarGruposDelAdministrador();
 
-        // Botón para crear nuevo grupo
         binding.btnCrearGrupo.setOnClickListener(v -> {
             Intent intent = new Intent(requireContext(), CrearGrupoActivity.class);
             crearGrupoLauncher.launch(intent);
         });
 
-        // Búsqueda por nombre
         binding.etBuscarGrupo.addTextChangedListener(new TextWatcher() {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {

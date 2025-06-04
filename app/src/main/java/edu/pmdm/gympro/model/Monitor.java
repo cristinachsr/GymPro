@@ -13,7 +13,6 @@ public class Monitor {
     private String idAdministrador;
 
     public Monitor() {
-        // Constructor vacío requerido por Firestore
     }
 
     public Monitor(String idMonitor, String nombre, String apellidos, String dni, String fechaNacimiento,

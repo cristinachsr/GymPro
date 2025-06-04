@@ -13,7 +13,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <!-- Logo -->
         <ImageView
             android:layout_width="160dp"
             android:layout_height="160dp"
@@ -21,7 +20,7 @@
             android:src="@drawable/logo_gympro_sinfondo"
             android:contentDescription="Logo" />
 
-        <!-- Título principal -->
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -31,7 +30,7 @@
             android:textColor="@color/blue"
             android:layout_marginBottom="24dp" />
 
-        <!-- Imagen de perfil -->
+
         <ImageView
             android:id="@+id/ivProfilePic"
             android:layout_width="120dp"
@@ -51,7 +50,7 @@
             android:backgroundTint="@color/blue"
             android:textColor="@android:color/white" />
 
-        <!-- Nombre -->
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -70,7 +69,7 @@
             android:textColorHint="@color/blue"
             android:backgroundTint="@color/blue" />
 
-        <!-- Apellidos -->
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -89,7 +88,7 @@
             android:textColorHint="@color/blue"
             android:backgroundTint="@color/blue" />
 
-        <!-- DNI -->
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -108,7 +107,7 @@
             android:textColorHint="@color/blue"
             android:backgroundTint="@color/blue" />
 
-        <!-- Fecha de nacimiento -->
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -127,7 +126,7 @@
             android:textColorHint="@color/blue"
             android:backgroundTint="@color/blue" />
 
-        <!-- Teléfono -->
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -166,7 +165,7 @@
                 android:backgroundTint="@color/blue" />
         </LinearLayout>
 
-        <!-- Correo -->
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -186,7 +185,7 @@
             android:textColorHint="@color/blue"
             android:backgroundTint="@color/blue" />
 
-        <!-- Contraseña -->
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -223,7 +222,7 @@
                 android:contentDescription="Ver contraseña" />
         </RelativeLayout>
 
-        <!-- Confirmar contraseña -->
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -260,7 +259,6 @@
                 android:contentDescription="Ver confirmar contraseña" />
         </RelativeLayout>
 
-        <!-- Botón de registro -->
         <Button
             android:id="@+id/btnRegistrarse"
             android:layout_width="match_parent"
@@ -270,7 +268,6 @@
             android:backgroundTint="@color/blue"
             android:textColor="@android:color/white" />
 
-        <!-- Enlace a login -->
         <TextView
             android:id="@+id/btnGoToLogin"
             android:layout_width="wrap_content"

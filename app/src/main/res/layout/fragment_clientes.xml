@@ -9,7 +9,6 @@
     android:background="?android:windowBackground"
     android:padding="16dp">
 
-    <!-- Botón Añadir Cliente -->
     <Button
         android:id="@+id/btnCrearCliente"
         android:layout_width="0dp"
@@ -26,7 +25,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginBottom="12dp" />
 
-    <!-- Buscador de clientes -->
     <EditText
         android:id="@+id/etBuscarCliente"
         android:layout_width="0dp"
@@ -42,7 +40,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginBottom="12dp" />
 
-    <!-- Lista de clientes -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvClientes"
         android:layout_width="0dp"

@@ -77,7 +77,6 @@ public class LoginActivity extends AppCompatActivity {
                     if (correo.equals(correoDescifrado)) {
                         correoEncontrado = true;
 
-                        // ✅ Intentar login con Firebase Auth (usa texto plano)
                         auth.signInWithEmailAndPassword(correo, password)
                                 .addOnSuccessListener(authResult -> {
                                     String uid = auth.getCurrentUser().getUid();
@@ -103,10 +102,9 @@ public class LoginActivity extends AppCompatActivity {
                                     Toast.makeText(this, "La contraseña es incorrecta", Toast.LENGTH_SHORT).show();
                                 });
 
-                        break; // ya hemos encontrado el correo
+                        break;
                     }
                 } catch (Exception e) {
-                    // El correo no estaba cifrado o falló la desencriptación
                     continue;
                 }
             }

@@ -10,7 +10,6 @@ public class Pago {
     private String idAdministrador;
 
     public Pago() {
-        // Requerido por Firestore
     }
 
     public Pago(String idPago, String idCliente, int mes, int año, boolean pagado, String idAdministrador) {

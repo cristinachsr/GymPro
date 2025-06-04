@@ -5,7 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- Toolbar con título y flecha atrás -->
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
@@ -15,7 +14,6 @@
         android:title="Añadir grupo"
         android:titleTextColor="@android:color/white"/>
 
-    <!-- Contenido desplazable -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -27,7 +25,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <!-- Nombre -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -50,7 +47,6 @@
                 android:layout_marginBottom="16dp"
                 android:maxLength="30"/>
 
-            <!-- Monitor -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -69,7 +65,6 @@
                 android:layout_marginBottom="16dp"
                 android:textColor="@color/blue"/>
 
-            <!-- Descripción -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -110,9 +105,6 @@
                 android:orientation="vertical"
                 android:layout_marginBottom="16dp"/>
 
-
-
-            <!-- Imagen -->
             <ImageView
                 android:id="@+id/ivFotoGrupo"
                 android:layout_width="200dp"
@@ -122,7 +114,6 @@
                 android:src="@drawable/logo_gympro_sinfondo"
                 android:layout_marginBottom="12dp" />
 
-            <!-- Botón elegir imagen -->
             <Button
                 android:id="@+id/btnSeleccionarFoto"
                 android:layout_width="wrap_content"
@@ -133,7 +124,6 @@
                 android:textColor="@android:color/white"
                 android:layout_marginBottom="24dp" />
 
-            <!-- Botones acción -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

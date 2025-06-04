@@ -204,7 +204,6 @@ public class CrearMonitorActivity extends AppCompatActivity {
 
             String idAdministrador = auth.getCurrentUser().getUid();
             String idMonitor = UUID.randomUUID().toString();
-
             String encryptedDni = CryptoUtils.encrypt(dni);
             String encryptedFecha = CryptoUtils.encrypt(fechaNacimiento);
             String encryptedTelefono = CryptoUtils.encrypt(telefono);
@@ -235,7 +234,6 @@ public class CrearMonitorActivity extends AppCompatActivity {
 
         if (!validarCampos(nombre, apellidos, dni, fechaNacimiento, telefono, correo)) return;
 
-        // Cifrado antes de guardar
         String encryptedDni = CryptoUtils.encrypt(dni);
         String encryptedFecha = CryptoUtils.encrypt(fechaNacimiento);
         String encryptedTelefono = CryptoUtils.encrypt(telefono);
@@ -330,7 +328,6 @@ public class CrearMonitorActivity extends AppCompatActivity {
     }
 
     private boolean fechaValida(String fecha) {
-        // Validar formato con regex antes de parsear
         if (!fecha.matches("^\\d{2}/\\d{2}/\\d{4}$")) return false;
 
         String[] partes = fecha.split("/");
@@ -338,10 +335,8 @@ public class CrearMonitorActivity extends AppCompatActivity {
         int mes = Integer.parseInt(partes[1]);
         int año = Integer.parseInt(partes[2]);
 
-        // Validar valores lógicos de día, mes y año
         if (dia < 1 || dia > 31 || mes < 1 || mes > 12 || año < 1900) return false;
 
-        // Validación estricta usando SimpleDateFormat
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
             sdf.setLenient(false);

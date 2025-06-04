@@ -45,10 +45,8 @@ public class GrupoAdapter extends RecyclerView.Adapter<GrupoAdapter.GrupoViewHol
         Grupo grupo = listaFiltrada.get(position);
         holder.tvNombreGrupo.setText(grupo.getNombre());
 
-        // Mostrar descripción del grupo
         holder.tvDescripcionGrupo.setText(grupo.getDescripcion() != null ? grupo.getDescripcion() : "Sin descripción");
 
-        // Mostrar foto del grupo
         if (grupo.getFoto() != null && !grupo.getFoto().isEmpty() && !grupo.getFoto().equals("logo_por_defecto")) {
             Glide.with(holder.itemView.getContext())
                     .load(grupo.getFoto())

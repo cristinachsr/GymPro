@@ -40,7 +40,6 @@ public class ClienteGrupoAdapter extends RecyclerView.Adapter<ClienteGrupoAdapte
         holder.tvNombreCliente.setText(cliente.getNombre() + " " + cliente.getApellidos());
         holder.tvCorreoCliente.setText(cliente.getCorreo());
 
-        // Cargar imagen con Glide si la URL de la foto no es nula ni vacía
         if (cliente.getFoto() != null && !cliente.getFoto().isEmpty()) {
             Glide.with(context)
                     .load(cliente.getFoto())

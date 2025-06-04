@@ -31,7 +31,6 @@ public class DetalleClienteActivity extends AppCompatActivity {
         if (getSupportActionBar() != null)
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        // Obtener datos del intent
         String nombre = getIntent().getStringExtra("nombre");
         String apellidos = getIntent().getStringExtra("apellidos");
         String dni = CryptoUtils.decrypt(getIntent().getStringExtra("dni"));
@@ -41,7 +40,6 @@ public class DetalleClienteActivity extends AppCompatActivity {
         String foto = getIntent().getStringExtra("foto");
         idCliente = getIntent().getStringExtra("idCliente");
 
-        // Mostrar datos
         binding.etNombre.setText(nombre);
         binding.etApellidos.setText(apellidos);
         binding.etDni.setText(dni);
@@ -127,7 +125,6 @@ public class DetalleClienteActivity extends AppCompatActivity {
     private void eliminarCliente() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        // Primero: borrar todos los pagos asociados al cliente
         db.collection("pagos")
                 .whereEqualTo("idCliente", idCliente)
                 .get()
@@ -136,7 +133,6 @@ public class DetalleClienteActivity extends AppCompatActivity {
                         db.collection("pagos").document(doc.getId()).delete();
                     }
 
-                    // Segundo: borrar el cliente después de borrar sus pagos
                     db.collection("clientes").document(idCliente)
                             .delete()
                             .addOnSuccessListener(unused -> {

@@ -6,7 +6,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- Toolbar con título y flecha atrás -->
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
@@ -16,7 +15,6 @@
         android:title="Añadir cliente"
         android:titleTextColor="@android:color/white" />
 
-    <!-- Scroll principal -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -28,7 +26,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <!-- Nombre -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -51,7 +48,6 @@
                 android:maxLength="30"
                 android:layout_marginBottom="16dp" />
 
-            <!-- Apellidos -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -74,7 +70,6 @@
                 android:maxLength="30"
                 android:layout_marginBottom="16dp" />
 
-            <!-- DNI -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -97,7 +92,6 @@
                 android:maxLength="9"
                 android:layout_marginBottom="16dp" />
 
-            <!-- Fecha de nacimiento -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -120,7 +114,6 @@
                 android:textColorHint="@color/blue"
                 android:layout_marginBottom="16dp" />
 
-            <!-- Teléfono con CountryCodePicker -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -160,7 +153,6 @@
                     android:textColorHint="@color/blue" />
             </LinearLayout>
 
-            <!-- Correo -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -184,7 +176,6 @@
                 android:maxLength="30"
                 android:layout_marginBottom="16dp" />
 
-            <!-- Seleccionar grupos -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -214,13 +205,12 @@
                 android:text="Sin grupos seleccionados"
                 android:layout_marginBottom="16dp" />
 
-            <!-- Lista de grupos seleccionados -->
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvGruposSeleccionados"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp" />
-            <!-- Imagen -->
+
             <ImageView
                 android:id="@+id/ivFotoCliente"
                 android:layout_width="200dp"
@@ -230,7 +220,6 @@
                 android:src="@drawable/logo_gympro_sinfondo"
                 android:layout_marginBottom="12dp" />
 
-            <!-- Botón elegir imagen -->
             <Button
                 android:id="@+id/btnSeleccionarFotoCliente"
                 android:layout_width="wrap_content"
@@ -241,7 +230,6 @@
                 android:textColor="@android:color/white"
                 android:layout_marginBottom="24dp" />
 
-            <!-- Botones acción -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

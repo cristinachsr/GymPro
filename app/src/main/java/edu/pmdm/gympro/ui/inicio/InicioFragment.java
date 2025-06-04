@@ -29,7 +29,6 @@ public class InicioFragment extends Fragment {
         binding = FragmentInicioBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        // Pedir permisos al iniciar
         checkAndRequestPermissions();
 
         binding.btnClientes.setOnClickListener(v ->

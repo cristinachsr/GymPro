@@ -13,7 +13,6 @@
     android:theme="@style/ThemeOverlay.AppCompat.Dark"
     android:gravity="start">
 
-    <!-- Imagen de perfil del administrador -->
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/imageViewProfile"
         android:layout_width="80dp"
@@ -23,7 +22,6 @@
         android:scaleType="centerCrop"
         android:src="@drawable/usuario_sinfondo" />
 
-    <!-- Nombre del administrador -->
     <TextView
         android:id="@+id/textViewNombre"
         android:layout_width="wrap_content"
@@ -34,7 +32,6 @@
         android:textSize="16sp"
         android:textStyle="bold" />
 
-    <!-- Correo del administrador -->
     <TextView
         android:id="@+id/textViewCorreo"
         android:layout_width="wrap_content"
@@ -44,7 +41,6 @@
         android:textSize="14sp"
         android:layout_marginBottom="12dp" />
 
-    <!-- Botón de cerrar sesión -->
     <Button
         android:id="@+id/btnLogout"
         android:layout_width="wrap_content"

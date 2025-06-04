@@ -29,7 +29,6 @@ public class DetalleMonitorActivity extends AppCompatActivity {
         if (getSupportActionBar() != null)
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        // Obtener datos del intent
         String nombre = getIntent().getStringExtra("nombre");
         String apellidos = getIntent().getStringExtra("apellidos");
         String dni = CryptoUtils.decrypt(getIntent().getStringExtra("dni"));
@@ -38,7 +37,6 @@ public class DetalleMonitorActivity extends AppCompatActivity {
         String correo = CryptoUtils.decrypt(getIntent().getStringExtra("correo"));
         String foto = getIntent().getStringExtra("foto");
 
-        // Mostrar datos en los EditText deshabilitados
         binding.etNombre.setText(nombre);
         binding.etApellidos.setText(apellidos);
         binding.etDni.setText(dni);
@@ -79,16 +77,16 @@ public class DetalleMonitorActivity extends AppCompatActivity {
         binding.btnEditarMonitor.setOnClickListener(v -> {
             Intent intent = new Intent(this, CrearMonitorActivity.class);
             intent.putExtra("modoEdicion", true);
-            intent.putExtra("idMonitor", getIntent().getStringExtra("idMonitor")); // si lo estás enviando desde el adapter
+            intent.putExtra("idMonitor", getIntent().getStringExtra("idMonitor"));
             intent.putExtra("nombre", binding.etNombre.getText().toString());
             intent.putExtra("apellidos", binding.etApellidos.getText().toString());
             intent.putExtra("dni", binding.etDni.getText().toString());
             intent.putExtra("fechaNacimiento", binding.etFechaNacimiento.getText().toString());
             intent.putExtra("telefono", binding.etTelefono.getText().toString());
             intent.putExtra("correo", binding.etCorreo.getText().toString());
-            intent.putExtra("foto", getIntent().getStringExtra("foto")); // pasar la URI original
+            intent.putExtra("foto", getIntent().getStringExtra("foto"));
             startActivity(intent);
-            finish(); // opcional: para que no vuelva aquí al presionar atrás
+            finish();
         });
 
     }

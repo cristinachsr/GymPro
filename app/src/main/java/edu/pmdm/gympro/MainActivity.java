@@ -66,7 +66,6 @@ public class MainActivity extends AppCompatActivity {
             return true;
         });
 
-        // Botón de logout
         View headerView = binding.navView.getHeaderView(0);
         Button btnLogout = headerView.findViewById(R.id.btnLogout);
         btnLogout.setOnClickListener(v -> {
@@ -77,7 +76,6 @@ public class MainActivity extends AppCompatActivity {
             finish();
         });
 
-        // Cargar datos al iniciar
         actualizarDatosAdministrador();
     }
 
@@ -112,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == 100 && resultCode == RESULT_OK) {
-            actualizarDatosAdministrador(); // Recargar datos del header
+            actualizarDatosAdministrador();
         }
     }
 
@@ -134,12 +132,10 @@ public class MainActivity extends AppCompatActivity {
 
                         tvNombre.setText(nombre != null ? nombre : "Admin");
 
-                        //correo cifrado
                         String correoCifrado = documentSnapshot.getString("correo");
                         String correoDescifrado = correoCifrado != null ? CryptoUtils.decrypt(correoCifrado) : "correo@ejemplo.com";
                         tvCorreo.setText(correoDescifrado);
 
-                        // Evaluar si hay una foto válida
                         if (fotoUrl != null && !fotoUrl.trim().isEmpty() && !fotoUrl.equals("logo_por_defecto")) {
                             try {
                                 Glide.with(this).load(Uri.parse(fotoUrl)).into(ivFoto); // Usamos URI

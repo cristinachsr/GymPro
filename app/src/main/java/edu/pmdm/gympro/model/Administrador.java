@@ -11,10 +11,8 @@ public class Administrador {
     private String foto;
     private String rol;
 
-    // Constructor vacío requerido por Firestore
     public Administrador() {}
 
-    // Constructor actualizado con todos los campos
     public Administrador(String idadministrador, String nombre, String apellidos, String fecha, String correo, String dni, String telefono, String foto){
         this.idadministrador = idadministrador;
         this.nombreAdministrador = nombre;

@@ -5,7 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- Toolbar con título -->
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
@@ -15,7 +14,6 @@
         android:title="Detalles del cliente"
         android:titleTextColor="@android:color/white" />
 
-    <!-- Contenido scrollable -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -27,7 +25,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <!-- Imagen -->
             <ImageView
                 android:id="@+id/ivFotoCliente"
                 android:layout_width="200dp"
@@ -37,7 +34,6 @@
                 android:src="@drawable/logo_gympro_sinfondo"
                 android:layout_marginBottom="24dp" />
 
-            <!-- Nombre -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -45,6 +41,7 @@
                 android:textColor="@color/blue"
                 android:textSize="16sp"
                 android:textStyle="bold" />
+
             <EditText
                 android:id="@+id/etNombre"
                 android:layout_width="match_parent"
@@ -56,7 +53,6 @@
                 android:textColor="@color/blue"
                 android:layout_marginBottom="16dp" />
 
-            <!-- Apellidos -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -64,6 +60,7 @@
                 android:textColor="@color/blue"
                 android:textSize="16sp"
                 android:textStyle="bold" />
+
             <EditText
                 android:id="@+id/etApellidos"
                 android:layout_width="match_parent"
@@ -75,7 +72,6 @@
                 android:textColor="@color/blue"
                 android:layout_marginBottom="16dp" />
 
-            <!-- DNI -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -83,6 +79,7 @@
                 android:textColor="@color/blue"
                 android:textSize="16sp"
                 android:textStyle="bold" />
+
             <EditText
                 android:id="@+id/etDni"
                 android:layout_width="match_parent"
@@ -94,7 +91,6 @@
                 android:textColor="@color/blue"
                 android:layout_marginBottom="16dp" />
 
-            <!-- Fecha nacimiento -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -102,6 +98,7 @@
                 android:textColor="@color/blue"
                 android:textSize="16sp"
                 android:textStyle="bold" />
+
             <EditText
                 android:id="@+id/etFechaNacimiento"
                 android:layout_width="match_parent"
@@ -113,7 +110,6 @@
                 android:textColor="@color/blue"
                 android:layout_marginBottom="16dp" />
 
-            <!-- Teléfono -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -121,6 +117,7 @@
                 android:textColor="@color/blue"
                 android:textSize="16sp"
                 android:textStyle="bold" />
+
             <EditText
                 android:id="@+id/etTelefono"
                 android:layout_width="match_parent"
@@ -132,7 +129,6 @@
                 android:textColor="@color/blue"
                 android:layout_marginBottom="16dp" />
 
-            <!-- Correo -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -140,6 +136,7 @@
                 android:textColor="@color/blue"
                 android:textSize="16sp"
                 android:textStyle="bold" />
+
             <EditText
                 android:id="@+id/etCorreo"
                 android:layout_width="match_parent"
@@ -151,7 +148,6 @@
                 android:textColor="@color/blue"
                 android:layout_marginBottom="16dp" />
 
-            <!-- Clases (grupos asignados) -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -159,6 +155,7 @@
                 android:textColor="@color/blue"
                 android:textSize="16sp"
                 android:textStyle="bold" />
+
             <TextView
                 android:id="@+id/tvClasesCliente"
                 android:layout_width="match_parent"
@@ -169,7 +166,6 @@
                 android:textSize="14sp"
                 android:layout_marginBottom="24dp" />
 
-            <!-- Botones -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

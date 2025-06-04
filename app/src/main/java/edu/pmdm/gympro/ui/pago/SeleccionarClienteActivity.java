@@ -47,7 +47,6 @@ public class SeleccionarClienteActivity extends AppCompatActivity {
                     for (QueryDocumentSnapshot doc : snapshot) {
                         Cliente cliente = doc.toObject(Cliente.class);
 
-                        // DESCIFRAR campos cifrados
                         cliente.setCorreo(CryptoUtils.decrypt(cliente.getCorreo()));
                         cliente.setDni(CryptoUtils.decrypt(cliente.getDni()));
                         cliente.setTelefono(CryptoUtils.decrypt(cliente.getTelefono()));

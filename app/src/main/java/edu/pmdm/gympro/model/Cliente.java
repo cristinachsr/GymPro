@@ -16,7 +16,6 @@ public class Cliente {
     private List<String> gruposSeleccionados;
 
     public Cliente() {
-        // Constructor vacío requerido por Firestore
     }
 
     public Cliente(String idCliente, String nombre, String apellidos, String dni, String fechaNacimiento,

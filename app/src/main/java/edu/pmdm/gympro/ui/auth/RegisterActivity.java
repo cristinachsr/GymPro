@@ -131,12 +131,10 @@ public class RegisterActivity extends AppCompatActivity {
             toast("Número de teléfono no válido"); return;
         }
 
-        //Cifrar los datos antes de consultar Firestore
         String dniCifrado = CryptoUtils.encrypt(dni);
         String telefonoCifrado = CryptoUtils.encrypt(telefono);
         String correoCifrado = CryptoUtils.encrypt(correo);
 
-        // Buscar por DNI cifrado
         db.collection("administradores")
                 .whereEqualTo("dni", dniCifrado)
                 .get()
@@ -146,7 +144,6 @@ public class RegisterActivity extends AppCompatActivity {
                         return;
                     }
 
-                    // Buscar por teléfono cifrado
                     db.collection("administradores")
                             .whereEqualTo("telefono", telefonoCifrado)
                             .get()
@@ -156,7 +153,6 @@ public class RegisterActivity extends AppCompatActivity {
                                     return;
                                 }
 
-                                // Buscar por correo cifrado
                                 db.collection("administradores")
                                         .whereEqualTo("correo", correoCifrado)
                                         .get()
@@ -165,8 +161,6 @@ public class RegisterActivity extends AppCompatActivity {
                                                 toast("Ya existe un administrador con este correo");
                                                 return;
                                             }
-
-                                            // Ningún campo está duplicado, proceder a crear el usuario
                                             crearUsuarioFirebase(nombre, apellidos, dni, fecha, correo, password, telefono);
                                         })
                                         .addOnFailureListener(e -> toast("Error al verificar correo"));
@@ -184,7 +178,6 @@ public class RegisterActivity extends AppCompatActivity {
                     String uid = result.getUser().getUid();
                     String fotoUrl = (fotoSeleccionadaUri != null) ? fotoSeleccionadaUri.toString() : "logo_por_defecto";
 
-                    // Cifrar campos sensibles antes de guardar en Firestore
                     String fechaCifrada = CryptoUtils.encrypt(fecha);
                     String correoCifrado = CryptoUtils.encrypt(correo);
                     String dniCifrado = CryptoUtils.encrypt(dni);
@@ -267,7 +260,6 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private boolean fechaValida(String fecha) {
-        // Validar formato con regex antes de parsear
         if (!fecha.matches("^\\d{2}/\\d{2}/\\d{4}$")) return false;
 
         String[] partes = fecha.split("/");
@@ -275,10 +267,8 @@ public class RegisterActivity extends AppCompatActivity {
         int mes = Integer.parseInt(partes[1]);
         int año = Integer.parseInt(partes[2]);
 
-        // Validar valores lógicos de día, mes y año
         if (dia < 1 || dia > 31 || mes < 1 || mes > 12 || año < 1900) return false;
 
-        // Validación estricta usando SimpleDateFormat
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
             sdf.setLenient(false);
