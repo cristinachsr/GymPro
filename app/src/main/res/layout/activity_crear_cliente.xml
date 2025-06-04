@@ -181,7 +181,7 @@
                 android:padding="10dp"
                 android:textColor="@color/blue"
                 android:textColorHint="@color/blue"
-                android:maxLength="50"
+                android:maxLength="30"
                 android:layout_marginBottom="16dp" />
 
             <!-- Seleccionar grupos -->

@@ -181,7 +181,7 @@
             android:textSize="14sp"
             android:hint="ejemplo@gmail.com"
             android:inputType="textEmailAddress"
-            android:maxLength="28"
+            android:maxLength="30"
             android:textColor="@color/blue"
             android:textColorHint="@color/blue"
             android:backgroundTint="@color/blue" />

@@ -1,6 +1,6 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android">
     <data />
-    <ScrollView
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:padding="16dp">
@@ -54,7 +54,7 @@
             <com.github.mikephil.charting.charts.BarChart
                 android:id="@+id/barChartGruposPorMonitor"
                 android:layout_width="match_parent"
-                android:layout_height="300dp"
+                android:layout_height="400dp"
                 android:layout_marginTop="24dp"
                 android:layout_marginBottom="16dp" />
 
@@ -71,5 +71,5 @@
                 android:text="Exportar CSV grupos por monitor" />
 
         </LinearLayout>
-    </ScrollView>
+    </androidx.core.widget.NestedScrollView>
 </layout>

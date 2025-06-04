@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.InputType;
@@ -46,6 +47,7 @@ public class RegisterActivity extends AppCompatActivity {
     private Uri fotoCamaraUri;
 
     private final int REQUEST_CAMERA_PERMISSION = 100;
+    private final int REQUEST_GALLERY_PERMISSION = 200;
 
     private final ActivityResultLauncher<Intent> seleccionarImagenLauncher =
             registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
@@ -129,7 +131,7 @@ public class RegisterActivity extends AppCompatActivity {
             toast("Número de teléfono no válido"); return;
         }
 
-        // 🔒 Cifrar los datos antes de consultar Firestore
+        //Cifrar los datos antes de consultar Firestore
         String dniCifrado = CryptoUtils.encrypt(dni);
         String telefonoCifrado = CryptoUtils.encrypt(telefono);
         String correoCifrado = CryptoUtils.encrypt(correo);
@@ -219,6 +221,22 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void abrirGaleria() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_IMAGES) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_MEDIA_IMAGES}, REQUEST_GALLERY_PERMISSION);
+            } else {
+                lanzarIntentGaleria();
+            }
+        } else {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_GALLERY_PERMISSION);
+            } else {
+                lanzarIntentGaleria();
+            }
+        }
+    }
+
+    private void lanzarIntentGaleria() {
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         seleccionarImagenLauncher.launch(intent);
     }
@@ -309,8 +327,11 @@ public class RegisterActivity extends AppCompatActivity {
         if (requestCode == REQUEST_CAMERA_PERMISSION && grantResults.length > 0 &&
                 grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             abrirCamara();
+        } else if (requestCode == REQUEST_GALLERY_PERMISSION && grantResults.length > 0 &&
+                grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            lanzarIntentGaleria();
         } else {
-            toast("Permiso de cámara denegado");
+            toast("Permiso de galería denegado");
         }
     }
 }

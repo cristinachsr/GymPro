@@ -39,7 +39,7 @@
             android:textColor="@color/blue"
             android:backgroundTint="@color/blue"
             android:inputType="textEmailAddress"
-            android:maxLength="28"/>
+            android:maxLength="30"/>
 
         <RelativeLayout
             android:layout_width="match_parent"

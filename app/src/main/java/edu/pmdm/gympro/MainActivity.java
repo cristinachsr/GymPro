@@ -130,7 +130,7 @@ public class MainActivity extends AppCompatActivity {
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
                         String nombre = documentSnapshot.getString("nombreAdministrador");
-                        String fotoUrl = documentSnapshot.getString("photo");
+                        String fotoUrl = documentSnapshot.getString("foto");
 
                         tvNombre.setText(nombre != null ? nombre : "Admin");
 
@@ -142,7 +142,7 @@ public class MainActivity extends AppCompatActivity {
                         // Evaluar si hay una foto válida
                         if (fotoUrl != null && !fotoUrl.trim().isEmpty() && !fotoUrl.equals("logo_por_defecto")) {
                             try {
-                                Glide.with(this).load(Uri.parse(fotoUrl)).into(ivFoto); // ✅ Usamos URI
+                                Glide.with(this).load(Uri.parse(fotoUrl)).into(ivFoto); // Usamos URI
                             } catch (Exception e) {
                                 ivFoto.setImageResource(R.drawable.usuario_sinfondo);
                             }

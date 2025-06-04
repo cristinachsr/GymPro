@@ -1,10 +1,13 @@
 package edu.pmdm.gympro.ui.analisis;
 
+import android.content.ContentValues;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +18,7 @@ import androidx.fragment.app.Fragment;
 
 import com.github.mikephil.charting.charts.Chart;
 import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
@@ -22,6 +26,7 @@ import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.formatter.PercentFormatter;
+import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.github.mikephil.charting.utils.ColorTemplate;
 import com.google.firebase.auth.FirebaseAuth;
@@ -31,6 +36,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -198,56 +204,64 @@ public class AnalisisFragment extends Fragment {
     }
 
     private void mostrarGraficoGruposPorMonitor(Map<String, String> idToNombre, Map<String, Integer> conteo) {
-        List<IBarDataSet> dataSets = new ArrayList<>();
-        int index = 0;
+        List<BarEntry> entries = new ArrayList<>();
+        List<String> nombresMonitores = new ArrayList<>();
 
+        int index = 0;
         for (Map.Entry<String, Integer> entry : conteo.entrySet()) {
             String idMonitor = entry.getKey();
             int cantidad = entry.getValue();
 
-            // Mostrar solo si el monitor aún existe
             if (!idToNombre.containsKey(idMonitor)) continue;
 
-            String nombre = idToNombre.get(idMonitor);
+            String nombreCompleto = idToNombre.get(idMonitor);
+            String nombreCorto = nombreCompleto.split(" ")[0] + " " + nombreCompleto.split(" ")[1].charAt(0) + ".";
 
-            List<BarEntry> barEntries = new ArrayList<>();
-            barEntries.add(new BarEntry(index, cantidad));
-
-            BarDataSet set = new BarDataSet(barEntries, nombre);
-            set.setColor(ColorTemplate.COLORFUL_COLORS[index % ColorTemplate.COLORFUL_COLORS.length]);
-            set.setValueTextSize(10f);
-            dataSets.add(set);
+            entries.add(new BarEntry(index, cantidad));
+            nombresMonitores.add(nombreCorto);
             index++;
         }
 
-        if (dataSets.isEmpty()) {
+        if (entries.isEmpty()) {
             Toast.makeText(getContext(), "No hay datos para mostrar en el gráfico", Toast.LENGTH_SHORT).show();
             binding.barChartGruposPorMonitor.clear();
             binding.barChartGruposPorMonitor.invalidate();
             return;
         }
 
-        BarData barData = new BarData(dataSets);
+        BarDataSet dataSet = new BarDataSet(entries, "Grupos por monitor");
+        dataSet.setColors(ColorTemplate.COLORFUL_COLORS);
+        dataSet.setValueTextSize(10f);
+
+        BarData barData = new BarData(dataSet);
         barData.setBarWidth(0.5f);
+
+
         binding.barChartGruposPorMonitor.setData(barData);
-
-        Legend legend = binding.barChartGruposPorMonitor.getLegend();
-        legend.setEnabled(true);
-        legend.setForm(Legend.LegendForm.SQUARE);
-        legend.setTextSize(10f);
-        legend.setFormSize(10f);
-        legend.setHorizontalAlignment(Legend.LegendHorizontalAlignment.LEFT);
-        legend.setVerticalAlignment(Legend.LegendVerticalAlignment.BOTTOM);
-        legend.setOrientation(Legend.LegendOrientation.HORIZONTAL);
-        legend.setDrawInside(false);
-
-        binding.barChartGruposPorMonitor.getXAxis().setDrawLabels(false);
-        binding.barChartGruposPorMonitor.getXAxis().setGranularity(1f);
-        binding.barChartGruposPorMonitor.getXAxis().setGranularityEnabled(true);
-
         binding.barChartGruposPorMonitor.setFitBars(true);
         binding.barChartGruposPorMonitor.setDrawValueAboveBar(true);
         binding.barChartGruposPorMonitor.getDescription().setEnabled(false);
+
+        Legend legend = binding.barChartGruposPorMonitor.getLegend();
+        legend.setEnabled(false);
+
+        XAxis xAxis = binding.barChartGruposPorMonitor.getXAxis();
+        xAxis.setGranularity(1f);
+        xAxis.setGranularityEnabled(true);
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setDrawGridLines(false);
+        xAxis.setDrawAxisLine(true);
+        xAxis.setTextSize(10f);
+        xAxis.setLabelRotationAngle(-45);  // Inclinar etiquetas
+        xAxis.setValueFormatter(new ValueFormatter() {
+            @Override
+            public String getFormattedValue(float value) {
+                int i = (int) value;
+                return (i >= 0 && i < nombresMonitores.size()) ? nombresMonitores.get(i) : "";
+            }
+        });
+        binding.barChartGruposPorMonitor.setExtraBottomOffset(32f);
+
 
         binding.barChartGruposPorMonitor.invalidate();
     }
@@ -269,6 +283,7 @@ public class AnalisisFragment extends Fragment {
             Toast.makeText(getContext(), "Error al guardar gráfico", Toast.LENGTH_SHORT).show();
         }
     }
+
 
     private void exportarDatosClientesPorGrupoComoCSV() {
         String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
@@ -305,7 +320,6 @@ public class AnalisisFragment extends Fragment {
                                     }
                                 }
 
-                                // Crear archivo CSV
                                 StringBuilder csvBuilder = new StringBuilder();
                                 csvBuilder.append("Grupo,Inscripciones\n");
                                 for (Map.Entry<String, Integer> entry : conteoPorGrupoId.entrySet()) {
@@ -316,15 +330,7 @@ public class AnalisisFragment extends Fragment {
                                     }
                                 }
 
-                                try {
-                                    File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "inscripciones_por_grupo.csv");
-                                    FileOutputStream fos = new FileOutputStream(file);
-                                    fos.write(csvBuilder.toString().getBytes());
-                                    fos.close();
-                                    Toast.makeText(getContext(), "CSV exportado: " + file.getAbsolutePath(), Toast.LENGTH_LONG).show();
-                                } catch (IOException e) {
-                                    Toast.makeText(getContext(), "Error al guardar CSV", Toast.LENGTH_SHORT).show();
-                                }
+                                guardarCSVEnDescargas("inscripciones_por_grupo.csv", csvBuilder.toString());
                             });
                 });
     }
@@ -340,35 +346,50 @@ public class AnalisisFragment extends Fragment {
 
                     for (QueryDocumentSnapshot doc : snapshot) {
                         String nombreCompleto = doc.getString("idMonitor");
-
                         String soloNombre = (nombreCompleto != null && !nombreCompleto.isEmpty())
                                 ? nombreCompleto.split(" ")[0]
                                 : "Sin asignar";
 
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                            monitorConteo.put(soloNombre, monitorConteo.getOrDefault(soloNombre, 0) + 1);
-                        }
+                        monitorConteo.put(soloNombre, monitorConteo.getOrDefault(soloNombre, 0) + 1);
                     }
 
-                    // Construir CSV
                     StringBuilder csvBuilder = new StringBuilder();
                     csvBuilder.append("Monitor,Grupos asignados\n");
                     for (Map.Entry<String, Integer> entry : monitorConteo.entrySet()) {
                         csvBuilder.append(entry.getKey()).append(",").append(entry.getValue()).append("\n");
                     }
 
-                    try {
-                        File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "grupos_por_monitor.csv");
-                        FileOutputStream fos = new FileOutputStream(file);
-                        fos.write(csvBuilder.toString().getBytes());
-                        fos.close();
-                        Toast.makeText(getContext(), "CSV exportado: " + file.getAbsolutePath(), Toast.LENGTH_LONG).show();
-                    } catch (IOException e) {
-                        Toast.makeText(getContext(), "Error al guardar CSV", Toast.LENGTH_SHORT).show();
-                    }
+                    guardarCSVEnDescargas("grupos_por_monitor.csv", csvBuilder.toString());
                 });
     }
 
+
+    private void guardarCSVEnDescargas(String nombreArchivo, String contenido) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            ContentValues values = new ContentValues();
+            values.put(MediaStore.Downloads.DISPLAY_NAME, nombreArchivo);
+            values.put(MediaStore.Downloads.MIME_TYPE, "text/csv");
+            values.put(MediaStore.Downloads.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS);
+
+            Uri uri = requireContext().getContentResolver().insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, values);
+            if (uri != null) {
+                try (OutputStream out = requireContext().getContentResolver().openOutputStream(uri)) {
+                    out.write(contenido.getBytes());
+                    Toast.makeText(getContext(), "CSV guardado correctamente", Toast.LENGTH_LONG).show();
+                } catch (IOException e) {
+                    Toast.makeText(getContext(), "Error al guardar CSV", Toast.LENGTH_SHORT).show();
+                }
+            }
+        } else {
+            File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), nombreArchivo);
+            try (FileOutputStream fos = new FileOutputStream(file)) {
+                fos.write(contenido.getBytes());
+                Toast.makeText(getContext(), "CSV exportado en: " + file.getAbsolutePath(), Toast.LENGTH_LONG).show();
+            } catch (IOException e) {
+                Toast.makeText(getContext(), "Error al guardar CSV", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
 
     @Override
     public void onDestroyView() {

@@ -202,7 +202,6 @@ public class CrearMonitorActivity extends AppCompatActivity {
                 }
             }
 
-            // ✅ Todo válido: crear
             String idAdministrador = auth.getCurrentUser().getUid();
             String idMonitor = UUID.randomUUID().toString();
 
