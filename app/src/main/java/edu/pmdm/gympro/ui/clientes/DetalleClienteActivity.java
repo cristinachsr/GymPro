@@ -125,15 +125,31 @@ public class DetalleClienteActivity extends AppCompatActivity {
     }
 
     private void eliminarCliente() {
-        FirebaseFirestore.getInstance()
-                .collection("clientes")
-                .document(idCliente)
-                .delete()
-                .addOnSuccessListener(unused -> {
-                    Toast.makeText(this, "Cliente eliminado", Toast.LENGTH_SHORT).show();
-                    finish();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        // Primero: borrar todos los pagos asociados al cliente
+        db.collection("pagos")
+                .whereEqualTo("idCliente", idCliente)
+                .get()
+                .addOnSuccessListener(snapshot -> {
+                    for (var doc : snapshot.getDocuments()) {
+                        db.collection("pagos").document(doc.getId()).delete();
+                    }
+
+                    // Segundo: borrar el cliente después de borrar sus pagos
+                    db.collection("clientes").document(idCliente)
+                            .delete()
+                            .addOnSuccessListener(unused -> {
+                                Toast.makeText(this, "Cliente y pagos eliminados", Toast.LENGTH_SHORT).show();
+                                finish();
+                            })
+                            .addOnFailureListener(e ->
+                                    Toast.makeText(this, "Error al eliminar cliente", Toast.LENGTH_SHORT).show()
+                            );
                 })
-                .addOnFailureListener(e -> Toast.makeText(this, "Error al eliminar", Toast.LENGTH_SHORT).show());
+                .addOnFailureListener(e ->
+                        Toast.makeText(this, "Error al eliminar pagos del cliente", Toast.LENGTH_SHORT).show()
+                );
     }
 
     @Override

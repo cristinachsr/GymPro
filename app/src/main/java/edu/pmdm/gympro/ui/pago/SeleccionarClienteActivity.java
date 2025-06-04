@@ -14,6 +14,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.pmdm.gympro.CryptoUtils;
 import edu.pmdm.gympro.R;
 import edu.pmdm.gympro.SpaceItemDecoration;
 import edu.pmdm.gympro.model.Cliente;
@@ -45,6 +46,13 @@ public class SeleccionarClienteActivity extends AppCompatActivity {
                 .addOnSuccessListener(snapshot -> {
                     for (QueryDocumentSnapshot doc : snapshot) {
                         Cliente cliente = doc.toObject(Cliente.class);
+
+                        // DESCIFRAR campos cifrados
+                        cliente.setCorreo(CryptoUtils.decrypt(cliente.getCorreo()));
+                        cliente.setDni(CryptoUtils.decrypt(cliente.getDni()));
+                        cliente.setTelefono(CryptoUtils.decrypt(cliente.getTelefono()));
+                        cliente.setFechaNacimiento(CryptoUtils.decrypt(cliente.getFechaNacimiento()));
+
                         clientes.add(cliente);
                     }
 

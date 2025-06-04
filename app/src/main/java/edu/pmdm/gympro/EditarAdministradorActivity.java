@@ -25,6 +25,7 @@ import java.io.File;
 import java.io.IOException;
 
 import edu.pmdm.gympro.databinding.ActivityEditarAdministradorBinding;
+import edu.pmdm.gympro.ui.auth.LoginActivity;
 
 public class EditarAdministradorActivity extends AppCompatActivity {
 
@@ -73,6 +74,8 @@ public class EditarAdministradorActivity extends AppCompatActivity {
         binding.btnGuardarAdmin.setOnClickListener(v -> guardarCambios());
         binding.btnCancelarAdmin.setOnClickListener(v -> finish());
         binding.btnSeleccionarFotoAdmin.setOnClickListener(v -> mostrarOpcionesFoto());
+        binding.btnEliminarAdmin.setOnClickListener(v -> confirmarEliminacion());
+
     }
 
     private void cargarDatosAdministrador() {
@@ -158,7 +161,7 @@ public class EditarAdministradorActivity extends AppCompatActivity {
         String fecha = binding.etFechaAdmin.getText().toString().trim();
         String telefono = binding.countryCodePickerAdmin.getFullNumberWithPlus().trim();
 
-        // ✅ Usamos la foto nueva si se seleccionó, si no, mantenemos la anterior
+        // Usamos la foto nueva si se seleccionó, si no, mantenemos la anterior
         String nuevaFoto = (imagenUriSeleccionada != null) ? imagenUriSeleccionada.toString() : fotoActual;
 
         if (nombre.isEmpty() || apellidos.isEmpty() || dni.isEmpty() || fecha.isEmpty() || !binding.countryCodePickerAdmin.isValidFullNumber()) {
@@ -214,6 +217,64 @@ public class EditarAdministradorActivity extends AppCompatActivity {
                     );
                 });
     }
+
+    private void eliminarAdministrador() {
+        String idAdmin = uid;
+
+        // Colecciones relacionadas que tienen idAdministrador
+        String[] coleccionesRelacionadas = {"clientes", "grupos", "monitores", "pagos"};
+
+        // 1. Eliminar todos los documentos relacionados en otras colecciones
+        for (String coleccion : coleccionesRelacionadas) {
+            db.collection(coleccion)
+                    .whereEqualTo("idAdministrador", idAdmin)
+                    .get()
+                    .addOnSuccessListener(snapshot -> {
+                        for (var doc : snapshot.getDocuments()) {
+                            db.collection(coleccion).document(doc.getId()).delete();
+                        }
+                    });
+        }
+
+        // 2. Eliminar el documento de administradores
+        db.collection("administradores").document(idAdmin).delete()
+                .addOnSuccessListener(aVoid -> {
+                    // 3. Intentar eliminar también el usuario de Authentication
+                    auth.getCurrentUser().delete()
+                            .addOnSuccessListener(unused -> {
+                                Toast.makeText(this, "Administrador eliminado por completo", Toast.LENGTH_SHORT).show();
+
+                                // Ir al login
+                                Intent intent = new Intent(this, LoginActivity.class);
+                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                startActivity(intent);
+                                finish();
+                            })
+                            .addOnFailureListener(e -> {
+                                // ⚠️ Si no se ha logueado recientemente, puede dar error
+                                Toast.makeText(this, "Datos eliminados, pero no se pudo eliminar la cuenta: " + e.getMessage(), Toast.LENGTH_LONG).show();
+
+                                // Cerrar sesión igualmente
+                                auth.signOut();
+                                startActivity(new Intent(this, LoginActivity.class));
+                                finish();
+                            });
+                })
+                .addOnFailureListener(e ->
+                        Toast.makeText(this, "Error al eliminar datos del administrador", Toast.LENGTH_SHORT).show()
+                );
+    }
+
+
+    private void confirmarEliminacion() {
+        new AlertDialog.Builder(this)
+                .setTitle("Eliminar administrador")
+                .setMessage("¿Seguro que quieres eliminar tu cuenta? Se borrarán todos tus datos del sistema.")
+                .setPositiveButton("Sí, eliminar", (dialog, which) -> eliminarAdministrador())
+                .setNegativeButton("Cancelar", null)
+                .show();
+    }
+
 
     @Override
     public boolean onSupportNavigateUp() {

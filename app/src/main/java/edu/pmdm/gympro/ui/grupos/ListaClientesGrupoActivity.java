@@ -49,6 +49,15 @@ public class ListaClientesGrupoActivity extends AppCompatActivity {
                     listaClientes.clear();
                     for (DocumentSnapshot doc : query.getDocuments()) {
                         Cliente cliente = doc.toObject(Cliente.class);
+
+                        if (cliente != null && cliente.getCorreo() != null) {
+                            try {
+                                cliente.setCorreo(edu.pmdm.gympro.CryptoUtils.decrypt(cliente.getCorreo()));
+                            } catch (Exception e) {
+                                e.printStackTrace(); // por si ya estaba en texto plano o falló
+                            }
+                        }
+
                         listaClientes.add(cliente);
                     }
                     adapter.notifyDataSetChanged();

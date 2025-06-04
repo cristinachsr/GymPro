@@ -216,6 +216,14 @@
                     android:textColor="@android:color/white"
                     android:layout_marginStart="8dp" />
             </LinearLayout>
+            <Button
+                android:id="@+id/btnEliminarAdmin"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Eliminar administrador"
+                android:textColor="@android:color/white"
+                android:layout_marginTop="24dp"
+                android:backgroundTint="@android:color/holo_red_dark" />
         </LinearLayout>
     </ScrollView>
 </LinearLayout>
