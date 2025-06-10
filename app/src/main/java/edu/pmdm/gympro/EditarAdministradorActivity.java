@@ -23,6 +23,9 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Locale;
 
 import edu.pmdm.gympro.databinding.ActivityEditarAdministradorBinding;
 import edu.pmdm.gympro.ui.auth.LoginActivity;
@@ -167,6 +170,11 @@ public class EditarAdministradorActivity extends AppCompatActivity {
             return;
         }
 
+        if (!fechaValida(fecha)) {
+            Toast.makeText(this, "La fecha debe tener formato dd/MM/yyyy y ser válida", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         if (!dni.matches("\\d{8}[A-Z]")) {
             Toast.makeText(this, "El DNI debe tener 8 dígitos seguidos de una letra en mayúscula", Toast.LENGTH_SHORT).show();
             return;
@@ -214,6 +222,26 @@ public class EditarAdministradorActivity extends AppCompatActivity {
                             Toast.makeText(this, "Error al actualizar", Toast.LENGTH_SHORT).show()
                     );
                 });
+    }
+
+    private boolean fechaValida(String fecha) {
+        if (!fecha.matches("^\\d{2}/\\d{2}/\\d{4}$")) return false;
+
+        String[] partes = fecha.split("/");
+        int dia = Integer.parseInt(partes[0]);
+        int mes = Integer.parseInt(partes[1]);
+        int año = Integer.parseInt(partes[2]);
+
+        if (dia < 1 || dia > 31 || mes < 1 || mes > 12 || año < 1900) return false;
+
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+            sdf.setLenient(false);
+            sdf.parse(fecha);
+            return true;
+        } catch (ParseException e) {
+            return false;
+        }
     }
 
     private void eliminarAdministrador() {
