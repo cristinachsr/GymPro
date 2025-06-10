@@ -97,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (id == R.id.action_edit_admin) {
             Intent intent = new Intent(this, EditarAdministradorActivity.class);
-            startActivityForResult(intent, 100); // Lanzar con requestCode
+            startActivityForResult(intent, 100);
             return true;
         }
 
@@ -138,7 +138,7 @@ public class MainActivity extends AppCompatActivity {
 
                         if (fotoUrl != null && !fotoUrl.trim().isEmpty() && !fotoUrl.equals("logo_por_defecto")) {
                             try {
-                                Glide.with(this).load(Uri.parse(fotoUrl)).into(ivFoto); // Usamos URI
+                                Glide.with(this).load(Uri.parse(fotoUrl)).into(ivFoto);
                             } catch (Exception e) {
                                 ivFoto.setImageResource(R.drawable.usuario_sinfondo);
                             }

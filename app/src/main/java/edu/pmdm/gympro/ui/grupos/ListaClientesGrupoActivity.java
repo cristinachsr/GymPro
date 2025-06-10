@@ -54,7 +54,7 @@ public class ListaClientesGrupoActivity extends AppCompatActivity {
                             try {
                                 cliente.setCorreo(edu.pmdm.gympro.CryptoUtils.decrypt(cliente.getCorreo()));
                             } catch (Exception e) {
-                                e.printStackTrace(); // por si ya estaba en texto plano o falló
+                                e.printStackTrace();
                             }
                         }
 

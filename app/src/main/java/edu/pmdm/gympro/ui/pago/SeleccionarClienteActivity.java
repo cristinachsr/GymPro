@@ -34,7 +34,7 @@ public class SeleccionarClienteActivity extends AppCompatActivity {
 
         recyclerViewClientes = findViewById(R.id.recyclerViewClientes);
         recyclerViewClientes.setLayoutManager(new LinearLayoutManager(this));
-        recyclerViewClientes.addItemDecoration(new SpaceItemDecoration(24)); // 👈 Espaciado entre elementos
+        recyclerViewClientes.addItemDecoration(new SpaceItemDecoration(24));
 
         db = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();

@@ -47,8 +47,8 @@ public class DetalleMonitorActivity extends AppCompatActivity {
         if (foto != null && !foto.equals("logo_por_defecto") && !foto.isEmpty()) {
             Glide.with(this)
                     .load(foto)
-                    .placeholder(R.drawable.logo_gympro_sinfondo) // mientras carga
-                    .error(R.drawable.logo_gympro_sinfondo)       // si falla
+                    .placeholder(R.drawable.logo_gympro_sinfondo)
+                    .error(R.drawable.logo_gympro_sinfondo)
                     .into(binding.ivFotoMonitor);
         } else {
             binding.ivFotoMonitor.setImageResource(R.drawable.logo_gympro_sinfondo);

@@ -35,7 +35,7 @@ public class EditarAdministradorActivity extends AppCompatActivity {
     private String uid;
     private Uri imagenUriSeleccionada;
     private Uri imagenUriCamara;
-    private String fotoActual = null; //Imagen previa
+    private String fotoActual = null;
 
     private final int REQUEST_CAMERA_PERMISSION = 123;
 
@@ -150,7 +150,7 @@ public class EditarAdministradorActivity extends AppCompatActivity {
         try {
             return CryptoUtils.decrypt(valor);
         } catch (Exception e) {
-            return valor; // ya estaba en texto plano o corrupto
+            return valor;
         }
     }
 
@@ -179,7 +179,7 @@ public class EditarAdministradorActivity extends AppCompatActivity {
                     boolean telDuplicado = false;
 
                     for (var doc : snapshot) {
-                        if (doc.getId().equals(uid)) continue; // 🔥 saltamos nuestro propio documento
+                        if (doc.getId().equals(uid)) continue;
 
                         String dniCifrado = CryptoUtils.encrypt(dni);
                         String telefonoCifrado = CryptoUtils.encrypt(telefono);

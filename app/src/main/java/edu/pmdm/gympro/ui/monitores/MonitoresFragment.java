@@ -83,7 +83,7 @@ public class MonitoresFragment extends Fragment {
 
 
     private void cargarMonitores() {
-        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid(); // Obtener UID del administrador
+        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
         db.collection("monitores")
                 .whereEqualTo("idAdministrador", uid)
@@ -101,13 +101,13 @@ public class MonitoresFragment extends Fragment {
                             monitor.setTelefono(CryptoUtils.decrypt(monitor.getTelefono()));
                             monitor.setFechaNacimiento(CryptoUtils.decrypt(monitor.getFechaNacimiento()));
                         } catch (Exception e) {
-                            continue; // omitir si el descifrado falla
+                            continue;
                         }
 
                         monitoresCargados.add(monitor);
                     }
 
-                    monitorAdapter.actualizarLista(monitoresCargados); // ← CORRECTO
+                    monitorAdapter.actualizarLista(monitoresCargados);
                 })
                 .addOnFailureListener(e -> {
                     Toast.makeText(getContext(), "Error al cargar monitores", Toast.LENGTH_SHORT).show();

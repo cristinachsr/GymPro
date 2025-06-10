@@ -152,7 +152,6 @@ public class CrearGrupoActivity extends AppCompatActivity {
                     String horaInicio = etHoraInicio.getText().toString().trim();
                     String horaFin = etHoraFin.getText().toString().trim();
 
-                    // Validar formato exacto hh:mm
                     if (!horaInicio.matches("^\\d{2}:\\d{2}$") || !horaFin.matches("^\\d{2}:\\d{2}$")) {
                         Toast.makeText(this, "Formato de hora inválido. Usa hh:mm (ej: 08:30)", Toast.LENGTH_LONG).show();
                         return;
@@ -179,8 +178,8 @@ public class CrearGrupoActivity extends AppCompatActivity {
                     .setTitle("Eliminar horario")
                     .setMessage("¿Quieres eliminar este horario?\n" + textoHorario)
                     .setPositiveButton("Sí", (dialog, which) -> {
-                        horarios.remove(horario);                     // elimina de la lista
-                        binding.layoutHorarios.removeView(texto);     // elimina de la vista
+                        horarios.remove(horario);
+                        binding.layoutHorarios.removeView(texto);
                     })
                     .setNegativeButton("No", null)
                     .show();

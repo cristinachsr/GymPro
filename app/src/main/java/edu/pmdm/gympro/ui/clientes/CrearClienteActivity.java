@@ -152,7 +152,7 @@ public class CrearClienteActivity extends AppCompatActivity {
 
         FirebaseFirestore.getInstance()
                 .collection("grupos")
-                .whereEqualTo("idAdministrador", uidAdmin) // Solo grupos del admin actual
+                .whereEqualTo("idAdministrador", uidAdmin)
                 .get()
                 .addOnSuccessListener(snapshot -> {
                     List<String> nombresGrupos = new ArrayList<>();
